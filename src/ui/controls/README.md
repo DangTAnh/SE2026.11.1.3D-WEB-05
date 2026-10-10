@@ -1,3 +1,5 @@
 # Controls — TV4
 
-Tuần 1: controls được dựng trong `src/ui/app.ts` để demo nhanh. Khi TV1/TV2/TV3 chốt `LabConfig` và port engine ở tuần 2, tách logic điều khiển sang folder này để tái sử dụng và viết interaction tests.
+controlBindings.ts render và bind controls với LabConfig, preset và Canvas2D preview. Module chỉ phát thay đổi config qua callback; không import engine.
+
+Khi tích hợp, TV1 nối callback updateConfig sang engine port ở composition root. TV2/TV3 cần xác nhận ranges/mode trước khi coi LabConfig là contract chung.

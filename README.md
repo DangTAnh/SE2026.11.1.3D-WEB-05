@@ -1,6 +1,6 @@
 # 3D-WEB-05 — GPU Particle Lab
 
-> **Scaffold tuần 1 + UI prototype của TV4**, chưa phải sản phẩm GPU cuối cùng. README này là bản tạm, TV1 nên tiếp quản để bổ sung thông tin chung.
+> **Scaffold tuần 1 + UI pre-integration của TV4**, chưa phải sản phẩm GPU cuối cùng. README này là bản tạm, TV1 nên tiếp quản để bổ sung thông tin chung.
 
 ## Mục tiêu đề tài
 
@@ -31,6 +31,9 @@ npm run preview
 - Tạm dừng / tiếp tục / reset preview, khôi phục cấu hình mặc định.
 - Export/import preset JSON có validation + unit tests.
 - Hiển thị **backend thật hiện tại là Canvas 2D mock**, FPS của **Canvas 2D preview**, GPU timing = "Không khả dụng".
+- Có fixture kiểm thử initializing/ready/fallback/unsupported/error bằng query uiState, không tạo metric giả.
+- Đã tách controls, overlay, notification, template và runtime view-model để dễ ghép engine.
+- Có JSON Schema preset v1, design tokens, state matrix và test cases pre-integration.
 
 ### Chưa triển khai — trách nhiệm của TV1/TV2/TV3/TV5
 
@@ -60,8 +63,17 @@ Các thư mục trống có `.gitkeep` để Git theo dõi. **Không có nghĩa 
 - [`docs/02-design/ui-wireframes.md`](docs/02-design/ui-wireframes.md)
 - [`docs/02-design/ui-description.md`](docs/02-design/ui-description.md)
 - [`docs/02-design/ui-interaction-spec.md`](docs/02-design/ui-interaction-spec.md)
+- [`docs/02-design/ui-state-matrix.md`](docs/02-design/ui-state-matrix.md)
+- [`docs/02-design/design-tokens.md`](docs/02-design/design-tokens.md)
+- [`docs/02-design/preset-schema-v1.schema.json`](docs/02-design/preset-schema-v1.schema.json)
 - [`docs/05-management/TV4-week1-handover.md`](docs/05-management/TV4-week1-handover.md)
+- [`docs/05-management/TV4-pre-integration-handover.md`](docs/05-management/TV4-pre-integration-handover.md)
 - [`docs/04-testing/TV4-week1-test-report.md`](docs/04-testing/TV4-week1-test-report.md)
+- [`docs/04-testing/TV4-ui-test-cases.md`](docs/04-testing/TV4-ui-test-cases.md)
+- [`docs/04-testing/TV4-preintegration-test-report.md`](docs/04-testing/TV4-preintegration-test-report.md)
+- [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)
+- [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md)
+- [`docs/RISK_REGISTER.md`](docs/RISK_REGISTER.md)
 
 ## Lưu ý tích hợp
 

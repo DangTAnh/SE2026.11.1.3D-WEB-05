@@ -36,6 +36,11 @@ function isNumberInRange(value: unknown, min: number, max: number): value is num
   return typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
 }
 
+function hasOnlyKeys(value: Record<string, unknown>, allowedKeys: readonly string[]): boolean {
+  const actualKeys = Object.keys(value);
+  return actualKeys.length === allowedKeys.length && actualKeys.every(key => allowedKeys.includes(key));
+}
+
 /** Chỉ nhận cấu hình hợp lệ, không tự động tin tưởng dữ liệu JSON do người dùng tải lên. */
 export function parsePreset(text: string): LabConfig {
   let value: unknown;
@@ -50,6 +55,10 @@ export function parsePreset(text: string): LabConfig {
   }
 
   const c = value.config;
+  if (!hasOnlyKeys(value, ['schemaVersion', 'app', 'config'])
+    || !hasOnlyKeys(c, ['mode', 'backendPreference', 'particleCount', 'speed', 'particleSize', 'particleColor', 'strength'])) {
+    throw new Error('Preset chứa trường không được hỗ trợ hoặc thiếu trường bắt buộc.');
+  }
   if (c.mode !== 'attractor' && c.mode !== 'vortex') throw new Error('Simulation mode không hợp lệ.');
   if (c.backendPreference !== 'auto' && c.backendPreference !== 'webgpu' && c.backendPreference !== 'webgl2') {
     throw new Error('Tùy chọn backend không hợp lệ.');

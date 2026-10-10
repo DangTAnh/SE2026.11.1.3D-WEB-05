@@ -1,10 +1,10 @@
-# Yêu cầu giao diện UI/UX và Preset (TV4) — v0.1
+# Yêu cầu giao diện UI/UX và Preset (TV4) — v0.2
 
 **Dự án:** 3D-WEB-05 — GPU Particle Lab
 
 **Giai đoạn:** tuần 1 (12–18/10/2026)
 
-**Tình trạng:** bản phân tích đề xuất, chờ TV1 hợp nhất vào SRS chung.
+**Tình trạng:** phần UI độc lập engine đã có prototype và test; contract chung vẫn chờ TV1/TV2/TV3/TV5 review.
 
 ## 1. Nguồn yêu cầu
 
@@ -30,7 +30,7 @@ Theo ngữ cảnh đề tài, MVP cần ít nhất hai simulation modes, điều
 | UI-FR-07 | Must | Import preset JSON | Khôi phục toàn bộ controls khi hợp lệ; thông báo lỗi khi thiếu/sai kiểu trường |
 | UI-FR-08 | Should | Reset về giá trị mặc định | Controls và state đồng bộ sau reset |
 | UI-FR-09 | Should | Tạm dừng / tiếp tục simulation | Trạng thái điều khiển rõ; cần API engine thực tế trong giai đoạn tích hợp |
-| UI-FR-10 | Should | Thông báo loading/error/unsupported | Người dùng không bị kẹt trong trạng thái trống hoặc báo sai khả năng GPU |
+| UI-FR-10 | Should | Thông báo loading/error/unsupported | Có fixture kiểm thử từng state; khóa control simulation khi chưa thể chạy; không báo sai khả năng GPU |
 
 ## 4. Non-functional Requirements đề xuất
 
@@ -40,11 +40,17 @@ Theo ngữ cảnh đề tài, MVP cần ít nhất hai simulation modes, điều
 - **An toàn đầu vào:** preset JSON có schema và validation; không render nội dung tùy ý từ file thành HTML.
 - **Tích hợp:** state controls tách khỏi renderer và performance pipeline; module TV4 không chứa code WebGPU giả.
 
-## 5. Ngoài phạm vi UI tuần 1
+## 5. Trạng thái triển khai TV4 pre-integration
+
+- UI-FR-01 đến UI-FR-03, UI-FR-06 đến UI-FR-09: có trong Canvas2D UI prototype.
+- UI-FR-04, UI-FR-05, UI-FR-10: đã hoàn thiện cách hiển thị và fixture UI; dữ liệu engine/performance thật còn chờ tích hợp.
+- JSON Schema v1 và ma trận runtime state đã lưu ở docs/02-design.
+
+## 6. Ngoài phạm vi UI tuần 1
 
 Kết nối GPU thật, benchmark, test hiệu năng 10k–50k particle, hiệu ứng đồ họa nâng cao, save preset lên server, authentication, đa người dùng.
 
-## 6. Điểm cần xác nhận tại buổi review
+## 7. Điểm cần xác nhận tại buổi review
 
 1. Nhóm có chốt **Attractor + Vortex** làm hai mode chính thức không?
 2. Ranges demo (`particleCount` 1k–50k; `speed` 0.1–3; `size` 1–8; `strength` 0.2–4) có phù hợp với mô hình engine thật không?

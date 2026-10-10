@@ -1,4 +1,4 @@
-# Thiết kế tương tác & Integration Contract — TV4 v0.1
+# Thiết kế tương tác & Integration Contract — TV4 v0.2
 
 > Đây là **đề xuất hợp đồng tích hợp**, chưa được TV1/TV2/TV3/TV5 xác nhận, tránh nhầm là API dự án đã có.
 
@@ -37,7 +37,11 @@ interface LabConfig {
 }
 ```
 
-Code thực tế: `src/presets/preset.ts`. Module `src/ui/app.ts` hiện lưu config và gọi Canvas2D preview tạm. TV1/TV2/TV3 cần review ranges và tên biến trước khi chốt interface chung.
+Code thực tế: src/presets/preset.ts. Module src/ui/app.ts giữ composition tạm; template, controls, notifications và overlay đã tách riêng. TV1/TV2/TV3 cần review ranges và tên biến trước khi chốt interface chung.
+
+### View-model UI hiện có
+
+UiRuntimeState trong src/ui/state/runtimeState.ts chỉ thuộc lớp UI. Nó mô tả initializing, ready, fallback, unsupported và error, cùng actual backend/metrics nullable. Đây không phải interface engine đã được nhóm chốt.
 
 ## 3. Giao tiếp tương lai được kiến nghị
 
@@ -78,7 +82,7 @@ Khi tích hợp: chỉ UI thay đổi trạng thái mong muốn; **Core quyết 
 }
 ```
 
-Validation hiện có: schema/app, mode, backend, particleCount (1000–50000 bước 1000), speed (0.1–3), particleSize (1–8), color `#RRGGBB`, strength (0.2–4). File trên 1MB bị từ chối qua giao diện. Phạm vi các tham số có thể phải thay đổi theo quyết định của nhóm.
+Validation hiện có: schema/app, đúng tập field bắt buộc, không nhận field thừa, mode, backend, particleCount (1000–50000 bước 1000), speed (0.1–3), particleSize (1–8), color #RRGGBB, strength (0.2–4). File trên 1MB bị từ chối qua giao diện. JSON Schema chính thức của bản v1 nằm ở docs/02-design/preset-schema-v1.schema.json.
 
 ## 5. Hành vi/giới hạn quan trọng
 
@@ -87,6 +91,7 @@ Validation hiện có: schema/app, mode, backend, particleCount (1000–50000 b�
 - FPS Canvas2D trong tuần 1 là đo preview thật, **không** được dùng làm dữ liệu benchmark WebGPU/WebGL2.
 - Số `particleCount` trong state phản ánh cấu hình mong muốn; Canvas2D minh họa chỉ vẽ tối đa **600** particle để tránh ngộ nhận về tải GPU.
 - Fallback là việc của TV1/TV3. Không có logic tự chọn WebGL2 trong giao diện mock hiện tại.
+- Query uiState chỉ tạo fixture hiển thị, không bật backend hoặc metric giả. Xem ui-state-matrix.md.
 
 ## 6. Acceptance tests của TV4
 
@@ -101,6 +106,7 @@ Validation hiện có: schema/app, mode, backend, particleCount (1000–50000 b�
 | UI-07 | Pause/Resume | Canvas2D dừng/tiếp tục mà không ảnh hưởng config |
 | UI-08 | Resize viewport | Canvas tự co giãn, panel vẫn truy cập được |
 | UI-09 | Xem GPU timing | “Không khả dụng” vì chưa có bộ đo GPU |
+| UI-10 | Mở từng fixture runtime | Banner/backend/control disabled đúng ma trận state |
 
 ## 7. Bàn giao cho thành viên khác
 
