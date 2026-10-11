@@ -13,3 +13,12 @@
 - `state-error-500x844.png`: mobile error, alert không lộ stack trace.
 
 Các ảnh fixture chỉ là bằng chứng UI, không phải bằng chứng backend GPU thật.
+
+## Automation bằng Playwright — 11/10/2026
+
+- `automated-desktop-1440x1000.png`: desktop mặc định.
+- `automated-fallback-1440x1000.png`: desktop fixture fallback WebGL2.
+- `automated-mobile-500x844.png`: mobile mặc định.
+- `automated-error-500x844.png`: mobile fixture error.
+
+Tạo lại bằng `npm run evidence:screenshots`. Các ảnh này được chụp ở viewport cố định bằng Chromium do Playwright quản lý; ảnh cũ được giữ làm lịch sử. Tất cả vẫn chỉ chứng minh lớp UI/fixture, không phải engine hoặc hiệu năng GPU.

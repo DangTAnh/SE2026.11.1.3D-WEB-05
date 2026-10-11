@@ -6,17 +6,21 @@
 - Phân tích yêu cầu UI, lập danh sách Use Cases và wireframes.
 - Dựng trang Particle Lab responsive bằng Vite + TypeScript + Canvas2D **mock**.
 - Controls mode/count/speed/size/color/strength và backend preference.
-- Export/import preset JSON có validation + test.
+- Export/import preset JSON được Ajv kiểm tra trực tiếp theo JSON Schema v1.
+- Bổ sung Vitest, Playwright và axe-core để tự động hóa kiểm thử UI desktop/mobile, accessibility và ảnh minh chứng.
 
 ## Hành vi đã kiểm tra
 
 - [x] Chạy UI bằng `npm run dev` trên máy Windows.
 - [x] `npm run typecheck`
-- [x] `npm test` — 6/6 tests đạt.
+- [x] `npm run typecheck:tests`
+- [x] `npm test` — 17/17 unit tests đạt bằng Vitest.
+- [x] `npm run test:e2e` — 10/10 tests đạt trên Chromium desktop/mobile.
+- [x] `npm run test:a11y` — 2 viewport × 4 trạng thái, 0 axe-core violation.
 - [x] `npm run build`
-- [x] Chụp màn hình desktop/mobile trong `docs/04-testing/screenshots/`.
+- [x] Tạo bốn ảnh minh chứng tự động desktop/mobile trong `docs/04-testing/screenshots/`.
 
-Chi tiết: `docs/04-testing/TV4-week1-test-report.md`.
+Chi tiết mới nhất: `docs/04-testing/TV4-tooling-upgrade-test-report.md`.
 
 ## Ngoài phạm vi PR
 

@@ -1,8 +1,8 @@
 # Test cases UI pre-integration — TV4
 
-**Cập nhật:** 10/10/2026
+**Cập nhật:** 11/10/2026
 
-## Tự động hóa hiện có
+## Unit test tự động bằng Vitest
 
 | ID | Truy vết | Case | Kết quả mong đợi |
 |---|---|---|---|
@@ -33,4 +33,14 @@
 | UI-11 | preset | import file lớn/sai schema | state cũ giữ nguyên, toast error |
 | UI-12 | preset | export rồi import | control phục hồi đúng |
 
-DOM/browser automation chưa thêm vì repo chưa có framework DOM/E2E. Các fixture cho phép TV5 nối Playwright/Vitest sau mà không cần mock engine.
+## Browser automation bằng Playwright + axe-core
+
+| ID | Truy vết | Case tự động | Viewport |
+|---|---|---|---|
+| E2E-01 | UI-01/02/06/08 | đổi mode, slider, reset và kiểm tra overflow | desktop + mobile |
+| E2E-02 | UI-04/05/06/08/10 | fallback/error, banner, backend và disabled controls | desktop + mobile |
+| E2E-03 | UI-05/06/07 | import hợp lệ, lỗi giữ state, export đúng schema | desktop + mobile |
+| A11Y-01 | UI-NFR-02/03 | quét WCAG A/AA bằng axe-core | desktop + mobile |
+| EVID-01 | UI-01/02/06/08 | tạo bốn ảnh default/fallback/error | 1440×1000 + 500×844 |
+
+Các mục keyboard/screen reader/reduced-motion vẫn cần checklist thủ công vì axe-core không thể thay thế đánh giá con người. Khi engine thật được ghép, TV5 cần bổ sung E2E/benchmark dựa trên backend và metric thật.

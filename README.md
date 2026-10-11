@@ -19,21 +19,29 @@ Truy cập đường dẫn do Vite hiển thị (thường là `http://localhost
 
 ```bash
 npm run typecheck
+npm run typecheck:tests
 npm test
+npx playwright install chromium
+npm run test:e2e
+npm run test:a11y
+npm run evidence:screenshots
 npm run build
 npm run preview
 ```
+
+`npm run verify` chạy toàn bộ typecheck, unit test, E2E/accessibility và production build. Playwright chỉ cần cài Chromium một lần trên mỗi máy. Lệnh `evidence:screenshots` tạo bốn ảnh `automated-*` trong thư mục `docs/04-testing/screenshots`.
 
 ### Phần đã làm được
 
 - Giao diện responsive và prototype Canvas 2D, có chọn **Attractor/Vortex** để mô phỏng trực quan.
 - Controls: particle count, speed, size, color, strength, backend preference (chỉ là lựa chọn UI).
 - Tạm dừng / tiếp tục / reset preview, khôi phục cấu hình mặc định.
-- Export/import preset JSON có validation + unit tests.
+- Export/import preset JSON dùng JSON Schema v1 qua Ajv và có unit tests bằng Vitest.
 - Hiển thị **backend thật hiện tại là Canvas 2D mock**, FPS của **Canvas 2D preview**, GPU timing = "Không khả dụng".
 - Có fixture kiểm thử initializing/ready/fallback/unsupported/error bằng query uiState, không tạo metric giả.
 - Đã tách controls, overlay, notification, template và runtime view-model để dễ ghép engine.
 - Có JSON Schema preset v1, design tokens, state matrix và test cases pre-integration.
+- Có Playwright E2E desktop/mobile, axe-core accessibility scan và quy trình tạo ảnh minh chứng tự động.
 
 ### Chưa triển khai — trách nhiệm của TV1/TV2/TV3/TV5
 
@@ -71,6 +79,8 @@ Các thư mục trống có `.gitkeep` để Git theo dõi. **Không có nghĩa 
 - [`docs/04-testing/TV4-week1-test-report.md`](docs/04-testing/TV4-week1-test-report.md)
 - [`docs/04-testing/TV4-ui-test-cases.md`](docs/04-testing/TV4-ui-test-cases.md)
 - [`docs/04-testing/TV4-preintegration-test-report.md`](docs/04-testing/TV4-preintegration-test-report.md)
+- [`docs/04-testing/TV4-tooling-upgrade-test-report.md`](docs/04-testing/TV4-tooling-upgrade-test-report.md)
+- [`docs/03-research/tooling-adoption.md`](docs/03-research/tooling-adoption.md)
 - [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)
 - [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md)
 - [`docs/RISK_REGISTER.md`](docs/RISK_REGISTER.md)

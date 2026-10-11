@@ -94,6 +94,16 @@ input:disabled {
   color: #e2f7ff;
 }
 
+/* Các token chữ phụ cần giữ tối thiểu 4.5:1 trên surface tương ứng. */
+.info-card small {
+  color: #7f95ad;
+}
+
+.scale,
+.settings-foot .muted {
+  color: #7d92aa;
+}
+
 .lab-shell[data-runtime-phase='fallback'] .status-dot {
   background: var(--ui-warning);
   box-shadow: 0 0 10px #f2c76e66;

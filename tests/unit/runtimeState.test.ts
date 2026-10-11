@@ -1,5 +1,4 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+import { expect, test } from 'vitest';
 import {
   createRuntimeState,
   formatFps,
@@ -9,39 +8,39 @@ import {
 } from '../../src/ui/state/runtimeState.ts';
 
 test('query không hợp lệ quay về Canvas2D mock', () => {
-  assert.equal(resolveRuntimeFixture('?uiState=unknown'), 'canvas-mock');
-  assert.equal(resolveRuntimeFixture(''), 'canvas-mock');
+  expect(resolveRuntimeFixture('?uiState=unknown')).toBe('canvas-mock');
+  expect(resolveRuntimeFixture('')).toBe('canvas-mock');
 });
 
 test('fixture nhận đúng từ query string', () => {
-  assert.equal(resolveRuntimeFixture('?foo=1&uiState=fallback-webgl2'), 'fallback-webgl2');
-  assert.equal(resolveRuntimeFixture('?uiState=error'), 'error');
+  expect(resolveRuntimeFixture('?foo=1&uiState=fallback-webgl2')).toBe('fallback-webgl2');
+  expect(resolveRuntimeFixture('?uiState=error')).toBe('error');
 });
 
 test('trạng thái lỗi và unsupported khóa điều khiển', () => {
   for (const fixture of ['initializing', 'unsupported', 'error'] as const) {
     const state = createRuntimeState(fixture);
-    assert.equal(state.controlsDisabled, true);
-    assert.equal(state.fps, null);
-    assert.equal(state.gpuTimeMs, null);
+    expect(state.controlsDisabled).toBe(true);
+    expect(state.fps).toBeNull();
+    expect(state.gpuTimeMs).toBeNull();
   }
 });
 
 test('fixture backend không tạo số hiệu năng giả', () => {
   for (const fixture of ['ready-webgpu', 'fallback-webgl2'] as const) {
     const state = createRuntimeState(fixture);
-    assert.equal(formatFps(state), '—');
-    assert.equal(formatGpuTiming(state), 'Không khả dụng');
-    assert.match(state.fpsDetail, /Không tạo|Chờ/);
+    expect(formatFps(state)).toBe('—');
+    expect(formatGpuTiming(state)).toBe('Không khả dụng');
+    expect(state.fpsDetail).toMatch(/Không tạo|Chờ/);
   }
 });
 
 test('chỉ Canvas2D mock nhận FPS từ preview', () => {
   const canvas = withPreviewFps(createRuntimeState('canvas-mock'), 59.6);
-  assert.equal(formatFps(canvas), '60 FPS');
+  expect(formatFps(canvas)).toBe('60 FPS');
 
   const fixture = createRuntimeState('ready-webgpu');
-  assert.equal(withPreviewFps(fixture, 60), fixture);
+  expect(withPreviewFps(fixture, 60)).toBe(fixture);
 });
 
 test('GPU timing chỉ hiển thị khi adapter xác nhận khả dụng', () => {
@@ -50,5 +49,5 @@ test('GPU timing chỉ hiển thị khi adapter xác nhận khả dụng', () =>
     gpuTimingAvailable: true,
     gpuTimeMs: 4.126,
   };
-  assert.equal(formatGpuTiming(state), '4.13 ms');
+  expect(formatGpuTiming(state)).toBe('4.13 ms');
 });

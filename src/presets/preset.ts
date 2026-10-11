@@ -1,3 +1,7 @@
+import Ajv2020 from 'ajv/dist/2020.js';
+import type { ErrorObject } from 'ajv';
+import presetSchema from '../../docs/02-design/preset-schema-v1.schema.json';
+
 /** Hợp đồng cấu hình đề xuất bởi TV4; cần TV1/TV2/TV3 review trước khi tích hợp engine. */
 export type SimulationMode = 'attractor' | 'vortex';
 export type BackendPreference = 'auto' | 'webgpu' | 'webgl2';
@@ -28,17 +32,36 @@ export const DEFAULT_CONFIG: Readonly<LabConfig> = Object.freeze({
   strength: 1.5,
 });
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+const validatePreset = new Ajv2020({ allErrors: true, strict: true }).compile<LabPreset>(presetSchema);
+
+function errorPath(error: ErrorObject): string {
+  if (error.keyword === 'required') {
+    return `${error.instancePath}/${String(error.params.missingProperty)}`;
+  }
+  if (error.keyword === 'additionalProperties') {
+    return `${error.instancePath}/${String(error.params.additionalProperty)}`;
+  }
+  return error.instancePath;
 }
 
-function isNumberInRange(value: unknown, min: number, max: number): value is number {
-  return typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
-}
+/** Giữ thông báo thân thiện trong UI, trong khi JSON Schema là nguồn validation duy nhất. */
+function formatValidationError(errors: ErrorObject[] | null | undefined): string {
+  if (!errors?.length) return 'Sai định dạng preset hoặc phiên bản chưa được hỗ trợ.';
 
-function hasOnlyKeys(value: Record<string, unknown>, allowedKeys: readonly string[]): boolean {
-  const actualKeys = Object.keys(value);
-  return actualKeys.length === allowedKeys.length && actualKeys.every(key => allowedKeys.includes(key));
+  if (errors.some(error => error.keyword === 'required' || error.keyword === 'additionalProperties')) {
+    return 'Preset chứa trường không được hỗ trợ hoặc thiếu trường bắt buộc.';
+  }
+
+  const paths = new Set(errors.map(errorPath));
+  if (paths.has('/config/mode')) return 'Simulation mode không hợp lệ.';
+  if (paths.has('/config/backendPreference')) return 'Tùy chọn backend không hợp lệ.';
+  if (paths.has('/config/particleCount')) return 'Số particle phải từ 1.000 đến 50.000, theo bước 1.000.';
+  if (paths.has('/config/speed')) return 'Tốc độ nằm ngoài khoảng 0.1–3.';
+  if (paths.has('/config/particleSize')) return 'Kích thước particle nằm ngoài khoảng 1–8.';
+  if (paths.has('/config/strength')) return 'Cường độ nằm ngoài khoảng 0.2–4.';
+  if (paths.has('/config/particleColor')) return 'Màu phải ở dạng #RRGGBB.';
+
+  return 'Sai định dạng preset hoặc phiên bản chưa được hỗ trợ.';
 }
 
 /** Chỉ nhận cấu hình hợp lệ, không tự động tin tưởng dữ liệu JSON do người dùng tải lên. */
@@ -50,37 +73,16 @@ export function parsePreset(text: string): LabConfig {
     throw new Error('Tệp không phải JSON hợp lệ.');
   }
 
-  if (!isRecord(value) || value.schemaVersion !== 1 || value.app !== '3D-WEB-05' || !isRecord(value.config)) {
-    throw new Error('Sai định dạng preset hoặc phiên bản chưa được hỗ trợ.');
-  }
-
-  const c = value.config;
-  if (!hasOnlyKeys(value, ['schemaVersion', 'app', 'config'])
-    || !hasOnlyKeys(c, ['mode', 'backendPreference', 'particleCount', 'speed', 'particleSize', 'particleColor', 'strength'])) {
-    throw new Error('Preset chứa trường không được hỗ trợ hoặc thiếu trường bắt buộc.');
-  }
-  if (c.mode !== 'attractor' && c.mode !== 'vortex') throw new Error('Simulation mode không hợp lệ.');
-  if (c.backendPreference !== 'auto' && c.backendPreference !== 'webgpu' && c.backendPreference !== 'webgl2') {
-    throw new Error('Tùy chọn backend không hợp lệ.');
-  }
-  if (!isNumberInRange(c.particleCount, 1000, 50000) || !Number.isInteger(c.particleCount) || c.particleCount % 1000 !== 0) {
-    throw new Error('Số particle phải từ 1.000 đến 50.000, theo bước 1.000.');
-  }
-  if (!isNumberInRange(c.speed, 0.1, 3)) throw new Error('Tốc độ nằm ngoài khoảng 0.1–3.');
-  if (!isNumberInRange(c.particleSize, 1, 8)) throw new Error('Kích thước particle nằm ngoài khoảng 1–8.');
-  if (!isNumberInRange(c.strength, 0.2, 4)) throw new Error('Cường độ nằm ngoài khoảng 0.2–4.');
-  if (typeof c.particleColor !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(c.particleColor)) {
-    throw new Error('Màu phải ở dạng #RRGGBB.');
-  }
+  if (!validatePreset(value)) throw new Error(formatValidationError(validatePreset.errors));
 
   return {
-    mode: c.mode,
-    backendPreference: c.backendPreference,
-    particleCount: c.particleCount,
-    speed: c.speed,
-    particleSize: c.particleSize,
-    particleColor: c.particleColor,
-    strength: c.strength,
+    mode: value.config.mode,
+    backendPreference: value.config.backendPreference,
+    particleCount: value.config.particleCount,
+    speed: value.config.speed,
+    particleSize: value.config.particleSize,
+    particleColor: value.config.particleColor,
+    strength: value.config.strength,
   };
 }
 

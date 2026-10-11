@@ -15,6 +15,15 @@ Nguồn runtime: src/ui/styles/tokens.css.
 | Trạng thái | --ui-warning | #f2c76e | fallback |
 | Trạng thái | --ui-danger | #ff8ea8 | error/unsupported |
 
+Hai màu chữ phụ được tách riêng tại runtime để bảo đảm tương phản WCAG AA cho cỡ chữ nhỏ:
+
+| Vị trí | Giá trị | Lý do |
+|---|---:|---|
+| Info card | #7f95ad | đạt ngưỡng tương phản 4.5:1 trên nền card |
+| Scale/footer | #7d92aa | đạt ngưỡng tương phản 4.5:1 trên nền preview |
+
+Các giá trị này được chốt sau khi quét tự động bằng axe-core trên desktop/mobile; không hạ thấp độ tương phản chỉ để đồng nhất với `--ui-muted`.
+
 Spacing dùng thang 4, 8, 12, 16, 24 px. Radius chuẩn 8 và 12 px.
 
 ## Responsive và accessibility
@@ -26,5 +35,6 @@ Spacing dùng thang 4, 8, 12, 16, 24 px. Radius chuẩn 8 và 12 px.
 - Touch target chính tối thiểu 44 px.
 - Focus dùng outline 2 px, không chỉ dựa vào màu.
 - prefers-reduced-motion tắt chuyển động không cần thiết.
+- axe-core quét WCAG A/AA trên 2 viewport và 4 trạng thái runtime; 0 violation ở checkpoint 11/10/2026.
 
 TV4 sở hữu token UI. Thành viên khác dùng token thay vì thêm mã màu rời.

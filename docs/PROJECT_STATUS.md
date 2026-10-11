@@ -1,8 +1,8 @@
 # PROJECT STATUS — 3D-WEB-05
 
-**Cập nhật:** 10/10/2026
+**Cập nhật:** 11/10/2026
 **Nhánh làm việc:** feat/tv4-week1-ui-ux
-**Gate hiện tại:** TV4 pre-integration, chờ review contract và ghép engine.
+**Gate hiện tại:** TV4 pre-integration + quality tooling hoàn tất, chờ review contract và ghép engine.
 
 ## Đã hoàn thành phía TV4
 
@@ -13,6 +13,8 @@
 - Fixture: initializing, ready WebGPU, fallback WebGL2, unsupported, error.
 - Design tokens, reduced-motion, alert/status semantics, trạng thái disabled.
 - Ma trận state, test cases và tài liệu bàn giao pre-integration.
+- Ajv dùng trực tiếp JSON Schema v1; Vitest thay Node test runner.
+- Playwright E2E desktop/mobile, axe-core WCAG scan và ảnh evidence tự động.
 
 ## Đang chờ
 
@@ -21,6 +23,7 @@
 - TV3 xác nhận fallback reason/actual backend.
 - TV5 xác nhận PerformanceSnapshot, chu kỳ cập nhật và E2E/benchmark.
 - Thiết lập default branch để sau theo chỉ đạo của chủ repo.
+- Quality tooling ngày 11/10 đã được commit cục bộ trên nhánh TV4; chưa push/chưa mở PR.
 
 ## Kiểm tra chất lượng
 
@@ -30,11 +33,13 @@
 | Baseline unit tests | Đạt 6/6 |
 | Typecheck sau thay đổi | Đạt |
 | Unit tests sau thay đổi | Đạt 17/17 |
-| Production build | Đạt, Vite 6.4.4 |
-| Desktop/mobile và state fixtures | Đạt kiểm tra trực quan; 4 ảnh mới |
+| Playwright E2E | Đạt 10/10, desktop + mobile Chromium |
+| axe-core WCAG A/AA | Đạt 2 viewport × 4 state, 0 violation sau sửa contrast |
+| Production build | Đạt, Vite 6.4.4, 190 modules transformed |
+| Ảnh tự động | Đạt 2/2 test; 4 ảnh `automated-*` mới |
 
 ## Ba việc tiếp theo
 
-1. TV1/TV2/TV3/TV5 review các contract đang chờ xác nhận.
-2. Sau khi có engine: viết adapter và chạy lại checklist/E2E.
-3. Khi người dùng cho phép: commit/push nhánh hiện tại và mở PR; không push vào main.
+1. Khi người dùng cho phép: push nhánh TV4 và mở PR theo chiến lược lịch sử Git do TV1 chốt.
+2. TV1/TV2/TV3/TV5 review contract; sau khi có engine, mở rộng E2E/benchmark thật.
+3. Chỉ mở rộng Firefox/WebKit hoặc Storybook khi có nhu cầu tích hợp cụ thể; không đổi kiến trúc UI hiện tại.

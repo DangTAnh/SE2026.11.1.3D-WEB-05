@@ -9,6 +9,8 @@
 
 **Exit gate:** typecheck, unit tests, build đạt; desktop/mobile và state fixture không có lỗi chặn.
 
+**Bổ sung 11/10/2026:** Ajv, Vitest, Playwright Chromium và axe-core đã tự động hóa validation, unit test, UI fixture, accessibility và ảnh minh chứng. E2E engine/benchmark thật vẫn thuộc Wave 3.
+
 ## Wave 2 — contract review cùng nhóm
 
 - TV1: adapter lifecycle và actual backend state.
@@ -21,7 +23,7 @@
 
 - Thay Canvas2D mock bằng engine port tại composition root.
 - Nối actual backend và metrics thật.
-- Bổ sung E2E cho ready/fallback/error và preset.
+- Mở rộng E2E fixture hiện có sang engine ready/fallback/error và metric thật.
 
 **Exit gate:** UI không import chi tiết engine; không có metric giả; regression checks đạt.
 
