@@ -43,7 +43,89 @@ File paths are **proposed**; TV2 and TV3 may rename inside `src/simulations/`.
 They may not rename a path that `tests/` or `src/ui/` already imports without
 telling TV1 and TV5 — a silent rename breaks the CI that gates everyone.
 
-### 3.1 One renderer, not two
+### 3.1 Work blocks
+
+Each area is split into blocks that can be finished and tested on their own. A
+block is done when its test exists and passes. Blocks are listed in the order
+their owner intends to work them; none needs another member's code before it
+can start, except the ones marked *(after …)*.
+
+**TV1 — contracts, wiring, evidence**
+
+| Block | Contents |
+|---|---|
+| Contracts & ports | `RendererPort` error model, backend-preference resolution, `RendererStatus` mapping, a `RendererPort` test double the other members can import |
+| Measurement tooling | sample validation shared with TV5's collector, result-file parsing, report CLI over a result file, golden-file test, `configHash` field matrix, protocol type |
+| Composition root | bootstrap against the test double, unsupported-device path, loading/cancel, dispose, feature probe |
+| CI & repository | split jobs, fitness job, `CODEOWNERS`, PR/issue templates, dependency updates, `engines` check |
+| Architecture & fitness | dependency-direction test, "core does not import `three`" test, "ports do not touch the DOM" test, runtime views (normal and fallback), ADR-0002…0004, debt register with owner and repayment trigger, quality scenarios, `tsconfig` strictness |
+| Integration | real adapter behind the port *(after TV3)*, collector contract *(after TV5)*, first end-to-end run *(after TV2/TV3/TV5)*, report regeneration, browser smoke |
+
+**TV2 — simulation**
+
+| Block | Contents |
+|---|---|
+| Attractor math | position/velocity update as TSL compute |
+| Vortex math | the second mode, same attribute layout |
+| Compute pipeline lifecycle | build, rebuild on count change, dispose |
+| Particle buffers & attributes | the single attribute set both backends draw |
+| Live parameter updates | speed, strength, size, count without rebuilding the world |
+| WebGL2 step path | same compute source through transform feedback — starts only after the §3.2 decision |
+| Numeric tests | deterministic `step(dt)`, golden values per mode |
+| Handoff | interface doc for TV3 and TV1 |
+
+**TV3 — backend adapter**
+
+| Block | Contents |
+|---|---|
+| Renderer lifecycle | `WebGPURenderer` init and teardown |
+| Backend detection | requested vs actual, reported honestly through `getStatus` |
+| `forceWebGL` | the same scene forced onto WebGL2 |
+| GPU timing | `trackTimestamp` on WebGPU, `EXT_disjoint_timer_query_webgl2` on WebGL2, `gpuTimingAvailable` telling the truth |
+| Parameter application | size/count changes, rebuilds, no leaks |
+| Frame loop | `start` / `pause` / `reset` / status snapshot |
+| Failures | context lost, init failure, neither backend available |
+| Contract tests | adapter against `RendererPort` |
+| Handoff | browser notes for TV5 |
+
+**TV4 — UI and presets**
+
+| Block | Contents |
+|---|---|
+| Layout shell | the frame the controls live in |
+| Control ↔ config binding | `UI-FR-01..03` through `RendererPort` |
+| Presets | export, import, storage, round-trip |
+| Status panel | `UI-FR-04/05` — actual backend, FPS, GPU time |
+| States | `UI-FR-10` loading, error, unsupported |
+| Accessibility & responsive | keyboard, contrast, narrow viewport |
+| `LabConfig` freeze | final field names and ranges, validation at the boundary |
+| UI tests | one per control group |
+| Mock removal | delete the Canvas 2D mock once the port is injected |
+
+**TV5 — proof**
+
+| Block | Contents |
+|---|---|
+| Frame sampler | `PerformanceSnapshot` stream through `RendererPort` |
+| GPU timing collector | pairing timing with `gpuTimingAvailable` (INV-1) |
+| Protocol runner | warm-up, sample count, duration once the protocol is fixed |
+| Browser / GPU matrix | which pairs are measured, which are recorded as untested |
+| E2E smoke | Playwright on both backends where available |
+| Measurement runs | result files produced through TV1's tooling |
+| Fairness report | same host, same config, limitations written down |
+| Regression triage | failing measurements become tests, not anecdotes |
+
+### 3.1.1 Handoffs
+
+| From → to | What | Blocks the receiver? |
+|---|---|---|
+| TV2 → TV3 | attribute/material interface | yes, TV3's parameter blocks |
+| TV3 → TV1 | adapter behind `RendererPort` | yes, TV1's integration block |
+| TV1 → TV4 | port injection into `src/ui/app.ts` | yes, mock removal |
+| TV1 → TV5 | `PerformanceSnapshot`, `configHash`, aggregation, result tooling | no — already published |
+| TV5 → TV1 | result file | no — TV1 renders whatever TV5 produces |
+
+### 3.2 One renderer, not two
 
 - `src/simulations/shared/` holds the particle attributes and the material tree
   both backends draw with. TV2 writes it, TV3 reviews it.
@@ -99,9 +181,10 @@ hardcodes `Canvas 2D (mockup)`. That gap is D-04 in
 Nobody needs the full chain before starting; this is the order that keeps
 people unblocked:
 
-1. **TV1**: publish the perf sample shape and the `configHash` rule — both
-   decided on 2026-10-22, neither implemented yet. No backend-switch path is
-   added: a changed `backendPreference` applies on the next `init()`.
+1. **TV1**: perf sample shape and `configHash`, decided and implemented on
+   2026-10-22 (`src/core/types/measurement.ts`, `src/core/measurement/`); the
+   aggregation and result-file tooling sits on top of them. No backend-switch
+   path is added: a changed `backendPreference` applies on the next `init()`.
 2. **TV2 + TV3**: freeze the simulation→render interface (attributes, uniforms,
    state buffers) and the WebGL2 step decision. Due 2026-10-29.
 3. **TV3**: `rendererAdapter.ts` behind the port.
