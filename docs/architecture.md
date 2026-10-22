@@ -5,6 +5,7 @@ Status: **partially implemented**. This file records what exists today, what the
 target shape is, and the rules that keep the two from drifting apart.
 
 Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
+[`mvp-acceptance.md`](01-requirements/mvp-acceptance.md),
 [`ui-interaction-spec.md`](02-design/ui-interaction-spec.md),
 [`team-ownership.md`](05-management/team-ownership.md).
 

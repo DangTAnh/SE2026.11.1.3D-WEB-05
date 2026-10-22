@@ -73,6 +73,10 @@ Do not write a second stepping path before that decision.
 | Preset export / import (client-side) | TV4 | — | TV5 |
 | WebGPU vs WebGL2 benchmark | run by TV5 | TV1 (`docs/06-benchmark/`) | TV5 |
 
+Definition of done for the MVP: [`01-requirements/mvp-acceptance.md`](../01-requirements/mvp-acceptance.md).
+The benchmark protocol values it leaves as TBD are TV5's to fix (aggregation
+shared with TV2/TV3).
+
 Nine of the ten controls exist against the mock. `UI-FR-04` does not meet its
 acceptance criterion: it must display the backend that actually ran
 (`docs/01-requirements/ui-requirements.md:27`), and `src/ui/app.ts:36`
