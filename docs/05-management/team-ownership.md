@@ -35,7 +35,7 @@ ordering, not by reassigning again.
 |---|---|---|---|
 | **TV2** | What a particle is, and how it evolves | `src/simulations/simulation.ts`, `src/simulations/shared/` | Two modes, deterministic `step(dt)`, attribute/material tree both backends draw with, one unit test per mode |
 | **TV3** | How the same scene runs on either backend, and what it costs | `src/simulations/rendererAdapter.ts`, `src/simulations/backend/` | Backend selection, `forceWebGL`, `trackTimestamp`, fallback verified on a browser without WebGPU |
-| **TV1** | What the system says about itself, and where it is wired | `src/core/`, `src/main.ts`, `.github/`, `docs/06-benchmark/` | `RendererPort`, perf sample shape, aggregation key, export format, benchmark report, CI, composition root |
+| **TV1** | What the system says about itself, and where it is wired | `src/core/`, `src/main.ts`, `.github/`, `docs/06-benchmark/` | `RendererPort`, perf sample shape and `configHash`, benchmark tooling (aggregation, result serialization, report generator), benchmark report, CI, composition root |
 | **TV4** | What the user controls and sees | `src/ui/`, `src/presets/` | All `UI-FR-01..10` driven through `RendererPort` instead of the Canvas 2D mock; preset export/import |
 | **TV5** | What we can prove | `src/perf/`, `tests/` | `src/perf/` collector, E2E and browser matrix, the two-backend benchmark run |
 
