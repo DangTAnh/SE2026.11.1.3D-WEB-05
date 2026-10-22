@@ -1,5 +1,11 @@
 # PROJECT STATUS — 3D-WEB-05
 
+> Cập nhật GitHub ngày **22/10/2026**: xem
+> [snapshot theo từng nhánh và kế hoạch PR](05-management/github-progress-2026-10-22.md)
+> và [kiểm tra TV4 hôm nay](04-testing/TV4-pr-verification-2026-10-22.md).
+> Nội dung dưới đây là checkpoint TV4 ngày 11/10; các câu “chưa push/chưa PR”,
+> pending và kết quả test bên dưới chỉ mô tả thời điểm đó.
+
 **Cập nhật:** 11/10/2026
 **Nhánh làm việc:** feat/tv4-week1-ui-ux
 **Gate hiện tại:** TV4 pre-integration + quality tooling hoàn tất, chờ review contract và ghép engine.

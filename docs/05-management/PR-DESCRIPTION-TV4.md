@@ -1,37 +1,50 @@
-# [TV4] Week 1 — UI/UX Use Cases + Wireframes + Prototype
+# [TV4] UI/presets, pre-integration và quality tooling vào develop
 
-## Tóm tắt
+## Kết quả
 
-- Khởi tạo scaffold thư mục làm việc chung (đề xuất; chưa áp đặt kiến trúc nhóm).
-- Phân tích yêu cầu UI, lập danh sách Use Cases và wireframes.
-- Dựng trang Particle Lab responsive bằng Vite + TypeScript + Canvas2D **mock**.
-- Controls mode/count/speed/size/color/strength và backend preference.
-- Export/import preset JSON được Ajv kiểm tra trực tiếp theo JSON Schema v1.
-- Bổ sung Vitest, Playwright và axe-core để tự động hóa kiểm thử UI desktop/mobile, accessibility và ảnh minh chứng.
+Đưa đầy đủ ba commit TV4 vào baseline `develop`: UI responsive và controls,
+Canvas2D mock có nhãn rõ, preset JSON Schema v1/Ajv, runtime view-model,
+status/notification, tài liệu UX/bàn giao, Vitest và Playwright/axe-core.
+Thêm snapshot tiến độ GitHub và biên bản kiểm tra ngày 22/10/2026.
 
-## Hành vi đã kiểm tra
+## Vì sao dùng nhánh này
 
-- [x] Chạy UI bằng `npm run dev` trên máy Windows.
-- [x] `npm run typecheck`
-- [x] `npm run typecheck:tests`
-- [x] `npm test` — 17/17 unit tests đạt bằng Vitest.
-- [x] `npm run test:e2e` — 10/10 tests đạt trên Chromium desktop/mobile.
-- [x] `npm run test:a11y` — 2 viewport × 4 trạng thái, 0 axe-core violation.
-- [x] `npm run build`
-- [x] Tạo bốn ảnh minh chứng tự động desktop/mobile trong `docs/04-testing/screenshots/`.
+`feat/tv4-week1-ui-ux` và `develop` không có chung lịch sử nên GitHub không
+mở PR trực tiếp được. Nhánh `codex/tv4-into-develop` bắt đầu từ
+`develop@99f2398`, cherry-pick đúng `11eedfd`, `adfca0d`, `3c2b00e`.
+Tree trước cập nhật tài liệu trùng hoàn toàn TV4 cục bộ `3c2b00e`.
+Nhánh TV4 gốc được giữ nguyên; không force-push, không merge unrelated
+histories và không đưa code TV1 lưu trữ vào gói này.
 
-Chi tiết mới nhất: `docs/04-testing/TV4-tooling-upgrade-test-report.md`.
+## Kiểm tra ngày 22/10/2026
 
-## Ngoài phạm vi PR
+`npm ci` và `npm run verify` PASS trên Windows/Node 22.16.0:
 
-- WebGPU/Three.js/TSL computation thực; fallback WebGL2; GPU timing và benchmark.
+- Typecheck source và tests: PASS.
+- Vitest: 17/17 tests.
+- Playwright: 10/10 tests desktop/mobile Chromium, 6 workers.
+- axe-core trong E2E: 2 viewport × 4 trạng thái, 0 violations.
+- Build: PASS, Vite 6.4.4.
 
-## Cần review từ nhóm
+[Biên bản](../04-testing/TV4-pr-verification-2026-10-22.md).
+Ảnh có sẵn là evidence lịch sử, không tạo lại hôm nay.
+Nhánh này chưa có CI workflow; kiểm tra trên là kiểm tra cục bộ.
 
-1. TV1: scaffold, bootstrap, dữ liệu chung `LabConfig`.
-2. TV2/TV3: mode, cấu hình simulation, backend preference.
-3. TV5: hiển thị perf metrics và test cases.
+## Cần DangTAnh review
 
-## Lưu ý
+- [ ] Phạm vi gói UI prototype/preset/tooling và scaffold dùng chung.
+- [ ] `LabConfig`/ranges và kế hoạch nối UI qua `RendererPort`.
+- [ ] Thống nhất unknown-key policy trước ghép TV1: TV4 reject, contract test
+  TV1 hiện yêu cầu drop trường lạ.
+- [ ] Thống nhất Vitest/Playwright với `node:test` bên TV1 và giữ đủ tests.
+- [ ] Thứ tự tích hợp và nội dung chung README/package/lock/bootstrap/specs;
+  không lấy nguyên một phía khi giải quyết xung đột sau này.
 
-`src/main.ts` chỉ là bootstrap tạm của demo TV4. Không merge đè lên bootstrap có sẵn nếu nhóm đã thêm code trước thời điểm PR.
+## Giới hạn
+
+Chưa có GPU engine, physics production, GPU timing, collector hay benchmark
+hai backend. Fixtures không chứng minh fallback/GPU đang chạy.
+PR này không duyệt G1/G2 hay nghiệm thu FR GPU; BL01 và R-GL-LIFECYCLE trong
+hồ sơ cục bộ vẫn OPEN.
+
+[Tiến độ theo từng nhánh và việc tiếp theo](github-progress-2026-10-22.md).

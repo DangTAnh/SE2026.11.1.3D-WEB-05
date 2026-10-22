@@ -1,5 +1,8 @@
 # 3D-WEB-05 — GPU Particle Lab
 
+Tiến độ GitHub ngày 22/10/2026 và các điểm cần review trước tích hợp:
+[snapshot dự án](docs/05-management/github-progress-2026-10-22.md).
+
 > **Scaffold tuần 1 + UI pre-integration của TV4**, chưa phải sản phẩm GPU cuối cùng. README này là bản tạm, TV1 nên tiếp quản để bổ sung thông tin chung.
 
 ## Mục tiêu đề tài
