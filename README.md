@@ -1,93 +1,86 @@
 # 3D-WEB-05 — GPU Particle Lab
 
-Tiến độ GitHub ngày 22/10/2026 và các điểm cần review trước tích hợp:
-[snapshot dự án](docs/05-management/github-progress-2026-10-22.md).
+Web app that visualises tens of thousands of particles with GPU simulation on
+WebGPU, falling back to WebGL2, with two simulation modes, live controls, FPS /
+GPU timing when the backend provides it, preset export/import, and a
+WebGPU vs WebGL2 benchmark.
 
-> **Scaffold tuần 1 + UI pre-integration của TV4**, chưa phải sản phẩm GPU cuối cùng. README này là bản tạm, TV1 nên tiếp quản để bổ sung thông tin chung.
+**Status: UI prototype plus written contracts.** There is no GPU renderer yet —
+the only preview is a Canvas 2D mock. What exists is tracked per area in
+[`docs/architecture.md`](docs/architecture.md) §1; do not describe the mock's
+numbers as WebGPU/WebGL2 results.
 
-## Mục tiêu đề tài
+## Run
 
-Ứng dụng web trình diễn hàng chục nghìn particle với GPU simulation trên WebGPU, fallback WebGL2, tối thiểu hai simulation modes, bảng điều khiển, FPS / GPU timing (nếu khả dụng), export/import preset JSON và benchmark giữa hai backend.
-
-## Chạy UI prototype
-
-Cần **Node.js >=22.16** và npm. Dùng terminal ở thư mục repo:
+Requires **Node.js >= 22.16** and npm.
 
 ```bash
 npm install
-npm run dev
+npm run dev        # Vite dev server, usually http://localhost:5173
 ```
 
-Truy cập đường dẫn do Vite hiển thị (thường là `http://localhost:5173`). Các lệnh khác:
-
 ```bash
-npm run typecheck
-npm run typecheck:tests
-npm test
-npx playwright install chromium
-npm run test:e2e
-npm run test:a11y
-npm run evidence:screenshots
+npm run typecheck  # tsc --noEmit
+npm test           # 24 unit tests (13 preset, 3 port, 8 measurement)
 npm run build
 npm run preview
 ```
 
-`npm run verify` chạy toàn bộ typecheck, unit test, E2E/accessibility và production build. Playwright chỉ cần cài Chromium một lần trên mỗi máy. Lệnh `evidence:screenshots` tạo bốn ảnh `automated-*` trong thư mục `docs/04-testing/screenshots`.
+CI (`.github/workflows/ci.yml`) runs `npm ci`, typecheck and the unit tests on
+every push to `main` or `feat/**`, and on pull requests.
 
-### Phần đã làm được
+## What exists today
 
-- Giao diện responsive và prototype Canvas 2D, có chọn **Attractor/Vortex** để mô phỏng trực quan.
-- Controls: particle count, speed, size, color, strength, backend preference (chỉ là lựa chọn UI).
-- Tạm dừng / tiếp tục / reset preview, khôi phục cấu hình mặc định.
-- Export/import preset JSON dùng JSON Schema v1 qua Ajv và có unit tests bằng Vitest.
-- Hiển thị **backend thật hiện tại là Canvas 2D mock**, FPS của **Canvas 2D preview**, GPU timing = "Không khả dụng".
-- Có fixture kiểm thử initializing/ready/fallback/unsupported/error bằng query uiState, không tạo metric giả.
-- Đã tách controls, overlay, notification, template và runtime view-model để dễ ghép engine.
-- Có JSON Schema preset v1, design tokens, state matrix và test cases pre-integration.
-- Có Playwright E2E desktop/mobile, axe-core accessibility scan và quy trình tạo ảnh minh chứng tự động.
+- **UI prototype (TV4):** Attractor/Vortex modes, controls for particle count,
+  speed, size, colour, strength and backend preference, pause/resume/reset,
+  preset export/import with validation. The preview is Canvas 2D and draws at
+  most **600** points while the default config asks for **20,000** — its FPS
+  and the backend label (`Canvas 2D (mockup)`) are not benchmark data.
+- **Contracts (TV1):**
+  - [`RendererPort`](src/core/renderer/RendererPort.ts) and
+    [`backend.ts`](src/core/types/backend.ts): one renderer, backend-flagged;
+    `actual` is the backend that ran, `requested` only explains a fallback.
+  - [`PerformanceSnapshot`](src/core/types/measurement.ts): the shape of a
+    perf sample — actual backend, `configHash`, FPS, GPU timing with
+    `gpuTimeMs: null` iff timing is unavailable.
+  - [`configHash`](src/core/measurement/configHash.ts): deterministic SHA-256
+    identity over the fields that change GPU work. Not consumed anywhere yet.
+- **Docs:** [architecture](docs/architecture.md) (INV-1, contracts, debt
+  register), [ADR-0001](docs/adr/0001-modular-monolith.md),
+  [work division](docs/05-management/team-ownership.md),
+  [MVP acceptance](docs/01-requirements/mvp-acceptance.md),
+  [WebGL2 research](docs/03-research/webgl2-simulation-options.md),
+  [benchmark template](docs/06-benchmark/README.md).
 
-### Chưa triển khai — trách nhiệm của TV1/TV2/TV3/TV5
+## Not implemented yet
 
-- **KHÔNG** có WebGPU/Three.js/TSL, compute shader hoặc WebGL2 fallback thật.
-- **KHÔNG** có GPU FPS/GPU timing hay benchmark WebGPU vs WebGL2.
-- Slider particle count lưu cấu hình mục tiêu nhưng preview Canvas2D có giới hạn tối đa 600 chấm để không gây hiểu nhầm.
-- **KHÔNG** có simulation physics đúng theo engine sản xuất.
+- No WebGPU, `three`, TSL compute, compute shader or real WebGL2 fallback.
+- No renderer adapter (`src/simulations/`) and no composition root: `src/main.ts`
+  is still the week-1 bootstrap and `src/ui/app.ts` still drives the Canvas 2D
+  mock directly (D-01 in the debt register).
+- No simulation physics, no perf collector (`src/perf/`), no WebGPU vs WebGL2
+  measurement.
+- No server, authentication or persistence in this repository.
 
-Không được báo cáo đây là phần WebGPU/WebGL2 đã hoàn thành.
+## Ownership
 
-## Quyền sở hữu module
+Work is split by axis, not by directory:
+[`docs/05-management/team-ownership.md`](docs/05-management/team-ownership.md).
+Empty directories with `.gitkeep` mean Git tracks them, **not** that the work
+exists.
 
-Bảng chia việc hiện hành nằm ở [`docs/05-management/team-ownership.md`](docs/05-management/team-ownership.md)
-(chia theo trục thay đổi, không theo thư mục). Bảng cũ "mỗi người một thư mục"
-đã bị thay thế.
+## Integration notes
 
-Các thư mục trống có `.gitkeep` để Git theo dõi. **Không có nghĩa là phần việc tương ứng đã được triển khai**.
+- `RendererPort` is the only integration point between `src/ui/` and
+  `src/simulations/`; the UI never imports a simulation module.
+- `LabConfig` still lives in [`src/presets/preset.ts`](src/presets/preset.ts)
+  (TV4) and is imported as a type only by the port — debt D-06.
+- `configHash` is defined and implemented but not yet used by any collector;
+  the fields and algorithm are in `docs/architecture.md` §5.1.
+- Backend identity rule (INV-1): store the backend that actually ran, and write
+  `gpuTimeMs: null` rather than `0` when timing is unavailable.
 
-## Tài liệu TV4
+## Branches
 
-- [`docs/01-requirements/use-cases.md`](docs/01-requirements/use-cases.md)
-- [`docs/01-requirements/ui-requirements.md`](docs/01-requirements/ui-requirements.md)
-- [`docs/02-design/ui-wireframes.md`](docs/02-design/ui-wireframes.md)
-- [`docs/02-design/ui-description.md`](docs/02-design/ui-description.md)
-- [`docs/02-design/ui-interaction-spec.md`](docs/02-design/ui-interaction-spec.md)
-- [`docs/02-design/ui-state-matrix.md`](docs/02-design/ui-state-matrix.md)
-- [`docs/02-design/design-tokens.md`](docs/02-design/design-tokens.md)
-- [`docs/02-design/preset-schema-v1.schema.json`](docs/02-design/preset-schema-v1.schema.json)
-- [`docs/05-management/TV4-week1-handover.md`](docs/05-management/TV4-week1-handover.md)
-- [`docs/05-management/TV4-pre-integration-handover.md`](docs/05-management/TV4-pre-integration-handover.md)
-- [`docs/04-testing/TV4-week1-test-report.md`](docs/04-testing/TV4-week1-test-report.md)
-- [`docs/04-testing/TV4-ui-test-cases.md`](docs/04-testing/TV4-ui-test-cases.md)
-- [`docs/04-testing/TV4-preintegration-test-report.md`](docs/04-testing/TV4-preintegration-test-report.md)
-- [`docs/04-testing/TV4-tooling-upgrade-test-report.md`](docs/04-testing/TV4-tooling-upgrade-test-report.md)
-- [`docs/03-research/tooling-adoption.md`](docs/03-research/tooling-adoption.md)
-- [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)
-- [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md)
-- [`docs/RISK_REGISTER.md`](docs/RISK_REGISTER.md)
-
-## Lưu ý tích hợp
-
-`src/main.ts` là bootstrap tạm cho việc demo tuần 1. `src/presets/preset.ts` đề xuất contract `LabConfig`, cần **TV1 + TV2 + TV3 review** trước khi nối renderer thật. Giao diện không tự suy đoán trạng thái WebGPU; chỉ dùng dữ liệu thực tế từ engine sau khi tích hợp.
-
-## Nhánh đề xuất
-
-`feat/tv4-week1-ui-ux` → PR vào nhánh tích hợp của nhóm (hoặc `main` nếu TV1 xác nhận). Không push trực tiếp lên `main`.
+Work happens on `feat/*` branches and is merged into the team's integration
+branch. Do not push directly to `main`.
