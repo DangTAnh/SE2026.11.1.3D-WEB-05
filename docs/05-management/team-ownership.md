@@ -10,9 +10,9 @@ replaces the kickoff draft that assigned one directory per person.
    Those two change together: one TSL material tree, one `forceWebGL` flag
    ([`docs/architecture.md`](../architecture.md) §4). Two owners produce two
    copies of the same physics, and the copies drift.
-2. **It left TV1 with `src/core/`** — 75 lines, while the repo is 642 and
-   TV4 has already written 392 of them (61%): every UI requirement and the
-   preset domain.
+2. **It left TV1 with `src/core/`** — 75 lines, while the TypeScript under
+   `src/` + `tests/` is 642 lines and TV4 has already written 392 of them
+   (61%): every UI requirement and the preset domain.
 3. **It gave the benchmark to no one.** The graded part of this topic is
    WebGPU vs WebGL2 on the same particles, with numbers. No row produced it.
 
@@ -59,8 +59,9 @@ decided; see §7 item 1. Do not write either until it is.
 
 | Requirement | Produced by | Recorded by | Proved by |
 |---|---|---|---|
-| `UI-FR-01` load / render | TV2, TV3 | — | TV5 |
-| `UI-FR-02` particle count, `UI-FR-03` mode | TV2 | — | TV5 |
+| `UI-FR-01` choose simulation mode | TV4 (control), TV2 (simulation) | — | TV5 |
+| `UI-FR-02` particle count | TV4 (control), TV2 (simulation) | — | TV5 |
+| `UI-FR-03` speed / size / color / mode coefficient | TV4 (control), TV2 (simulation) | — | TV5 |
 | `UI-FR-04` show actual backend | TV3 (`getStatus`) | TV1 | TV5 |
 | `UI-FR-05` FPS / GPU timing | TV3 | TV1 | TV5 |
 | `UI-FR-06` export, `UI-FR-07` import | TV4 | — | TV5 |
@@ -69,8 +70,11 @@ decided; see §7 item 1. Do not write either until it is.
 | Preset export / import (client-side) | TV4 | — | TV5 |
 | WebGPU vs WebGL2 benchmark | run by TV5 | TV1 (`docs/06-benchmark/`) | TV5 |
 
-All ten UI requirements are already implemented against the mock. What remains
-for TV4 is integration — roughly 90 of the 162 lines in `app.ts` — not features.
+Nine of the ten controls exist against the mock. `UI-FR-04` does not meet its
+acceptance criterion: it must display the backend that actually ran
+(`docs/01-requirements/ui-requirements.md:27`), and `src/ui/app.ts:36`
+hardcodes `Canvas 2D (mockup)`. That gap is D-04 in
+[`docs/architecture.md`](../architecture.md) §6.
 
 ## 5. Shared files
 
@@ -78,8 +82,10 @@ for TV4 is integration — roughly 90 of the 162 lines in `app.ts` — not featu
   port-injection PR; TV5 never edits it (tests only). TV4's own plan
   (`src/ui/overlays/README.md`) to move the status cards into an overlay module
   is the split to follow, not a new `status.ts`.
-- **`tests/` — TV5 owns the harness.** TV2 may add tests for a module they own;
-  TV5 reviews. Nobody else adds test files.
+- **`tests/` — TV5 owns the harness.** Existing files stay with their authors:
+  `renderer-port.test.ts` and `preset.contract.test.ts` (TV1, 168 lines) and
+  `preset.test.ts` (TV4, 34 lines). For new files: TV2 and TV3 may add tests for
+  a module they own; TV5 reviews every new test file.
 
 ## 6. Merge order
 

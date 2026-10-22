@@ -130,7 +130,7 @@ data in the current codebase would be false.
 | ID | Debt | Where |
 |---|---|---|
 | D-01 | UI imports the Canvas 2D mock directly; no `RendererPort` implementation is wired | `src/ui/app.ts`, `src/ui/mock/particlePreview.ts` |
-| D-07 | `src/ui/app.ts` is required by TV1 (port wiring) and TV5 (status panel) but owned by TV4 — one file, three owners | `src/ui/app.ts` |
+| D-07 | TV1 must inject `RendererPort` into `src/ui/app.ts`, which TV4 owns and merges — two owners on one file. The status UI stays in TV4's overlay module, not in a file TV5 edits | `src/ui/app.ts` |
 | D-08 | `RendererPort` cannot switch backend after `init`, although `LabConfig.backendPreference` and UC-03 imply it must | `src/core/renderer/RendererPort.ts` |
 
 Open decisions that are not debt yet — the WebGL2 stepping path, the backend
