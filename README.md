@@ -55,15 +55,11 @@ npm run preview
 
 Không được báo cáo đây là phần WebGPU/WebGL2 đã hoàn thành.
 
-## Quyền sở hữu module (đề xuất, chờ nhóm xác nhận)
+## Quyền sở hữu module
 
-| Thành viên | Code | Tài liệu chính |
-|---|---|---|
-| TV1 | `src/core/`, bootstrap / integration | `docs/01-requirements/SRS.md`, `docs/02-design/architecture.md`, quản lý |
-| TV2 | `src/simulations/webgpu/`, `src/simulations/shared/` cùng TV3 | thiết kế và nghiên cứu WebGPU |
-| TV3 | `src/simulations/webgl2/`, shared cùng TV2 | fallback và tương thích |
-| **TV4** | `src/ui/`, `src/presets/` | use cases, UI requirements, wireframe, interaction spec |
-| TV5 | `src/perf/`, `tests/` (testing tổng thể) | test plan, test environments, benchmark |
+Bảng chia việc hiện hành nằm ở [`docs/05-management/team-ownership.md`](docs/05-management/team-ownership.md)
+(chia theo trục thay đổi, không theo thư mục). Bảng cũ "mỗi người một thư mục"
+đã bị thay thế.
 
 Các thư mục trống có `.gitkeep` để Git theo dõi. **Không có nghĩa là phần việc tương ứng đã được triển khai**.
 

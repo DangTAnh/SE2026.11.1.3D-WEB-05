@@ -11,7 +11,7 @@
  *
  * Known coupling: `LabConfig` still lives in `src/presets/preset.ts`, so this
  * module depends on the preset domain for a type. Moving the config types into
- * `src/core/types/` is tracked as D-06 in docs/02-design/architecture.md.
+ * `src/core/types/` is tracked as D-06 in docs/architecture.md.
  */
 import type { ActualBackend, BackendPreference } from '../types/backend.ts';
 import type { LabConfig } from '../../presets/preset.ts';

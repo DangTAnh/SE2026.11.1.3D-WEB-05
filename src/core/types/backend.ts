@@ -4,7 +4,7 @@
  * `BackendPreference` is what the user asked for; `ActualBackend` is what the
  * engine really runs. They must never be conflated: a run requested as `auto`
  * can end up on `webgl2` or on `unavailable`, and the benchmark row has to say
- * so. See docs/02-design/architecture.md (INV-1).
+ * so. See docs/architecture.md (INV-1).
  */
 
 /** Backend selected by the user, before the engine has resolved it. */

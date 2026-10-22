@@ -19,9 +19,13 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
 | UI shell | Implemented (prototype) | [`src/ui/app.ts`](../src/ui/app.ts) |
 | Simulation preview | Canvas 2D mock, **not a GPU renderer** | [`src/ui/mock/particlePreview.ts`](../src/ui/mock/particlePreview.ts) |
-| WebGPU renderer | Not started (TV2) | `src/simulations/webgpu/` |
-| WebGL2 renderer | Not started (TV3) | `src/simulations/webgl2/` |
+| Renderer adapter (one, backend-flagged) | Not started | `src/simulations/rendererAdapter.ts` (planned) |
+| Simulation: physics + material tree | Not started | `src/simulations/simulation.ts`, `src/simulations/shared/` (planned) |
 | Perf collector | Not started (TV5) | `src/perf/` |
+
+There is **one** renderer, not one per backend. `src/simulations/webgpu/` and
+`src/simulations/webgl2/` hold backend-specific parts only (capability probe,
+timestamp query), never a second copy of the simulation rules.
 | Server, auth, persistence | **Out of scope for this repo** | — |
 
 The mock draws at most 600 points while the default config asks for 20,000, so
@@ -35,8 +39,8 @@ flowchart LR
   UI --> PRESET["src/presets"]
   PORT --> TYPES["src/core/types"]
   PORT -. "type only: LabConfig" .-> PRESET
-  WG["src/simulations/webgpu"] --> PORT
-  GL["src/simulations/webgl2"] --> PORT
+  SIM["src/simulations/simulation.ts"] --> PORT
+  RND["src/simulations/rendererAdapter.ts"] --> PORT
   PERF["src/perf"] --> PORT
 ```
 
@@ -51,9 +55,10 @@ Rules:
 4. `src/ui/` may not import `src/simulations/*` directly — only `RendererPort`.
 5. `src/presets/` may not import `src/ui/`.
 
-Rule 4 is the one that currently does not hold: the UI imports the Canvas 2D
-mock directly. Splitting `RendererPort` out is the first step; wiring the mock
-behind it is tracked as D-01.
+Rule 4 holds today only because nothing implements `RendererPort`: the UI draws
+with a Canvas 2D mock that itself lives under `src/ui/`, so there is no
+`src/simulations/` import to forbid yet. The port has no implementation and the
+mock cannot be swapped for a GPU backend — that gap is D-01.
 
 ## 3. Backend boundary
 
@@ -66,7 +71,7 @@ false. Recording the requested backend, or writing `0` for "not measured",
 invalidates every comparison the project is built to produce.
 
 `RendererStatus` encodes this directly: `requested` exists only to explain a
-fallback, and `actual` is what gets persisted.
+fallback, and `actual` is the only backend identity a benchmark row may store.
 
 ## 4. Renderer contract
 
@@ -101,10 +106,13 @@ would duplicate the same TSL material tree.
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
 | `ActualBackend`, `BackendPreference` | `src/core/types/backend.ts` | TV1 | renderer, perf, UI | TV1 |
 | `LabConfig`, preset JSON v1 | `src/presets/preset.ts` | TV4 | UI, renderer, future server | TV4 |
-| Perf sample shape | *not defined yet* | TV5 | ingestion | TV5 |
+| Perf sample shape | `src/core/types/measurement.ts` (planned) | TV1 | TV5, ingestion | TV1 |
 
 A contract changes only with its owner's review. Consumers adapt; the contract
 does not bend per consumer.
+
+Who writes which file is in [`05-management/team-ownership.md`](05-management/team-ownership.md);
+this table is about contracts, not about people.
 
 ## 5. Data ownership
 
@@ -122,9 +130,16 @@ data in the current codebase would be false.
 | ID | Debt | Where |
 |---|---|---|
 | D-01 | UI imports the Canvas 2D mock directly; no `RendererPort` implementation is wired | `src/ui/app.ts`, `src/ui/mock/particlePreview.ts` |
+| D-07 | `src/ui/app.ts` is required by TV1 (port wiring) and TV5 (status panel) but owned by TV4 — one file, three owners | `src/ui/app.ts` |
+| D-08 | `RendererPort` cannot switch backend after `init`, although `LabConfig.backendPreference` and UC-03 imply it must | `src/core/renderer/RendererPort.ts` |
+
+Open decisions that are not debt yet — the WebGL2 stepping path, the backend
+switch, and the `LabConfig` freeze date — are tracked in
+[`05-management/team-ownership.md`](05-management/team-ownership.md) §7.
 | D-02 | Domain module touches the DOM (`downloadPreset`) | `src/presets/preset.ts` |
 | D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/app.ts` |
 | D-04 | Backend label hardcoded in the UI template | `src/ui/app.ts` |
+| D-05 | `serializePreset` re-parses its own output to self-validate | `src/presets/preset.ts` |
 | D-06 | `RendererPort` depends on `src/presets` for the `LabConfig` type | `src/core/renderer/RendererPort.ts` |
 
 D-06 disappears once the config types move into `src/core/types/`; that change
@@ -135,7 +150,7 @@ needs TV4's agreement because `src/presets/` is theirs.
 ```bash
 npm ci
 npm run typecheck     # tsc --noEmit over src/
-npm test              # node --test, tests/unit/*.test.ts
+npm test              # node --experimental-strip-types --test tests/unit/*.test.ts
 ```
 
 `RendererPort` itself adds no runtime code; the contract test exists so that a
