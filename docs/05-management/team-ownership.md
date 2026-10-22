@@ -95,8 +95,9 @@ hardcodes `Canvas 2D (mockup)`. That gap is D-04 in
 Nobody needs the full chain before starting; this is the order that keeps
 people unblocked:
 
-1. **TV1**: extend `RendererPort` with a backend-switch path, and publish the
-   perf sample shape. Due 2026-10-24.
+1. **TV1**: publish the perf sample shape and the `configHash` rule — both
+   decided on 2026-10-22, neither implemented yet. No backend-switch path is
+   added: a changed `backendPreference` applies on the next `init()`.
 2. **TV2 + TV3**: freeze the simulation→render interface (attributes, uniforms,
    state buffers) and the WebGL2 step decision. Due 2026-10-29.
 3. **TV3**: `rendererAdapter.ts` behind the port.
@@ -111,8 +112,11 @@ people unblocked:
 | # | Question | Owner | Due |
 |---|---|---|---|
 | 1 | WebGL2 compute path: TSL compute node through three's transform-feedback mapping (evidence in [`03-research/webgl2-simulation-options.md`](../03-research/webgl2-simulation-options.md)), or a separate GPU path? CPU is not an option | TV2 + TV3 | 2026-10-29 |
-| 2 | `backendPreference` can change after `init` (import/reset, `src/ui/app.ts:143,152`) but the lifecycle has no way to apply it: add a switch path, or define that a changed preference applies on the next start | TV1 | 2026-10-24 |
-| 3 | `LabConfig` frozen — field names and ranges final for the engine | TV4, reviewed by TV1/2/3 | 2026-10-29 |
+| 2 | `LabConfig` frozen — field names and ranges final for the engine | TV4, reviewed by TV1/2/3 | 2026-10-29 (proposed) |
+
+Item 2 is an external dependency: the date and the frozen field set were
+proposed by TV1, and TV4 has not confirmed either. The backend-switch question
+is closed — see `docs/architecture.md` §4.
 
 ## 8. Working rules
 

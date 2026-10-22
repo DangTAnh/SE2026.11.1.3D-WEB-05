@@ -1,8 +1,9 @@
 # WebGL2 simulation strategy — evidence
 
-Status: **evidence only.** The decision belongs to TV2 + TV3
-([`05-management/team-ownership.md`](../05-management/team-ownership.md) §7,
-item 1). Nothing here is implemented.
+Status: **evidence only; no option agreed.** TSL compute through WebGL2
+transform feedback is the *preferred candidate*. The decision belongs to
+TV2 + TV3 ([`05-management/team-ownership.md`](../05-management/team-ownership.md)
+§7, item 1) and they have not confirmed it. Nothing here is implemented.
 
 Question: the particle simulation must run on the GPU. Given the one-adapter,
 `forceWebGL` decision ([`architecture.md`](../architecture.md) §4), what runs
@@ -50,10 +51,18 @@ simulation rules is required.
 
 ## 4. What TV2 and TV3 must confirm
 
-1. Particle state is updated element-wise — no scatter writes, no atomics. If it
-   is not, the TSL compute path is insufficient and option 2 returns.
-2. `count` is the fixed particle count per step, never indirect.
-3. `gpuTimingAvailable` on WebGL2: whether `TimestampQuery.COMPUTE` works under
-   `EXT_disjoint_timer_query_webgl2`, or must be reported as false.
+1. **Element-wise state.** Does the particle update map one invocation to one
+   particle, so that transform feedback's per-invocation varying write is
+   sufficient?
+2. **No scatter, no atomics.** Does the update avoid writing to an index other
+   than the invocation's own, and avoid atomic accumulation? Transform feedback
+   cannot express either.
+3. **Supported `count`.** Is `count` the fixed particle count per step, never
+   an array and never indirect? `compute()` falls back to `count[0]` with a
+   `warnOnce` on an array.
+4. **Compute timing.** Does `TimestampQuery.COMPUTE` return a usable number
+   under `EXT_disjoint_timer_query_webgl2`, or must `gpuTimingAvailable` be
+   false on the WebGL2 backend?
 
-Until 1–3 are answered, do not write a second stepping path.
+If 1 or 2 fails, the TSL compute path is insufficient and the ping-pong option
+returns. Until all four are answered, do not write a second stepping path.

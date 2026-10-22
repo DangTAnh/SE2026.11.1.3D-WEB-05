@@ -68,8 +68,9 @@ Hai trường `actual` và `configHash` là bắt buộc, không phải tuỳ ch
 INV-1 (`docs/architecture.md` §3) cấm lấy backend được yêu cầu thay cho backend
 thực tế, và UC-04 (`docs/01-requirements/use-cases.md`: "Dữ liệu benchmark phải
 kèm điều kiện đo") buộc mỗi mẫu phải định danh được cấu hình đã sinh ra nó.
-`configHash` chưa tồn tại trong code; shape thuộc TV1 (`docs/architecture.md`
-§4.1), TV5 sản xuất số đo, UI render.
+`configHash` chưa tồn tại trong code; cách tính và chuẩn hoá ở
+`docs/architecture.md` §5.1. Shape thuộc TV1 (§4.1), TV5 sản xuất số đo, UI
+render.
 
 Khi tích hợp: chỉ UI thay đổi trạng thái mong muốn; **Core quyết định actual backend**; TV5 cung cấp số đo; UI render trạng thái theo dữ liệu do hai bên cung cấp.
 

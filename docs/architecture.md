@@ -93,6 +93,12 @@ Design notes:
   resources or start a request. Only an explicit preset save reaches a server.
 - The contract is transport-free and DOM-free so that `tests/unit/renderer-port.test.ts`
   can exercise callers with a fake — no canvas, no GPU.
+- **`backendPreference` is read at `init()`.** Changing it later through import
+  or reset does not switch a running renderer; the next `init()` applies it.
+  This is a decision by TV1 on 2026-10-22, not an open question: UC-03
+  (`01-requirements/use-cases.md`) describes choosing a backend and then
+  initialising it, and `UI-FR-04` requires displaying the backend that actually
+  ran. Neither requires hot-swapping. The former D-08 is resolved by this rule.
 
 When a real backend is added, `ThreeRendererAdapter` will be **one** class with a
 backend flag (`forceWebGL`), not two classes: `three/webgpu` selects the backend
@@ -125,6 +131,47 @@ this table is about contracts, not about people.
 There is no persistence layer in this repository yet. Any claim about stored
 data in the current codebase would be false.
 
+### 5.1 Benchmark configuration identity (`configHash`)
+
+`configHash` names the configuration a sample was measured under. Two samples
+may be aggregated only when they agree on `(mode, configHash) × actual`; across
+a hash boundary they are different experiments.
+
+**Included fields** — the `LabConfig` values that change the work the GPU does:
+`mode`, `particleCount`, `speed`, `particleSize`, `strength`.
+
+**Excluded, with reasons:**
+
+- `backendPreference` — a request, not a measurement condition. The backend
+  that ran is stored separately as `actual` (INV-1).
+- `particleColor` — a per-frame uniform; it changes appearance, not step cost
+  or particle count. Excluding it lets runs that differ only in colour share
+  measurements.
+- `schemaVersion`, `app` — preset envelope, not measurement input.
+
+**Normalization.** The hash input is one JSON object, keys in alphabetical
+order, no whitespace, numbers rounded to 3 decimal places and written without
+trailing zeros (`1.2`, not `1.20`):
+
+```json
+{"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}
+```
+
+Key order is fixed by this rule, not by object iteration order.
+
+**Algorithm.** SHA-256 over the UTF-8 bytes of that string, lowercase hex,
+64 characters.
+
+**Invalid or missing values.** A hash is computed only for a config that has
+already passed `parsePreset` (`src/presets/preset.ts:40`): it rejects
+out-of-range values, requires `particleCount` to be an integer multiple of
+1000, and rebuilds the object from the seven known fields (lines 67–75), so
+unknown keys never reach the hash. Invalid input produces no sample at all —
+never a hash of a defaulted or partially filled config.
+
+**Status.** Defined by TV1 on 2026-10-22; **not implemented**. The type belongs
+in `src/core/types/measurement.ts` (planned); no function computes it yet.
+
 ## 6. Known debt
 
 | ID | Debt | Where |
@@ -136,13 +183,15 @@ data in the current codebase would be false.
 | D-05 | `serializePreset` re-parses its own output to self-validate | `src/presets/preset.ts` |
 | D-06 | `RendererPort` depends on `src/presets` for the `LabConfig` type | `src/core/renderer/RendererPort.ts` |
 | D-07 | TV1 must inject `RendererPort` into `src/ui/app.ts`, which TV4 owns and merges — two owners on one file. The status UI stays in TV4's overlay module, not in a file TV5 edits | `src/ui/app.ts` |
-| D-08 | `LabConfig.backendPreference` can be replaced after `init` by import or reset (`src/ui/app.ts:143,152`), but the renderer lifecycle specifies no way to apply the change | `src/core/renderer/RendererPort.ts` |
 
 D-06 disappears once the config types move into `src/core/types/`; that change
 needs TV4's agreement because `src/presets/` is theirs.
 
-Open decisions that are not debt yet — the WebGL2 stepping path, the backend
-switch, and the `LabConfig` freeze date — are tracked in
+D-08 is retired: a changed `backendPreference` applies on the next `init()`
+(§4). The ID is not reused.
+
+Open decisions that are not debt yet — the WebGL2 stepping path and the
+`LabConfig` freeze date — are tracked in
 [`05-management/team-ownership.md`](05-management/team-ownership.md) §7.
 Evidence on the WebGL2 path is in
 [`03-research/webgl2-simulation-options.md`](03-research/webgl2-simulation-options.md).
