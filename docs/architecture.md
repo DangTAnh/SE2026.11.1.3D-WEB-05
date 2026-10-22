@@ -29,16 +29,19 @@ no timing produced by it is usable for a WebGPU/WebGL2 comparison.
 
 ## 2. Dependency rules
 
+```mermaid
+flowchart LR
+  UI["src/ui"] --> PORT["src/core/renderer<br/>RendererPort"]
+  UI --> PRESET["src/presets"]
+  PORT --> TYPES["src/core/types"]
+  PORT -. "type only: LabConfig" .-> PRESET
+  WG["src/simulations/webgpu"] --> PORT
+  GL["src/simulations/webgl2"] --> PORT
+  PERF["src/perf"] --> PORT
 ```
-src/ui ──► src/core/renderer (RendererPort) ──► src/core/types
-  │                    │
-  │                    └──► src/presets (type only, LabConfig)
-  └──► src/presets
 
-src/simulations/webgpu ──┐
-src/simulations/webgl2 ──┴──► src/core/renderer (implements the port)
-src/perf ──► src/core/renderer (reads RendererStatus)
-```
+Solid arrows are runtime dependencies; the dotted arrow is type-only. Arrows
+never point back toward `src/ui`.
 
 Rules:
 
@@ -90,6 +93,18 @@ When a real backend is added, `ThreeRendererAdapter` will be **one** class with 
 backend flag (`forceWebGL`), not two classes: `three/webgpu` selects the backend
 at construction and exposes `renderer.backend.isWebGPUBackend`. Two classes
 would duplicate the same TSL material tree.
+
+### 4.1 Who owns each contract
+
+| Contract | Defined in | Producer | Consumers | Owner |
+|---|---|---|---|---|
+| `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
+| `ActualBackend`, `BackendPreference` | `src/core/types/backend.ts` | TV1 | renderer, perf, UI | TV1 |
+| `LabConfig`, preset JSON v1 | `src/presets/preset.ts` | TV4 | UI, renderer, future server | TV4 |
+| Perf sample shape | *not defined yet* | TV5 | ingestion | TV5 |
+
+A contract changes only with its owner's review. Consumers adapt; the contract
+does not bend per consumer.
 
 ## 5. Data ownership
 
