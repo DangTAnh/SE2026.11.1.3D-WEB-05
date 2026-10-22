@@ -17,6 +17,8 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 |---|---|---|
 | Renderer contract | **Holds a written type, no implementation yet** | [`src/core/renderer/RendererPort.ts`](../src/core/renderer/RendererPort.ts) |
 | Backend identity types | Implemented (types only) | [`src/core/types/backend.ts`](../src/core/types/backend.ts) |
+| Perf sample shape (`PerformanceSnapshot`) | Implemented (type only) | [`src/core/types/measurement.ts`](../src/core/types/measurement.ts) |
+| Benchmark config identity (`configHash`) | Implemented | [`src/core/measurement/configHash.ts`](../src/core/measurement/configHash.ts) |
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
 | UI shell | Implemented (prototype) | [`src/ui/app.ts`](../src/ui/app.ts) |
 | Simulation preview | Canvas 2D mock, **not a GPU renderer** | [`src/ui/mock/particlePreview.ts`](../src/ui/mock/particlePreview.ts) |
@@ -113,7 +115,7 @@ would duplicate the same TSL material tree.
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
 | `ActualBackend`, `BackendPreference` | `src/core/types/backend.ts` | TV1 | renderer, perf, UI | TV1 |
 | `LabConfig`, preset JSON v1 | `src/presets/preset.ts` | TV4 | UI, renderer, future server | TV4 |
-| Perf sample shape | `src/core/types/measurement.ts` (planned) | TV1 | TV5, ingestion | TV1 |
+| `PerformanceSnapshot`, `configHash` | `src/core/types/measurement.ts`, `src/core/measurement/configHash.ts` | TV1 | TV5, ingestion | TV1 |
 
 A contract changes only with its owner's review. Consumers adapt; the contract
 does not bend per consumer.
@@ -170,8 +172,13 @@ out-of-range values, requires `particleCount` to be an integer multiple of
 unknown keys never reach the hash. Invalid input produces no sample at all —
 never a hash of a defaulted or partially filled config.
 
-**Status.** Defined by TV1 on 2026-10-22; **not implemented**. The type belongs
-in `src/core/types/measurement.ts` (planned); no function computes it yet.
+**Status.** Defined and implemented by TV1 on 2026-10-22:
+`canonicalConfig()` and `configHash()` in
+`src/core/measurement/configHash.ts`, covered by
+`tests/unit/measurement.contract.test.ts`. `configHash()` is async because
+SHA-256 comes from Web Crypto (`crypto.subtle`), which also works in the
+browser with no dependency added. It rejects missing, non-finite or invalid
+`mode` values with a `TypeError`; range checks stay in `parsePreset`.
 
 ## 6. Known debt
 
