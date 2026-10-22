@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/3d-web-05/preset-schema-v2.json",
+  "title": "3D-WEB-05 Particle Lab Preset v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "app", "config"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "app": { "const": "3D-WEB-05" },
+    "name": { "type": "string", "maxLength": 80 },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "backendPreference", "simulation", "modes", "rendering", "camera"],
+      "properties": {
+        "mode": { "enum": ["orbit", "flow"] },
+        "backendPreference": { "enum": ["auto", "webgpu", "webgl2"] },
+        "simulation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["particleCount", "spawnRadius", "particleSize", "lifetime", "speed"],
+          "properties": {
+            "particleCount": { "type": "integer", "minimum": 1000, "maximum": 500000 },
+            "spawnRadius": { "type": "number", "minimum": 1, "maximum": 100 },
+            "particleSize": { "type": "number", "minimum": 1, "maximum": 8 },
+            "lifetime": { "type": "number", "minimum": 0.5, "maximum": 20 },
+            "speed": { "type": "number", "minimum": 0.1, "maximum": 3 }
+          }
+        },
+        "modes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["orbit", "flow"],
+          "properties": {
+            "orbit": { "$ref": "#/$defs/orbit" },
+            "flow": { "$ref": "#/$defs/flow" }
+          }
+        },
+        "rendering": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["backgroundColor", "particleColor", "opacity", "additiveBlend"],
+          "properties": {
+            "backgroundColor": { "$ref": "#/$defs/hexColor" },
+            "particleColor": { "$ref": "#/$defs/hexColor" },
+            "opacity": { "type": "number", "minimum": 0.05, "maximum": 1 },
+            "additiveBlend": { "type": "boolean" }
+          }
+        },
+        "camera": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "autoRotate", "distance"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "autoRotate": { "type": "boolean" },
+            "distance": { "type": "number", "minimum": 5, "maximum": 500 }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "orbit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["orbitStrength", "orbitRadius", "orbitDamping"],
+      "properties": {
+        "orbitStrength": { "type": "number", "minimum": 0, "maximum": 100 },
+        "orbitRadius": { "type": "number", "minimum": 0.5, "maximum": 50 },
+        "orbitDamping": { "type": "number", "minimum": 0.8, "maximum": 1 }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["flowStrength", "flowNoiseScale", "flowDamping"],
+      "properties": {
+        "flowStrength": { "type": "number", "minimum": 0, "maximum": 100 },
+        "flowNoiseScale": { "type": "number", "minimum": 0.01, "maximum": 20 },
+        "flowDamping": { "type": "number", "minimum": 0.8, "maximum": 1 }
+      }
+    }
+  }
+}
