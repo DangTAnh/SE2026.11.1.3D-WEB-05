@@ -36,7 +36,7 @@ test('groups: splits by configHash and actual backend, sorted deterministically'
   ]);
 
   assert.deepEqual(
-    groups.map((group) => [group.configHash, group.actual, group.samples.length]),
+    groups.map((group) => [group.configHash, group.actual, group.count]),
     [
       [HASH_A, 'webgl2', 1],
       [HASH_A, 'webgpu', 2],

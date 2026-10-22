@@ -8,6 +8,9 @@
  * preference.
  */
 
+import type { ActualBackend } from '../types/backend.ts';
+import type { PerformanceSnapshot } from '../types/measurement.ts';
+
 export interface ValueSummary {
   readonly count: number;
   readonly min: number;
@@ -49,4 +52,74 @@ export function summarize(values: readonly number[]): ValueSummary | null {
     median,
     p95: percentile(sorted, 0.95),
   };
+}
+
+export interface AggregateGroup {
+  readonly configHash: string;
+  readonly actual: ActualBackend;
+  /** Samples in the group. Raw samples are not exposed: the result must not
+   * depend on the order they arrived in. */
+  readonly count: number;
+  readonly fps: ValueSummary | null;
+  readonly gpuTimeMs: ValueSummary | null;
+}
+
+const CONFIG_HASH_PATTERN = /^[0-9a-f]{64}$/;
+
+/**
+ * INV-1 at the aggregation boundary. A sample that claims timing it does not
+ * have, or omits timing it does, is rejected before it can reach a statistic —
+ * an average of mixed truths is worse than a failed run.
+ */
+function assertSample(sample: PerformanceSnapshot): void {
+  if (!CONFIG_HASH_PATTERN.test(sample.configHash)) {
+    throw new TypeError(`aggregateByBackend: malformed configHash "${sample.configHash}"`);
+  }
+  if (sample.gpuTimingAvailable) {
+    if (sample.gpuTimeMs === null || !Number.isFinite(sample.gpuTimeMs)) {
+      throw new TypeError('aggregateByBackend: gpuTimingAvailable is true but gpuTimeMs is not a finite number');
+    }
+  } else if (sample.gpuTimeMs !== null) {
+    throw new TypeError('aggregateByBackend: gpuTimeMs must be null when timing is unavailable (INV-1)');
+  }
+  if (sample.fps !== null && !Number.isFinite(sample.fps)) {
+    throw new TypeError('aggregateByBackend: fps must be a finite number or null');
+  }
+}
+
+/**
+ * Groups samples by `configHash × actual`, sorted by the key.
+ *
+ * `mode` is not part of the key because `configHash` already covers it
+ * (`docs/architecture.md` §5.1); `actual` is the backend that ran. A sample
+ * carries no requested preference to group by, by construction.
+ */
+export function aggregateByBackend(samples: readonly PerformanceSnapshot[]): AggregateGroup[] {
+  const buckets = new Map<string, PerformanceSnapshot[]>();
+  for (const sample of samples) {
+    assertSample(sample);
+    const key = `${sample.configHash}\u0000${sample.actual}`;
+    const bucket = buckets.get(key);
+    if (bucket) bucket.push(sample);
+    else buckets.set(key, [sample]);
+  }
+
+  return [...buckets.values()]
+    .map((bucket) => {
+      const first = bucket[0]!;
+      const fps = bucket.map((s) => s.fps).filter((value): value is number => value !== null);
+      const gpuTime = bucket.map((s) => s.gpuTimeMs).filter((value): value is number => value !== null);
+      return {
+        configHash: first.configHash,
+        actual: first.actual,
+        count: bucket.length,
+        fps: summarize(fps),
+        gpuTimeMs: summarize(gpuTime),
+      };
+    })
+    .sort((a, b) => {
+      if (a.configHash !== b.configHash) return a.configHash < b.configHash ? -1 : 1;
+      if (a.actual === b.actual) return 0;
+      return a.actual < b.actual ? -1 : 1;
+    });
 }
