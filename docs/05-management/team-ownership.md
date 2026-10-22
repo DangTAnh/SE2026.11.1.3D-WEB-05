@@ -51,9 +51,12 @@ telling TV1 and TV5 — a silent rename breaks the CI that gates everyone.
   query and the fallback decision. TV3 writes it.
 - Neither directory holds a second copy of the simulation rules.
 
-**Open:** WebGL2 has no compute-shader path. Either the step runs on the CPU in
-simulation.ts for both backends, or WebGL2 gets a second GPU stepping path. Not
-decided; see §7 item 1. Do not write either until it is.
+**Open (decision with TV2 + TV3).** WebGL2 has no native compute shader, but
+`three@0.186.1`'s `WebGLBackend` maps a TSL compute node to transform feedback,
+so the same compute source can run on both backends. A CPU step is not an
+acceptable fallback — the simulation is meant to run on the GPU. Evidence and
+remaining constraints: [`03-research/webgl2-simulation-options.md`](../03-research/webgl2-simulation-options.md).
+Do not write a second stepping path before that decision.
 
 ## 4. Coverage
 
@@ -107,8 +110,8 @@ people unblocked:
 
 | # | Question | Owner | Due |
 |---|---|---|---|
-| 1 | WebGL2 has no compute-shader path — CPU step for both backends, or a second GPU path? | TV2 + TV3 | 2026-10-29 |
-| 2 | `backendPreference` cannot switch a running renderer; `RendererPort` has no re-init. Add it or delete UC-03 | TV1 | 2026-10-24 |
+| 1 | WebGL2 compute path: TSL compute node through three's transform-feedback mapping (evidence in [`03-research/webgl2-simulation-options.md`](../03-research/webgl2-simulation-options.md)), or a separate GPU path? CPU is not an option | TV2 + TV3 | 2026-10-29 |
+| 2 | `backendPreference` can change after `init` (import/reset, `src/ui/app.ts:143,152`) but the lifecycle has no way to apply it: add a switch path, or define that a changed preference applies on the next start | TV1 | 2026-10-24 |
 | 3 | `LabConfig` frozen — field names and ranges final for the engine | TV4, reviewed by TV1/2/3 | 2026-10-29 |
 
 ## 8. Working rules

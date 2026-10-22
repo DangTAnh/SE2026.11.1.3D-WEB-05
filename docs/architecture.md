@@ -130,20 +130,22 @@ data in the current codebase would be false.
 | ID | Debt | Where |
 |---|---|---|
 | D-01 | UI imports the Canvas 2D mock directly; no `RendererPort` implementation is wired | `src/ui/app.ts`, `src/ui/mock/particlePreview.ts` |
-| D-07 | TV1 must inject `RendererPort` into `src/ui/app.ts`, which TV4 owns and merges — two owners on one file. The status UI stays in TV4's overlay module, not in a file TV5 edits | `src/ui/app.ts` |
-| D-08 | `RendererPort` cannot switch backend after `init`, although `LabConfig.backendPreference` and UC-03 imply it must | `src/core/renderer/RendererPort.ts` |
-
-Open decisions that are not debt yet — the WebGL2 stepping path, the backend
-switch, and the `LabConfig` freeze date — are tracked in
-[`05-management/team-ownership.md`](05-management/team-ownership.md) §7.
 | D-02 | Domain module touches the DOM (`downloadPreset`) | `src/presets/preset.ts` |
 | D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/app.ts` |
 | D-04 | Backend label hardcoded in the UI template | `src/ui/app.ts` |
 | D-05 | `serializePreset` re-parses its own output to self-validate | `src/presets/preset.ts` |
 | D-06 | `RendererPort` depends on `src/presets` for the `LabConfig` type | `src/core/renderer/RendererPort.ts` |
+| D-07 | TV1 must inject `RendererPort` into `src/ui/app.ts`, which TV4 owns and merges — two owners on one file. The status UI stays in TV4's overlay module, not in a file TV5 edits | `src/ui/app.ts` |
+| D-08 | `LabConfig.backendPreference` can be replaced after `init` by import or reset (`src/ui/app.ts:143,152`), but the renderer lifecycle specifies no way to apply the change | `src/core/renderer/RendererPort.ts` |
 
 D-06 disappears once the config types move into `src/core/types/`; that change
 needs TV4's agreement because `src/presets/` is theirs.
+
+Open decisions that are not debt yet — the WebGL2 stepping path, the backend
+switch, and the `LabConfig` freeze date — are tracked in
+[`05-management/team-ownership.md`](05-management/team-ownership.md) §7.
+Evidence on the WebGL2 path is in
+[`03-research/webgl2-simulation-options.md`](03-research/webgl2-simulation-options.md).
 
 ## 7. Verification
 
