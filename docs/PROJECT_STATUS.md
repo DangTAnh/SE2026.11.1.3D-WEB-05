@@ -1,5 +1,13 @@
 # PROJECT STATUS — 3D-WEB-05
 
+> **24/10/2026 — workflow/current-dev checkpoint (#36):** dev at `888626a`
+> includes #32 UI controls and #35 shared TSL kernels. Adapter #12, fallback
+> #13 and composition #15 remain pending; GPU runtime/parity/benchmark NOT_RUN.
+> TV4 #33 is a draft live-status candidate into dev; #16 is blocked on shared
+> hash/Vortex decisions. Four legacy branches have been renamed with identical
+> SHAs. See [workflow audit and next actions](05-management/workflow-audit-2026-10-24.md)
+> and [CONTRIBUTING](../CONTRIBUTING.md). Prior checkpoints below are historical.
+
 > **24/10/2026 — TV4 issue #9/#25 branch checkpoint:** UI now consumes an
 > injected RendererPort, with explicit FakeRenderer browser tests and no
 > Canvas2D preview. Production main still has no adapter injected and shows

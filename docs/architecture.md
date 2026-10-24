@@ -23,7 +23,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | UI shell | Consumes an injected RendererPort; no backend init in UI | [`src/ui/app.ts`](../src/ui/app.ts) |
 | Simulation preview | Canvas2D mock removed; composition root must inject a real renderer | `src/main.ts` (integration pending) |
 | Renderer adapter (one, backend-flagged) | Not started | `src/simulations/rendererAdapter.ts` (planned) |
-| Simulation: physics + material tree | Not started | `src/simulations/simulation.ts`, `src/simulations/shared/` (planned) |
+| Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 
 There is **one** renderer, not one per backend. `src/simulations/webgpu/` and
