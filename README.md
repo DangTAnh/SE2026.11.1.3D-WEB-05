@@ -21,13 +21,16 @@ npm run dev        # Vite dev server, usually http://localhost:5173
 
 ```bash
 npm run typecheck  # tsc --noEmit
-npm test           # 24 unit tests (13 preset, 3 port, 8 measurement)
+npm test           # 61 unit tests (Vitest)
+npx playwright install chromium  # once per machine
+npm run test:e2e
 npm run build
 npm run preview
 ```
 
-CI (`.github/workflows/ci.yml`) runs `npm ci`, typecheck and the unit tests on
-every push to `main` or `feat/**`, and on pull requests.
+CI (`.github/workflows/ci.yml`) runs `npm run verify` (typecheck, unit tests,
+Playwright E2E, build) on every push to `main`, `dev` or `feat/**`, and on
+pull requests.
 
 ## What exists today
 
