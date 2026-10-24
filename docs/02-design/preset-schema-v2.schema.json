@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/3d-web-05/preset-schema-v2.json",
+  "title": "3D-WEB-05 Particle Lab Preset v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "app", "config"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "app": { "const": "3D-WEB-05" },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Optional metadata; not part of the round-trip identity."
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "backendPreference", "simulation", "modes", "rendering", "camera"],
+      "properties": {
+        "mode": {
+          "enum": ["attractor", "vortex"],
+          "description": "MVP modes. Flow/curl-noise is a post-MVP extension and is intentionally absent from v2."
+        },
+        "backendPreference": { "enum": ["auto", "webgpu", "webgl2"] },
+        "simulation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["particleCount", "spawnRadius", "particleSize", "lifetime", "speed"],
+          "properties": {
+            "particleCount": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 500000,
+              "description": "Integer count; no multipleOf because 65536 is the default."
+            },
+            "spawnRadius": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100,
+              "description": "World-space spawn radius."
+            },
+            "particleSize": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 8,
+              "description": "Adapter-defined size units; WebGPU/WebGL2 parity is measured in E-06."
+            },
+            "lifetime": {
+              "type": "number",
+              "minimum": 0.5,
+              "maximum": 20,
+              "description": "Simulation seconds; age advances by delta * speed, so speed shortens effective lifetime."
+            },
+            "speed": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 3,
+              "description": "Global time multiplier applied to delta."
+            }
+          }
+        },
+        "modes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["attractor", "vortex"],
+          "properties": {
+            "attractor": { "$ref": "#/$defs/attractor" },
+            "vortex": { "$ref": "#/$defs/vortex" }
+          }
+        },
+        "rendering": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["backgroundColor", "particleColor", "opacity", "additiveBlend"],
+          "properties": {
+            "backgroundColor": { "$ref": "#/$defs/hexColor" },
+            "particleColor": { "$ref": "#/$defs/hexColor" },
+            "opacity": { "type": "number", "minimum": 0.05, "maximum": 1 },
+            "additiveBlend": { "type": "boolean" }
+          }
+        },
+        "camera": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["enabled", "autoRotate", "distance"],
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "autoRotate": {
+              "type": "boolean",
+              "description": "Only effective when enabled is true."
+            },
+            "distance": {
+              "type": "number",
+              "minimum": 5,
+              "maximum": 500,
+              "description": "World-space camera distance."
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "attractor": {
+      "description": "MVP attractor parameters. The current orbit kernel is one attractor implementation; TV2 confirms the final formula.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attractorStrength", "attractorRadius", "attractorDamping"],
+      "properties": {
+        "attractorStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Engine orbitStrength uniform range is 0-100."
+        },
+        "attractorRadius": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 50,
+          "description": "Damping threshold outside the orbit radius."
+        },
+        "attractorDamping": {
+          "type": "number",
+          "minimum": 0.8,
+          "maximum": 1
+        }
+      }
+    },
+    "vortex": {
+      "description": "MVP vortex parameter set from v1/mock UI; TV2 adds fields if the vortex formula requires them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["vortexStrength"],
+      "properties": {
+        "vortexStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Engine strength uniform range is 0-100; TV4 updates the UI range."
+        }
+      }
+    }
+  }
+}
