@@ -13,8 +13,10 @@ import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAM
 import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
+import { BackendUnavailableError, forceWebGLFromSearch, startBackend, type InitializedBackend } from './backend/fallback.ts';
 
 const MAX_FRAME_DELTA = 0.05;
+const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 30;
 
 /** Three.js implementation of the app-facing renderer contract. */
 export class ThreeRendererAdapter implements RendererPort {
@@ -37,6 +39,11 @@ export class ThreeRendererAdapter implements RendererPort {
   #fpsStartedAt = 0;
   #lastFrameAt = 0;
   #target: RendererTarget = { width: 1, height: 1, pixelRatio: 1 };
+  #gpuTimingSupported = false;
+  #gpuTimingAvailable = false;
+  #gpuTimingInFlight = false;
+  #gpuTimeMs: number | null = null;
+  #computeFrames = 0;
   #unavailableNotice: HTMLElement | null = null;
 
   constructor(canvas: HTMLCanvasElement, initialConfig: Readonly<LabConfig>) {
@@ -56,43 +63,83 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#requested = this.#config.backendPreference;
     this.#target = target;
 
-    let renderer: WebGPURenderer | null = null;
     try {
-      renderer = new WebGPURenderer({
-        canvas: this.#canvas,
-        antialias: true,
-        forceWebGL: this.#requested === 'webgl2',
-      });
-      await renderer.init();
-      if (!this.#isInitActive(generation)) {
-        this.#disposeRenderer(renderer);
-        return 'unavailable';
-      }
-
-      const actual = this.#resolveActualBackend(renderer);
-      if (actual === 'unavailable') throw new Error('Renderer initialized without a supported backend.');
-      this.#renderer = renderer;
-      this.#actual = actual;
-      this.#createScene();
-      this.#createPipeline(this.#config.particleCount, this.#config);
-      if (this.#buffers) await renderer.compute(this.#buffers.initKernel);
+      const started = await startBackend<WebGPURenderer>(
+        this.#requested,
+        forceWebGLFromSearch(window.location.search),
+        {
+          webgpu: () => this.#initializeRenderer(false, generation),
+          webgl2: () => this.#initializeRenderer(true, generation),
+        },
+      );
       if (!this.#isInitActive(generation)) return 'unavailable';
-
-      await renderer.setAnimationLoop(this.#onFrame);
-      if (!this.#isInitActive(generation)) return 'unavailable';
-    } catch {
-      if (renderer && this.#renderer === renderer) {
-        this.#releaseRenderer();
-      } else if (renderer && this.#isInitActive(generation)) {
-        this.#disposeRenderer(renderer);
-      }
+      this.#renderer = started.instance;
+      this.#actual = started.actual;
+      if (!this.#renderer) this.#showUnavailableNotice();
+    } catch (error) {
       if (this.#isInitActive(generation)) {
         this.#actual = 'unavailable';
         this.#showUnavailableNotice();
       }
+      throw error;
     }
 
     return this.#isInitActive(generation) ? this.#actual : 'unavailable';
+  }
+  async #initializeRenderer(forceWebGL: boolean, generation: number): Promise<InitializedBackend<WebGPURenderer>> {
+    if (!this.#isInitActive(generation)) {
+      throw new BackendUnavailableError('Renderer initialization is no longer active.');
+    }
+    const renderer = new WebGPURenderer({
+      canvas: this.#canvas,
+      antialias: true,
+      forceWebGL,
+      trackTimestamp: true,
+    });
+    try {
+      try {
+        await renderer.init();
+      } catch (error) {
+        throw new BackendUnavailableError('Renderer backend initialization failed.', { cause: error });
+      }
+      if (!this.#isInitActive(generation)) {
+        throw new BackendUnavailableError('Renderer initialization was cancelled.');
+      }
+
+      const actual = this.#resolveActualBackend(renderer);
+      if (actual === 'unavailable') {
+        throw new BackendUnavailableError('Renderer initialized without a supported backend.');
+      }
+      this.#renderer = renderer;
+      this.#actual = actual;
+      this.#createScene();
+      this.#createPipeline(this.#config.particleCount, this.#config);
+      if (this.#buffers) {
+        try {
+          await renderer.compute(this.#buffers.initKernel);
+        } catch (error) {
+          throw new BackendUnavailableError('Renderer could not initialize the particle pipeline.', { cause: error });
+        }
+      }
+      if (!this.#isInitActive(generation)) {
+        throw new BackendUnavailableError('Renderer initialization was cancelled.');
+      }
+
+      this.#gpuTimingSupported = renderer.hasFeature('timestamp-query');
+      try {
+        await renderer.setAnimationLoop(this.#onFrame);
+      } catch (error) {
+        throw new BackendUnavailableError('Renderer could not start its animation loop.', { cause: error });
+      }
+      if (!this.#isInitActive(generation)) {
+        throw new BackendUnavailableError('Renderer initialization was cancelled.');
+      }
+      return { actual, instance: renderer };
+    } catch (error) {
+      if (this.#renderer === renderer) this.#releaseRenderer();
+      else this.#disposeRenderer(renderer);
+      throw error;
+    }
   }
   #isInitActive(generation: number): boolean {
     return !this.#disposed && generation === this.#initGeneration;
@@ -111,7 +158,11 @@ export class ThreeRendererAdapter implements RendererPort {
       .then(() => renderer.dispose())
       .catch(() => undefined);
   }
-  #watchCompute(run: () => Promise<unknown> | undefined, renderer: WebGPURenderer): boolean {
+  #watchCompute(
+    run: () => Promise<unknown> | undefined,
+    renderer: WebGPURenderer,
+    sampleGpuTime = false,
+  ): boolean {
     let task: Promise<unknown> | undefined;
     try {
       task = run();
@@ -119,8 +170,36 @@ export class ThreeRendererAdapter implements RendererPort {
       this.#handleComputeFailure(renderer);
       return false;
     }
-    if (task) void task.catch(() => this.#handleComputeFailure(renderer));
+    if (task) {
+      void task.then(() => {
+        if (sampleGpuTime) this.#resolveGpuTime(renderer);
+      }).catch(() => this.#handleComputeFailure(renderer));
+    }
     return this.#renderer === renderer && !this.#disposed;
+  }
+
+  #resolveGpuTime(renderer: WebGPURenderer): void {
+    if (!this.#gpuTimingSupported || this.#gpuTimingInFlight || this.#renderer !== renderer || this.#disposed) return;
+    this.#gpuTimingInFlight = true;
+    void renderer.resolveTimestampsAsync('compute')
+      .then((durationMs) => {
+        if (this.#renderer !== renderer || this.#disposed) return;
+        if (durationMs !== undefined && durationMs !== null && Number.isFinite(durationMs) && durationMs > 0) {
+          this.#gpuTimeMs = durationMs;
+          this.#gpuTimingAvailable = true;
+        } else {
+          this.#gpuTimeMs = null;
+          this.#gpuTimingAvailable = false;
+        }
+      })
+      .catch(() => {
+        if (this.#renderer !== renderer || this.#disposed) return;
+        this.#gpuTimeMs = null;
+        this.#gpuTimingAvailable = false;
+      })
+      .finally(() => {
+        this.#gpuTimingInFlight = false;
+      });
   }
 
   #handleComputeFailure(renderer: WebGPURenderer): void {
@@ -172,13 +251,14 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   getStatus(): RendererStatus {
+    const gpuTimingAvailable = this.#gpuTimingAvailable && this.#gpuTimeMs !== null;
     return {
       requested: this.#requested,
       actual: this.#actual,
       running: this.#running,
-      gpuTimingAvailable: false,
+      gpuTimingAvailable,
       fps: this.#fps > 0 ? this.#fps : null,
-      gpuTimeMs: null,
+      gpuTimeMs: gpuTimingAvailable ? this.#gpuTimeMs : null,
     };
   }
 
@@ -280,7 +360,9 @@ export class ThreeRendererAdapter implements RendererPort {
       if (buffers) {
         buffers.uniforms.delta.value = delta * this.#config.speed;
         if (this.#computeKernel) {
-          if (!this.#watchCompute(() => renderer.compute(this.#computeKernel!), renderer)) return;
+          this.#computeFrames += 1;
+          const sampleGpuTime = this.#computeFrames % GPU_TIMING_SAMPLE_INTERVAL_FRAMES === 0;
+          if (!this.#watchCompute(() => renderer.compute(this.#computeKernel!), renderer, sampleGpuTime)) return;
         }
       }
       this.#fpsFrames += 1;
@@ -331,6 +413,11 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#camera = null;
     this.#buffers = null;
     this.#computeKernel = null;
+    this.#gpuTimingSupported = false;
+    this.#gpuTimingAvailable = false;
+    this.#gpuTimingInFlight = false;
+    this.#gpuTimeMs = null;
+    this.#computeFrames = 0;
   }
 
   #showUnavailableNotice(): void {

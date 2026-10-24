@@ -9,8 +9,8 @@ test('forced WebGL2 initializes a renderer on the application canvas when suppor
   });
 
   await page.goto('/?webgl=1');
-  await expect(page.locator('#actual-backend')).toHaveText(webgl2Supported ? 'WebGL2 fallback' : 'Không khả dụng');
-  await expect(page.locator('#runtime-phase-label')).toHaveText(webgl2Supported ? 'FALLBACK ACTIVE' : 'UNSUPPORTED');
+  await expect(page.locator('#actual-backend')).toHaveText(webgl2Supported ? 'WebGL2' : 'Không khả dụng');
+  await expect(page.locator('#runtime-phase-label')).toHaveText(webgl2Supported ? 'READY' : 'UNSUPPORTED');
 
   if (webgl2Supported) {
     const dimensions = await page.locator('#preview-canvas').evaluate((canvas: HTMLCanvasElement) => ({
