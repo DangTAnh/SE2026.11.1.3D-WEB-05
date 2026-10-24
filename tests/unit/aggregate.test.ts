@@ -4,7 +4,7 @@
  * The statistics are what a report row shows; if they change, published
  * numbers stop meaning the same thing.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { summarize } from '../../src/core/measurement/aggregate.ts';
 

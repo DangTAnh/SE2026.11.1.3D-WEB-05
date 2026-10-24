@@ -6,7 +6,7 @@
  * INV-1 violation must stop the run instead of producing a clean-looking
  * average of a lie.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import type { PerformanceSnapshot } from '../../src/core/types/measurement.ts';
 import { aggregateByBackend } from '../../src/core/measurement/aggregate.ts';

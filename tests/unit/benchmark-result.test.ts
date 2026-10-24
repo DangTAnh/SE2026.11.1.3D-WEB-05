@@ -5,7 +5,7 @@
  * person who ran the benchmark. It must refuse an incomplete result instead of
  * writing "n/a" over a missing environment or inventing timing.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 import { toMarkdown } from '../../src/core/measurement/result.ts';

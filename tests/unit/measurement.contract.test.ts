@@ -4,7 +4,7 @@
  *
  * If one of these fails, samples stop being comparable across runs.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 import type { LabConfig } from '../../src/presets/preset.ts';

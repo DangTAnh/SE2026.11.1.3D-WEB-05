@@ -5,7 +5,7 @@
  * collector can be written against the interface alone, and that `actual`
  * comes from the engine rather than from what was requested.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 import type { LabConfig } from '../../src/presets/preset.ts';

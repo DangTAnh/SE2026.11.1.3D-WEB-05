@@ -5,7 +5,7 @@
  * is what makes them fail the build. A rule that only exists in a diagram is a
  * suggestion — the first import written in a hurry deletes it.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
