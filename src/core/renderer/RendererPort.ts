@@ -50,7 +50,7 @@ export interface RendererPort {
   /** Updates the drawing buffer and projection when the host canvas changes size. */
   resize?(target: RendererTarget): void;
 
-  /** Applies simulation parameters. Safe to call every frame while dragging. */
+  /** Applies simulation parameters. Count changes rebuild and reseed particle buffers, so callers need not also reset. Safe to call while dragging. */
   applyConfig(config: Readonly<LabConfig>): void;
 
   start(): void;

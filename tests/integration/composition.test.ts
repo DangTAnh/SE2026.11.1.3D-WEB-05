@@ -71,14 +71,12 @@ test('composition: a rejecting init does not reject or skip mounting', async () 
   assert.equal(mounted, true);
 });
 
-test('composition: the returned disposer is the UI disposer, so unloading disposes once', async () => {
+test('composition: returned disposer tears down UI and port exactly once', async () => {
   const fake = new FakeRenderer({ actual: 'unavailable' });
   const port: RendererPort = fake;
-  let disposed = false;
+  let uiDisposals = 0;
   const uiDispose = (): void => {
-    if (disposed) return;
-    disposed = true;
-    port.dispose();
+    uiDisposals += 1;
   };
 
   const dispose = await composeLab({
@@ -90,5 +88,6 @@ test('composition: the returned disposer is the UI disposer, so unloading dispos
   assert.notEqual(dispose, uiDispose);
   dispose();
   dispose();
+  assert.equal(uiDisposals, 1);
   assert.equal(fake.calls.filter((call) => call.type === 'dispose').length, 1);
 });

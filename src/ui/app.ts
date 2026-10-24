@@ -1,12 +1,13 @@
 import { DEFAULT_CONFIG } from '../presets/preset.ts';
 import type { LabConfig } from '../presets/preset.ts';
-import type { RendererPort, RendererTarget } from '../core/renderer/RendererPort.ts';
+import type { RendererPort } from '../core/renderer/RendererPort.ts';
 import { bindLabControls, renderLabControls } from './controls/controlBindings.ts';
 import { byId } from './dom.ts';
 import { createToastController } from './notifications.ts';
 import { renderRuntimeStatus } from './overlays/statusOverlay.ts';
 import { createRendererRuntimeState } from './state/runtimeState.ts';
 import { createLabMarkup } from './template.ts';
+import { measureRendererTarget } from './rendererTarget.ts';
 
 /** The composition root owns init/canvas binding; UI only consumes the injected port. */
 export function prepareLabUI(root: HTMLElement): HTMLCanvasElement {
@@ -28,14 +29,7 @@ export function mountLabUI(
   const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
   if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
   const rendererPort = port;
-  const getRendererTarget = (): RendererTarget => {
-    const bounds = (canvas.parentElement ?? canvas).getBoundingClientRect();
-    return {
-      width: Math.max(1, bounds.width),
-      height: Math.max(1, bounds.height),
-      pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
-    };
-  };
+  const getRendererTarget = () => measureRendererTarget(canvas);
   const resizeObserver = rendererPort?.resize
     ? new ResizeObserver(() => rendererPort.resize?.(getRendererTarget()))
     : null;
@@ -68,6 +62,7 @@ export function mountLabUI(
 
   const updateConfig = (next: LabConfig, shouldReset = false): void => {
     if (disposed) return;
+    const countChanged = next.particleCount !== config.particleCount;
     try {
       rendererPort?.applyConfig(next);
     } catch {
@@ -77,7 +72,7 @@ export function mountLabUI(
     configApplied = true;
     config = next;
     renderLabControls(config);
-    if (shouldReset) {
+    if (shouldReset && !countChanged) {
       try { resetSimulation(); }
       catch {
         refreshStatus();
@@ -117,7 +112,6 @@ export function mountLabUI(
     disposeControls();
     toast.dispose();
     resizeObserver?.disconnect();
-    rendererPort?.dispose();
   };
   return dispose;
 }

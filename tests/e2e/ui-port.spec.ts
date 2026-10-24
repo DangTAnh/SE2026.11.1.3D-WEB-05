@@ -2,20 +2,37 @@ import { expect, test } from '@playwright/test';
 
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
-test('production initializes a real renderer and ignores UI fixture query parameters', async ({ page }) => {
+test('production reports the backend that its capability probe can initialize', async ({ page }) => {
+  const capabilities = await page.evaluate(async () => {
+    const gpu = (navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown | null> } }).gpu;
+    const webgpu = gpu ? (await gpu.requestAdapter()) !== null : false;
+    const webgl2 = document.createElement('canvas').getContext('webgl2') !== null;
+    return { webgpu, webgl2 };
+  });
   await page.goto('/?uiState=ready-webgpu');
   await expect(page.locator('#lab-shell')).toHaveAttribute('data-fixture', 'false');
   await expect(page.locator('#runtime-phase-label')).not.toContainText('UI FIXTURE');
   await expect.poll(async () => page.locator('#actual-backend').textContent()).not.toBe('Đang khởi tạo');
   const actual = await page.locator('#actual-backend').textContent();
-  expect(['WebGPU', 'Không khả dụng']).toContain(actual);
+  if (actual === 'WebGPU') expect(capabilities.webgpu).toBe(true);
+  else if (actual?.includes('WebGL2')) expect(capabilities.webgl2).toBe(true);
+  else expect(capabilities.webgpu || capabilities.webgl2).toBe(false);
   if (actual === 'Không khả dụng') await expect(page.locator('#mode-vortex')).toBeDisabled();
   else await expect(page.locator('#mode-vortex')).toBeEnabled();
   await expect(page.locator('#export-preset')).toBeEnabled();
   await expect(page.locator('#import-preset')).toBeEnabled();
 });
 
-test('each control change applies once; mode/count also reset through the port', async ({ page }) => {
+test('webgl=1 forces the WebGL2 backend when available', async ({ page }) => {
+  const webgl2Available = await page.evaluate(() =>
+    document.createElement('canvas').getContext('webgl2') !== null,
+  );
+  await page.goto('/?webgl=1');
+  await expect.poll(async () => page.locator('#actual-backend').textContent()).not.toBe('Đang khởi tạo');
+  if (webgl2Available) await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
+  else await expect(page.locator('#actual-backend')).toHaveText('Không khả dụng');
+});
+test('each control change applies once; mode resets and particle count rebuilds through the port', async ({ page }) => {
   await page.goto(fixturePage);
   await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
   const initialCalls = await page.evaluate(() => window.uiTest.port.calls);
@@ -32,7 +49,7 @@ test('each control change applies once; mode/count also reset through the port',
     await page.evaluate(() => { window.uiTest.port.calls.length = 0; });
     await page.locator(change.id).fill(change.value);
     const calls = await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus'));
-    expect(calls.map(c => c.type)).toEqual(change.field === 'particleCount' ? ['applyConfig', 'reset'] : ['applyConfig']);
+    expect(calls.map(c => c.type)).toEqual(['applyConfig']);
     expect(calls[0]).toMatchObject({ config: { [change.field]: change.expected } });
   }
   await page.evaluate(() => { window.uiTest.port.calls.length = 0; });

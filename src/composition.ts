@@ -24,8 +24,11 @@ export async function composeLab({
     if (disposed) return;
     disposed = true;
     if (typeof window !== 'undefined') window.removeEventListener('beforeunload', dispose);
-    if (uiDispose) uiDispose();
-    else port.dispose();
+    try {
+      uiDispose?.();
+    } finally {
+      port.dispose();
+    }
   };
 
   if (typeof window !== 'undefined') {

@@ -58,17 +58,23 @@ export class ThreeRendererAdapter implements RendererPort {
 
     let renderer: WebGPURenderer | null = null;
     try {
-      renderer = new WebGPURenderer({ canvas: this.#canvas, antialias: true });
+      renderer = new WebGPURenderer({
+        canvas: this.#canvas,
+        antialias: true,
+        forceWebGL: this.#requested === 'webgl2',
+      });
       await renderer.init();
       if (!this.#isInitActive(generation)) {
-        renderer.dispose();
+        this.#disposeRenderer(renderer);
         return 'unavailable';
       }
 
+      const actual = this.#resolveActualBackend(renderer);
+      if (actual === 'unavailable') throw new Error('Renderer initialized without a supported backend.');
       this.#renderer = renderer;
-      this.#actual = 'webgpu';
+      this.#actual = actual;
       this.#createScene();
-      this.#createPipeline(this.#config.particleCount);
+      this.#createPipeline(this.#config.particleCount, this.#config);
       if (this.#buffers) await renderer.compute(this.#buffers.initKernel);
       if (!this.#isInitActive(generation)) return 'unavailable';
 
@@ -78,7 +84,7 @@ export class ThreeRendererAdapter implements RendererPort {
       if (renderer && this.#renderer === renderer) {
         this.#releaseRenderer();
       } else if (renderer && this.#isInitActive(generation)) {
-        renderer.dispose();
+        this.#disposeRenderer(renderer);
       }
       if (this.#isInitActive(generation)) {
         this.#actual = 'unavailable';
@@ -91,18 +97,30 @@ export class ThreeRendererAdapter implements RendererPort {
   #isInitActive(generation: number): boolean {
     return !this.#disposed && generation === this.#initGeneration;
   }
+  #resolveActualBackend(renderer: WebGPURenderer): ActualBackend {
+    const backend = renderer.backend as { isWebGPUBackend?: boolean; isWebGLBackend?: boolean };
+    if (backend.isWebGPUBackend === true) return 'webgpu';
+    if (backend.isWebGLBackend === true) return 'webgl2';
+    return 'unavailable';
+  }
 
-  #watchCompute(run: () => Promise<unknown> | undefined, renderer: WebGPURenderer): void {
-    let task: Promise<unknown>;
+  #disposeRenderer(renderer: WebGPURenderer): void {
+    void Promise.resolve()
+      .then(() => renderer.setAnimationLoop(null))
+      .catch(() => undefined)
+      .then(() => renderer.dispose())
+      .catch(() => undefined);
+  }
+  #watchCompute(run: () => Promise<unknown> | undefined, renderer: WebGPURenderer): boolean {
+    let task: Promise<unknown> | undefined;
     try {
-      const result = run();
-      if (!result) return;
-      task = result;
+      task = run();
     } catch {
       this.#handleComputeFailure(renderer);
-      return;
+      return false;
     }
-    void task.catch(() => this.#handleComputeFailure(renderer));
+    if (task) void task.catch(() => this.#handleComputeFailure(renderer));
+    return this.#renderer === renderer && !this.#disposed;
   }
 
   #handleComputeFailure(renderer: WebGPURenderer): void {
@@ -115,6 +133,9 @@ export class ThreeRendererAdapter implements RendererPort {
   applyConfig(config: Readonly<LabConfig>): void {
     const countChanged = config.particleCount !== this.#config.particleCount;
     const modeChanged = config.mode !== this.#config.mode;
+    const renderer = this.#renderer;
+
+    if (countChanged && renderer) this.#createPipeline(config.particleCount, config);
     this.#config = { ...config };
     this.#updateUniforms();
     if (this.#material) {
@@ -122,10 +143,10 @@ export class ThreeRendererAdapter implements RendererPort {
       this.#material.size = config.particleSize;
     }
 
-    if (this.#renderer && (countChanged || modeChanged)) {
-      if (countChanged) this.#createPipeline(config.particleCount);
-      else if (modeChanged) this.#selectComputeKernel();
-      this.#updateUniforms();
+    if (renderer && countChanged && this.#buffers) {
+      this.#watchCompute(() => renderer.compute(this.#buffers!.initKernel), renderer);
+    } else if (renderer && modeChanged) {
+      this.#selectComputeKernel();
     }
   }
   start(): void {
@@ -185,44 +206,65 @@ export class ThreeRendererAdapter implements RendererPort {
     renderer.setSize(this.#target.width, this.#target.height, false);
   }
 
-  #createPipeline(count: number): void {
-    if (!this.#renderer || count <= 0) return;
+  #createPipeline(count: number, config: Readonly<LabConfig>): void {
+    if (!Number.isInteger(count) || count <= 0) throw new RangeError('Particle count must be a positive integer.');
+    const scene = this.#scene;
+    if (!this.#renderer || !scene) throw new Error('Renderer scene is not initialized.');
 
-    if (this.#points) this.#scene?.remove(this.#points);
-    this.#geometryAndMaterialDispose();
+    let buffers: ParticleBuffers | null = null;
+    let material: PointsNodeMaterial | null = null;
+    let points: Sprite | null = null;
+    let computeKernel: ReturnType<typeof createAttractorKernel> | ReturnType<typeof createVortexKernel> | null = null;
+    try {
+      buffers = createParticleBuffers(count);
+      material = new PointsNodeMaterial({
+        color: config.particleColor,
+        size: config.particleSize,
+        positionNode: buffers.positions.toAttribute(),
+      });
+      points = new Sprite(material);
+      points.count = count;
+      computeKernel = config.mode === 'attractor'
+        ? createAttractorKernel(buffers)
+        : createVortexKernel(buffers);
+      scene.add(points);
+    } catch (error) {
+      if (points) scene.remove(points);
+      this.#disposePipeline(material, buffers);
+      throw error;
+    }
 
-    const buffers = createParticleBuffers(count);
-    const material = new PointsNodeMaterial({
-      color: this.#config.particleColor,
-      size: this.#config.particleSize,
-      positionNode: buffers.positions.toAttribute(),
-    });
-    const points = new Sprite(material);
-    points.count = count;
-    this.#buffers = buffers;
-    this.#scene?.add(points);
-
-    this.#material = material;
+    const previousPoints = this.#points;
+    const previousMaterial = this.#material;
+    const previousBuffers = this.#buffers;
     this.#points = points;
-    this.#updateUniforms();
-    this.#selectComputeKernel();
+    this.#material = material;
+    this.#buffers = buffers;
+    this.#computeKernel = computeKernel;
+    this.#updateUniforms(buffers, config);
+
+    if (previousPoints) scene.remove(previousPoints);
+    this.#disposePipeline(previousMaterial, previousBuffers);
   }
-  #updateUniforms(): void {
-    if (!this.#buffers) return;
-    const { uniforms } = this.#buffers;
-    uniforms.strength.value = this.#config.strength;
+
+  #updateUniforms(
+    buffers: ParticleBuffers | null = this.#buffers,
+    config: Readonly<LabConfig> = this.#config,
+  ): void {
+    if (!buffers) return;
+    const { uniforms } = buffers;
+    uniforms.strength.value = config.strength;
     uniforms.delta.value = 0;
-    // Both kernels are compiled once with their respective mode uniform values.
     uniforms.radius.value = DEFAULT_ATTRACTOR_RADIUS;
     uniforms.damping.value = DEFAULT_ATTRACTOR_DAMPING;
     uniforms.vortexDamping.value = DEFAULT_VORTEX_DAMPING;
   }
 
-  #selectComputeKernel(): void {
-    if (!this.#buffers) return;
-    this.#computeKernel = this.#config.mode === 'attractor'
-      ? createAttractorKernel(this.#buffers)
-      : createVortexKernel(this.#buffers);
+  #selectComputeKernel(buffers: ParticleBuffers | null = this.#buffers, config: Readonly<LabConfig> = this.#config): void {
+    if (!buffers) return;
+    this.#computeKernel = config.mode === 'attractor'
+      ? createAttractorKernel(buffers)
+      : createVortexKernel(buffers);
   }
 
   #onFrame = (time: number): void => {
@@ -238,7 +280,7 @@ export class ThreeRendererAdapter implements RendererPort {
       if (buffers) {
         buffers.uniforms.delta.value = delta * this.#config.speed;
         if (this.#computeKernel) {
-          this.#watchCompute(() => renderer.compute(this.#computeKernel!), renderer);
+          if (!this.#watchCompute(() => renderer.compute(this.#computeKernel!), renderer)) return;
         }
       }
       this.#fpsFrames += 1;
@@ -263,23 +305,27 @@ export class ThreeRendererAdapter implements RendererPort {
     }
   }
 
-  #geometryAndMaterialDispose(): void {
-    this.#material?.dispose();
-    this.#material = null;
-    this.#points = null;
-
-    const buffers = this.#buffers;
-    this.#buffers = null;
+  #disposePipeline(material: PointsNodeMaterial | null, buffers: ParticleBuffers | null): void {
+    material?.dispose();
     buffers?.positions.value.dispose();
     buffers?.velocities.value.dispose();
     buffers?.ages.value.dispose();
     buffers?.seeds.value.dispose();
   }
+
+  #geometryAndMaterialDispose(): void {
+    const material = this.#material;
+    const buffers = this.#buffers;
+    this.#material = null;
+    this.#points = null;
+    this.#buffers = null;
+    this.#disposePipeline(material, buffers);
+  }
+
   #releaseRenderer(): void {
     const renderer = this.#renderer;
-    if (renderer) void Promise.resolve(renderer.setAnimationLoop(null)).catch(() => undefined);
+    if (renderer) this.#disposeRenderer(renderer);
     this.#geometryAndMaterialDispose();
-    renderer?.dispose();
     this.#renderer = null;
     this.#scene = null;
     this.#camera = null;
