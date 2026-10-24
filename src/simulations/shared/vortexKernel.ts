@@ -3,8 +3,8 @@ import type { ParticleBuffers } from './particleBuffers.ts';
 
 /**
  * Vortex compute kernel. The CPU reference for the same formula is `step()`
- * with `mode: 'vortex'` in `../simulation.ts`; the adapter must set
- * `uniforms.damping.value = DEFAULT_VORTEX_DAMPING` and `delta = dt * speed`.
+ * with `mode: 'vortex'` in `../simulation.ts`; the adapter only has to set
+ * `delta = dt * speed` and `strength` — damping comes from `uniforms.vortexDamping`.
  */
 export function createVortexKernel(system: ParticleBuffers) {
   const { positions, velocities, ages, uniforms, count } = system;
@@ -18,7 +18,7 @@ export function createVortexKernel(system: ParticleBuffers) {
     const tangent = toCenter.cross(vec3(0, 1, 0));
 
     velocity.addAssign(tangent.mul(uniforms.strength).mul(uniforms.delta));
-    velocity.assign(velocity.mul(uniforms.damping));
+    velocity.assign(velocity.mul(uniforms.vortexDamping));
     position.addAssign(velocity.mul(uniforms.delta));
     age.addAssign(uniforms.delta);
   })()
