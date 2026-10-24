@@ -7,12 +7,9 @@ export interface LabComposition {
 }
 
 /**
- * Composition root: initialize the renderer before the UI reads its status,
- * then mount the UI with the port it must drive.
- *
- * A failed init is not rethrown — `getStatus()` still reports `unavailable` and
- * `mountLabUI` renders the unsupported screen. The returned disposer is the
- * UI's idempotent one, so `beforeunload` disposes the port exactly once.
+ * Initialize the renderer before mounting a UI that reads its status.
+ * The unload listener is installed before init so a pending initialization is
+ * disposed if the page is closed.
  */
 export async function composeLab({
   createPort,
@@ -20,10 +17,36 @@ export async function composeLab({
   mountUI,
 }: LabComposition): Promise<() => void> {
   const port = createPort();
+  let uiDispose: (() => void) | null = null;
+  let disposed = false;
+
+  const dispose = (): void => {
+    if (disposed) return;
+    disposed = true;
+    if (typeof window !== 'undefined') window.removeEventListener('beforeunload', dispose);
+    try {
+      uiDispose?.();
+    } finally {
+      port.dispose();
+    }
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', dispose, { once: true });
+  }
+
   try {
     await port.init(createTarget());
   } catch {
     // Availability is read back from getStatus(); never surface init errors in the page.
   }
-  return mountUI(port);
+
+  if (disposed) return dispose;
+  try {
+    uiDispose = mountUI(port);
+  } catch (error) {
+    dispose();
+    throw error;
+  }
+  return dispose;
 }
