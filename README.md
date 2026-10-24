@@ -45,6 +45,9 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   parsing; a shared `FakeRenderer` for tests.
 - **Backend capability selection:** injectable probes and preference resolution
   are integrated; actual renderer construction and fallback still need #12/#13.
+- **Simulation reference and sampling:** deterministic CPU reference steps and
+  the RendererPort performance collector are integrated; GPU runtime evidence
+  and wiring remain pending.
 - **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
   uses v1 until issue #16 and its shared config/hash decisions are implemented.
 - **Verification:** UI interaction tests use an explicit
@@ -85,9 +88,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 Default branch: `main`. Integration branch: `dev`.
 Work starts from a tracked issue on a separate branch from current `dev`
-(e.g. `codex/tv4-9-ui-renderer-port`), then a PR into `dev`, passing CI and at
+(pattern `type/<issue-number>-slug`, e.g. `feat/9-ui-renderer-port`), then a PR into `dev`, passing CI and at
 least one independent approval before merge. Do not push directly to `main`.
 
 Request TV1 (`minhhhduc`) review for the UI port/composition boundary and README.
-GitHub Pages deployment is tracked by PR #27 / issue #26; publish a live URL or
-deployment badge only after a successful deployment and live smoke test.
+The GitHub Pages workflow from PR #27 is integrated into dev. Publish a live
+URL or deployment badge only after promotion to main, successful deployment
+and a live smoke test.
