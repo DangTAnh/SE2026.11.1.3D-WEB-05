@@ -3,7 +3,9 @@
 Branch: `feat/14-ui-live-status`, following `type/<issue-number>-slug`.
 Initial baseline: PR #32, commit `ed914c0b5831e4e4cb67058aee014662bb9df684`.
 PR #32 merged into dev at `1c466d2b164ed9731bea9dacc125f23f0385fda1`;
-PR #33 now targets dev. The merged dev tree matches the initial baseline.
+PR #33 targets dev. After #38 merged, this branch merged `dev@de6665a` and
+resolved the fixture conflict by keeping `composeLab` plus controlled status
+transitions. The initial #32 baseline below is historical.
 
 ## Completed UI work
 
@@ -17,27 +19,31 @@ PR #33 now targets dev. The merged dev tree matches the initial baseline.
 - Existing polling now has regression coverage for ready → fallback →
   unavailable → error → recovery and clearing old metrics/notices.
 - Tests use an explicit controlled FakeRenderer with no production query path.
-  Shared RendererPort, collector, preset v1, physics and main.ts are unchanged.
+  The fake's status mutator lets `start()`/`pause()`/`dispose()` remain authoritative.
+  Shared RendererPort, collector, preset v1 and physics are unchanged; current
+  `main.ts` comes from the #38 composition-root integration.
 
 ## Verification
 
-`CI=1 npm run verify`: **102 unit tests**, **30 desktop/mobile Chromium E2E**,
+`npm run verify` after integrating #38: **119 unit/integration tests**,
+**30 desktop/mobile Chromium E2E**,
 source/test typecheck and production build PASS.
 The browser suite includes axe WCAG A/AA checks for all four runtime phases.
-Read-only independent review reported no blocking findings; reviewer did not
-run tests. Source/E2E scans confirm the old query and synthetic backend tokens
-have been removed from `src/ui` and `tests/e2e`.
+TV1's requested changes on #33 led to valid-FPS detail, authoritative fake
+status mutation, and current docs. Human re-review is pending. The old query
+parser is absent from production source; one E2E deliberately passes
+`?uiState=ready-webgpu` to verify that production ignores it.
 
 ## Remaining integration gate
 
 This is a draft UI candidate, not closure of #14. #32/#9/#25 are merged,
-but adapter #12 plus composition root #15 are absent on the inspected baseline.
+and composition root #15 is merged; adapter #12 remains pending.
 Real renderer/backend/timing verification is NOT_RUN. Current port has no frame
 timestamp or measurement-age field, so UI cannot independently determine the
 freshness of numeric values while a producer claims it is running.
 
-PR #33 targets dev after #32 merged; CI checks the candidate against that base.
-After #12/#15, exercise the same UI with actual WebGPU/WebGL2, forced fallback
+PR #33 targets dev; CI checks the final candidate head.
+After #12, exercise the same UI with actual WebGPU/WebGL2, forced fallback
 and unavailable/error paths before marking #14 accepted. No default branch,
 release, deployment or shared preset/configHash decision is changed here.
 

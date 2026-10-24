@@ -1,33 +1,27 @@
-# Ma trận trạng thái UI runtime — TV4 v0.2
+# Ma trận trạng thái UI runtime — TV4
 
-**Cập nhật:** 10/10/2026
-**Phạm vi:** view-model và nội dung hiển thị của UI; không phải contract engine đã chốt.
+**Cập nhật:** 24/10/2026. UI chiếu trạng thái từ `RendererPort.getStatus()`;
+production không còn Canvas2D mock hoặc `?uiState=` fixture. Trang được chuẩn bị
+với nội dung tĩnh `unsupported` cho tới khi port được gắn và trạng thái thật
+được đọc. Test dùng FakeRenderer được inject riêng tại
+`tests/e2e/fixtures/renderer-port.html`.
 
-## Trạng thái và hành vi
+| Phase | Nguồn trạng thái | Backend hiển thị | Controls simulation | FPS/GPU timing |
+|---|---|---|---|---|
+| ready | `actual: webgpu`, hoặc WebGL2 được yêu cầu rõ | Giá trị `actual` | Bật | Chỉ số hữu hạn/hợp lệ khi `running` |
+| fallback | `actual: webgl2`, `requested` khác `webgl2` | WebGL2 fallback | Bật; warning | Cùng quy tắc; thiếu timing là `null` |
+| unsupported | thiếu port hoặc `actual: unavailable` | Không khả dụng | Khóa | Không khả dụng |
+| error | đọc trạng thái port hoặc apply config lỗi | Lỗi renderer | Khóa | Không khả dụng |
 
-| Fixture | Phase | Backend hiển thị | Controls simulation | FPS/GPU timing | Thông báo |
-|---|---|---|---|---|---|
-| canvas-mock | ready | Canvas 2D (mockup) | Bật | FPS preview thật; GPU N/A | Không |
-| initializing | initializing | Đang khởi tạo | Khóa | Không có số | Info, chờ Core |
-| ready-webgpu | ready | WebGPU (fixture UI) | Bật | Không tạo số giả | Info, ghi rõ fixture |
-| fallback-webgl2 | fallback | WebGL2 fallback (fixture UI) | Bật | Không tạo số giả | Warning + lý do minh họa |
-| unsupported | unsupported | Không khả dụng | Khóa | Không khả dụng | Alert, hướng dẫn an toàn |
-| error | error | Lỗi khởi tạo | Khóa | Không khả dụng | Alert, không lộ stack trace |
+`requested` chỉ giải thích lựa chọn/fallback, không thay thế `actual`. Khi dừng,
+UI xóa FPS và GPU timing cũ. Khi `running` nhưng FPS không hợp lệ, số đo và
+nhãn “Dữ liệu từ renderer” đều biến mất. Zero là số đo hợp lệ nếu producer
+báo timing có sẵn; `null` với `gpuTimingAvailable: false` nghĩa là chưa đo.
 
-Mở fixture bằng query, ví dụ /?uiState=fallback-webgl2 hoặc /?uiState=error. Query lạ quay về canvas-mock.
+Test UI kiểm ready → fallback → unsupported → error → recovery bằng
+`window.uiTest.setStatus()`/`setFailure()` trên FakeRenderer. Các nhãn và số đo
+trong harness là đầu vào test, không phải bằng chứng WebGPU/WebGL2 thật. UI
+không hiển thị stack trace, driver nội bộ hoặc dữ liệu giả như benchmark.
 
-## Quy tắc nội dung
-
-- Luôn tách backend được yêu cầu và backend thực tế.
-- Chỉ hiển thị FPS/GPU timing khi adapter cung cấp số đo thật. Fixture không có số giả.
-- Error/unsupported dùng role alert; trạng thái thường dùng role status.
-- Khi initializing/error/unsupported, khóa control simulation nhưng vẫn cho import/export preset và đổi backend preference.
-- Không hiển thị stack trace, tên driver nội bộ hoặc dữ liệu có thể gây nhầm là benchmark.
-
-## Ranh giới tích hợp
-
-src/ui/state/runtimeState.ts là view-model nội bộ của TV4. TV1/TV3/TV5 có thể viết adapter từ trạng thái engine/performance thật sang UiRuntimeState; engine không nên import module DOM.
-
-- TV1/TV3 cấp phase, actualBackend, backendDetail và lý do fallback/lỗi an toàn.
-- TV5 cấp fps, gpuTimeMs, gpuTimingAvailable và mô tả unavailable.
-- TV4 chịu trách nhiệm render, nội dung, accessibility và trạng thái controls.
+TV1/TV3 sở hữu contract/backend của port; TV5 sở hữu producer và chứng cứ số
+đo; TV4 sở hữu phần chiếu trạng thái, nội dung và accessibility.
