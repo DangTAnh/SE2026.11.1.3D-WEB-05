@@ -21,16 +21,25 @@ attribute của `PARTICLE_ATTRIBUTES`:
 ## 2. Init kernel
 
 ```
-direction = normalize((hash(i), hash(i+1), hash(i+2)) - 0.5)
-radial    = pow(hash(i+4), 1/3)
+u         = hash(i)                         // đều trong [0, 1)
+v         = hash(i+1)
+z         = 2u - 1                          // đều trong [-1, 1]
+phi       = 2πv                             // đều trong [0, 2π)
+rxy       = sqrt(1 - z²)
+direction = (cos(phi) * rxy, z, sin(phi) * rxy)
+radial    = pow(hash(i+2), 1/3)
 position  = direction * spawnRadius * radial
 velocity  = 0
 age       = 0
-seed      = uint(hash(i+4) * 0xffffffff)
+seed      = uint(hash(i+3) * 0xffffffff)
 ```
 
+- `direction` là **mẫu cầu đều** (uniform sphere sampling): `z` đều trên trục tung và
+  `phi` đều quanh trục, nên diện tích khớp `sin(θ) dθ dφ`. Không được normalize một vector
+  đều trong cube (`normalize((hash, hash, hash) - 0.5)`) vì cách đó dồn hạt về 8 góc.
 - `pow(x, 1/3)` thay `cbrt` để phân bố đều theo thể tích, khớp
   `createState()` (`radius = spawnRadius * cbrt(random())`).
+- Hash index: `i`, `i+1` cho hướng, `i+2` cho radial, `i+3` cho seed.
 - Hash-based init **không** tái tạo đúng dãy `mulberry32` của CPU. Vì vậy không thể so
   bit-exact vị trí ban đầu giữa CPU và GPU; chỉ so được công thức step khi cùng state đầu vào
   (xem §5).
@@ -53,19 +62,23 @@ Vortex dùng uniform riêng (`vortexDamping`) để adapter không vô tình dù
 ## 4. Công thức step (khớp reference)
 
 ```
-toCenter = normalize(-position)
-tangent  = toCenter × (0, 1, 0)          // = (z/r, 0, -x/r), r = |position|
-v       += tangent * strength * delta
-attractor: nếu |position| > radius: v *= damping
-vortex:                            v *= vortexDamping
-p       += v * delta
+d        = |position|
+nếu d > 1e-6:
+  toCenter = normalize(-position)
+  tangent  = toCenter × (0, 1, 0)        // = (z/r, 0, -x/r), r = d
+  v       += tangent * strength * delta
+  attractor: nếu d > radius: v *= damping
+  vortex:                    v *= vortexDamping
+  p       += v * delta
 age     += delta
 ```
 
 - Thứ tự cố định: cộng vận tốc → damping → tích phân vị trí → tăng age.
+- **Guard gốc toạ độ**: `normalize(vec3(0))` là `0/0` → NaN, nên cả hai kernel bọc phần
+  chuyển động trong `If(distance.greaterThan(1e-6), ...)`, giống `if (r > EPSILON)` của
+  reference (`EPSILON = 1e-6`). `age` tăng **ngoài** guard để hạt ở tâm vẫn già đi.
 - Attractor: chỉ damping khi ra ngoài `radius`.
 - Vortex: damping mỗi bước, không có lực hướng tâm (xem §6).
-- `age` cập nhật cho mọi hạt, kể cả hạt ở gốc toạ độ.
 - Kernel không đọc `seeds`; buffer này dành cho respawn/nhiễu ở giai đoạn sau.
 
 ## 5. Kiểm chứng và parity
@@ -75,7 +88,10 @@ Hiện có (unit, chạy trong Node):
 - layout buffer + default uniform;
 - `initKernel` / attractor / vortex đều là compute node đúng tên, đúng `count`;
 - validate `count` nguyên dương;
-- vortex dùng `vortexDamping` riêng.
+- vortex dùng `vortexDamping` riêng;
+- `tests/unit/kernel-contract.test.ts` khoá hai tính chất không thấy được từ node graph:
+  sampler cầu đều (không có `normalize(cube - 0.5)`), guard gốc toạ độ trong **cả hai**
+  kernel với `age` tăng ngoài guard, và hash index trong tài liệu này khớp code.
 
 **Chưa có numeric parity GPU** vì Vitest không chạy được WebGPU. Điều kiện để test thật:
 
