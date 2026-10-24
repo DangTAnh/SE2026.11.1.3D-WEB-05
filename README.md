@@ -5,8 +5,9 @@ Browser particle lab targeting WebGPU with a WebGL2 GPU fallback, two modes
 measurements on both backends.
 
 **Current implementation: UI through RendererPort; GPU integration pending.**
-The Canvas2D preview has been removed. The default entry point does not yet
-inject an initialized renderer, so it shows unavailable with no FPS or GPU
+The Canvas2D preview has been removed. The default entry point initializes a
+renderer port before mounting the UI; until #12 supplies the real adapter that
+port reports unavailable, so the UI shows unsupported with no FPS or GPU
 timing. Preset import/export remains available. Nothing in the default build
 currently demonstrates a running GPU simulation.
 
@@ -41,6 +42,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 - **Port consumer:** `mountLabUI(root, port)` applies defaults once, sends one
   `applyConfig` per change, polls `getStatus`, and returns an idempotent disposer.
   It never creates or initializes a GPU backend.
+- **Composition root:** `composeLab` initializes the port before the UI reads its
+  status, survives an unavailable or rejecting init (the UI renders unsupported),
+  and returns the UI disposer wired to `beforeunload`. `src/main.ts` injects an
+  unavailable placeholder port until #12 lands the real adapter.
 - **Core:** renderer/status contracts, config identity, aggregation and result
   parsing; a shared `FakeRenderer` for tests.
 - **Backend capability selection:** injectable probes and preference resolution
@@ -58,9 +63,9 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## Integration still required
 
-- TV1/TV3 initialize the real adapter, bind the canvas and inject the port from
-  `src/main.ts` (issues #12/#15). With no port, UI controls for simulation are
-  disabled and presets remain editable.
+- TV1/TV3 implement the real adapter and bind the canvas (#12). The composition
+  root (#15) already initializes and injects whatever port it is given; today
+  that port is an unavailable placeholder, so simulation controls stay disabled.
 - Simulation kernels and backend probes on other branches/PRs are not implied
   to be part of this build. There is no renderer adapter in this baseline.
 - Actual WebGPU/WebGL2 fallback, GPU numeric parity, live timing validation,

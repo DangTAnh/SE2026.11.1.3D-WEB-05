@@ -1,5 +1,6 @@
 import '../../../src/ui/styles/main.css';
 import '../../../src/ui/styles/tokens.css';
+import { composeLab } from '../../../src/composition.ts';
 import { mountLabUI } from '../../../src/ui/app.ts';
 import { FakeRenderer } from '../../support/fakeRenderer.ts';
 import type { RendererStatus } from '../../../src/core/renderer/RendererPort.ts';
@@ -14,6 +15,8 @@ declare global {
     };
   }
 }
+
+const TARGET = { width: 800, height: 600, pixelRatio: 1 };
 
 class ControlledRenderer extends FakeRenderer {
   statusPatch: Partial<RendererStatus> = {};
@@ -35,8 +38,13 @@ const port = new ControlledRenderer({
 });
 const root = document.querySelector<HTMLElement>('#app');
 if (!root) throw new Error('Missing test root');
+const unmount = await composeLab({
+  createPort: () => port,
+  createTarget: () => TARGET,
+  mountUI: (injected) => mountLabUI(root, injected),
+});
 window.uiTest = {
-  port, unmount: mountLabUI(root, port),
+  port, unmount,
   setStatus: (status) => { port.statusPatch = { ...port.statusPatch, ...status }; },
   setFailure: (failed) => { port.failed = failed; },
 };

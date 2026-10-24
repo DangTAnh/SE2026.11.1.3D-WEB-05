@@ -9,9 +9,10 @@
 
 > **24/10/2026 — TV4 issue #9/#25 branch checkpoint:** UI now consumes an
 > injected RendererPort, with explicit FakeRenderer browser tests and no
-> Canvas2D preview. Production main still has no adapter injected and shows
-> unavailable; this is not GPU acceptance. README reflects this branch's
-> behavior. See [handoff and verification](04-testing/UI-renderer-port-2026-10-24.md).
+> Canvas2D preview. Production main initializes a placeholder port and shows
+> unavailable until #12 supplies the real adapter; this is not GPU acceptance.
+> README reflects this branch's behavior. See
+> [handoff and verification](04-testing/UI-renderer-port-2026-10-24.md).
 > Previous checkpoints below are historical, not current branch state.
 
 > Cập nhật GitHub ngày **22/10/2026**: xem

@@ -16,8 +16,9 @@ test('production without an injected renderer stays unavailable despite a backen
 test('each control change applies once; mode/count also reset through the port', async ({ page }) => {
   await page.goto(fixturePage);
   await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
-  expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type === 'init'))).toEqual([]);
-  expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type === 'applyConfig').length)).toBe(1);
+  const initialCalls = await page.evaluate(() => window.uiTest.port.calls);
+  expect(initialCalls[0]).toEqual({ type: 'init', target: { width: 800, height: 600, pixelRatio: 1 } });
+  expect(initialCalls.filter(c => c.type === 'applyConfig').length).toBe(1);
   const cases = [
     { id: '#speed', value: '2.5', field: 'speed', expected: 2.5 },
     { id: '#particle-size', value: '4', field: 'particleSize', expected: 4 },
