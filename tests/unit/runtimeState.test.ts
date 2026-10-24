@@ -42,6 +42,7 @@ for (const invalid of [null, NaN, Infinity, -1]) {
     expect(state.gpuTimeMs).toBeNull();
     expect(state.gpuTimingAvailable).toBe(false);
     expect(formatFps(state)).toBe('—');
+    expect(state.fpsDetail).toBe('Không có số đo hợp lệ');
     expect(formatGpuTiming(state)).toBe('Không khả dụng');
   });
 }
@@ -52,6 +53,7 @@ test('pause hides the last frame measurements and keeps resume enabled', () => {
   expect(state.gpuTimeMs).toBeNull();
   expect(state.gpuTimingAvailable).toBe(false);
   expect(state.controlsDisabled).toBe(false);
+  expect(state.fpsDetail).toContain('tạm dừng');
   expect(state.gpuTimingDetail).toContain('tạm dừng');
 });
 
@@ -67,4 +69,5 @@ test('missing renderer and renderer errors stay unavailable with safe explanatio
   expect(failure.fps).toBeNull();
   expect(failure.gpuTimeMs).toBeNull();
   expect(failure.controlsDisabled).toBe(true);
+  expect(failure.backendDetail).toBe('Không đọc được trạng thái renderer');
 });

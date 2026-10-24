@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
-test('production without an injected renderer stays unavailable despite a backend query', async ({ page }) => {
-  await page.goto('/?backend=webgpu');
+test('production ignores the removed UI state query without an injected renderer', async ({ page }) => {
+  await page.goto('/?uiState=ready-webgpu');
   await expect(page.locator('#actual-backend')).toHaveText('Không khả dụng');
   await expect(page.locator('#runtime-phase-label')).toHaveText('UNSUPPORTED');
   await expect(page.locator('#runtime-fps')).toHaveText('—');

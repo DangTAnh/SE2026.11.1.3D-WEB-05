@@ -39,7 +39,8 @@ export function createRendererRuntimeState(status?: RendererStatus, failed = fal
     return {
       phase: failed ? 'error' : 'unsupported', actualBackend: 'unavailable',
       backendLabel: failed ? 'Lỗi renderer' : 'Không khả dụng',
-      backendDetail: status ? 'Không có backend đồ họa phù hợp' : 'Renderer chưa được kết nối',
+      backendDetail: failed ? 'Không đọc được trạng thái renderer'
+        : status ? 'Không có backend đồ họa phù hợp' : 'Renderer chưa được kết nối',
       fps: null, fpsDetail: 'Mô phỏng chưa chạy', gpuTimeMs: null,
       gpuTimingAvailable: false, gpuTimingDetail: 'Không khả dụng',
       controlsDisabled: true,
@@ -52,12 +53,15 @@ export function createRendererRuntimeState(status?: RendererStatus, failed = fal
   const fallback = status.actual === 'webgl2' && status.requested !== 'webgl2';
   const gpuTimingAvailable = status.running && status.gpuTimingAvailable && status.gpuTimeMs !== null
     && Number.isFinite(status.gpuTimeMs) && status.gpuTimeMs >= 0;
+  const fps = status.running && status.fps !== null && Number.isFinite(status.fps) && status.fps >= 0
+    ? status.fps : null;
   return {
     phase: fallback ? 'fallback' : 'ready', actualBackend: status.actual,
     backendLabel: status.actual === 'webgpu' ? 'WebGPU' : fallback ? 'WebGL2 fallback' : 'WebGL2',
     backendDetail: fallback ? 'Renderer báo đang dùng WebGL2 thay cho WebGPU' : 'Backend do renderer báo cáo',
-    fps: status.running && status.fps !== null && Number.isFinite(status.fps) && status.fps >= 0 ? status.fps : null,
-    fpsDetail: status.running ? 'Dữ liệu từ renderer' : 'Mô phỏng đang tạm dừng',
+    fps,
+    fpsDetail: !status.running ? 'Mô phỏng đang tạm dừng'
+      : fps === null ? 'Không có số đo hợp lệ' : 'Dữ liệu từ renderer',
     gpuTimeMs: gpuTimingAvailable ? status.gpuTimeMs : null,
     gpuTimingAvailable,
     gpuTimingDetail: !status.running ? 'Mô phỏng đang tạm dừng'

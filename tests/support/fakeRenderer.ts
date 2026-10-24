@@ -57,6 +57,11 @@ export class FakeRenderer implements RendererPort {
     return this.#disposed;
   }
 
+  /** Updates the fake's authoritative status for browser transition tests. */
+  setStatus(patch: Partial<RendererStatus>): void {
+    this.#status = { ...this.#status, ...patch };
+  }
+
   async init(target: RendererTarget): Promise<ActualBackend> {
     this.calls.push({ type: 'init', target });
     return this.#status.actual;

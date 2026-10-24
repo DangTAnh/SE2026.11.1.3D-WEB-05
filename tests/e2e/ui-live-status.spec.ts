@@ -54,8 +54,12 @@ test('paused and invalid samples never keep old GPU timing visible', async ({ pa
   await expect(page.locator('#runtime-fps')).toHaveText('—');
   await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
   await expect(page.locator('#gpu-timing-detail')).toContainText('tạm dừng');
+  await page.locator('#toggle-preview').click();
+  await expect(page.locator('#toggle-preview')).toHaveAttribute('aria-label', 'Tạm dừng xem trước');
+  expect(await page.evaluate(() => window.uiTest.port.getStatus().running)).toBe(true);
   await page.evaluate(() => window.uiTest.setStatus({ running: true, fps: NaN, gpuTimeMs: -1 }));
   await page.clock.fastForward(500);
   await expect(page.locator('#runtime-fps')).toHaveText('—');
+  await expect(page.locator('#runtime-fps-detail')).toHaveText('Không có số đo hợp lệ');
   await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
 });

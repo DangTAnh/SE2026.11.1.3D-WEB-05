@@ -19,12 +19,11 @@ declare global {
 const TARGET = { width: 800, height: 600, pixelRatio: 1 };
 
 class ControlledRenderer extends FakeRenderer {
-  statusPatch: Partial<RendererStatus> = {};
   failed = false;
 
   override getStatus(): RendererStatus {
     if (this.failed) throw new Error('internal test failure');
-    return { ...super.getStatus(), ...this.statusPatch };
+    return super.getStatus();
   }
 
   override applyConfig(...args: Parameters<FakeRenderer['applyConfig']>): void {
@@ -45,6 +44,6 @@ const unmount = await composeLab({
 });
 window.uiTest = {
   port, unmount,
-  setStatus: (status) => { port.statusPatch = { ...port.statusPatch, ...status }; },
+  setStatus: (status) => { port.setStatus(status); },
   setFailure: (failed) => { port.failed = failed; },
 };
