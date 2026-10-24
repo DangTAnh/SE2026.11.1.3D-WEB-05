@@ -10,6 +10,18 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+/**
+ * Flushes the collector's async `configHash` without moving the fake clock.
+ * `vi.waitFor` would advance timers and fire extra sampling intervals, which
+ * makes the sample count depend on machine load.
+ */
+async function flushSamples(samples: PerformanceSnapshot[], expected: number): Promise<void> {
+  for (let attempt = 0; attempt < 100 && samples.length < expected; attempt += 1) {
+    await vi.advanceTimersByTimeAsync(0);
+  }
+  assert.equal(samples.length, expected);
+}
+
 test('samples the actual backend after warm-up at a fixed cadence', async () => {
   vi.useFakeTimers();
   const port = new FakeRenderer({
@@ -34,9 +46,9 @@ test('samples the actual backend after warm-up at a fixed cadence', async () => 
   assert.equal(samples.length, 0);
 
   await vi.advanceTimersByTimeAsync(1);
-  await vi.waitFor(() => assert.equal(samples.length, 1));
+  await flushSamples(samples, 1);
   await vi.advanceTimersByTimeAsync(50);
-  await vi.waitFor(() => assert.equal(samples.length, 2));
+  await flushSamples(samples, 2);
 
   const expectedHash = await configHash(DEFAULT_CONFIG);
   for (const sample of samples) {
@@ -73,7 +85,7 @@ test('unavailable GPU timing is always stored as null', async () => {
 
   collector.start();
   await vi.advanceTimersByTimeAsync(0);
-  await vi.waitFor(() => assert.equal(samples.length, 1));
+  await flushSamples(samples, 1);
 
   assert.equal(samples[0]?.gpuTimingAvailable, false);
   assert.equal(samples[0]?.gpuTimeMs, null);
@@ -96,7 +108,7 @@ test('start, stop and dispose are idempotent and cancelled work emits no more sa
   collector.start();
   collector.start();
   await vi.advanceTimersByTimeAsync(20);
-  await vi.waitFor(() => assert.equal(samples.length, 1));
+  await flushSamples(samples, 1);
 
   collector.stop();
   collector.stop();
@@ -105,7 +117,7 @@ test('start, stop and dispose are idempotent and cancelled work emits no more sa
 
   collector.start();
   await vi.advanceTimersByTimeAsync(20);
-  await vi.waitFor(() => assert.equal(samples.length, 2));
+  await flushSamples(samples, 2);
   collector.dispose();
   collector.dispose();
   collector.start();

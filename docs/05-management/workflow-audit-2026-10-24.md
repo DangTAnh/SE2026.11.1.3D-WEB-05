@@ -6,6 +6,13 @@ This checkpoint applies the team procedure supplied on this date. The original
 announcement's claim about a running orbit/WebGPU/WebGL2 demo is historical;
 it is not runtime evidence for the current integrated repository.
 
+**Later same-day update:** #38 merged into `dev@de6665a`, adding the composition
+root and a collector test change. Production still reports unavailable until
+adapter #12 is integrated. PRs #39 (adapter) and #40 (WebGL2 fallback) are
+review candidates, not accepted runtime evidence. Issue #37 stays open until
+the collector test change has been checked for deterministic behavior. The
+tables below retain their explicit earlier `888626a` baseline.
+
 ## Branch corrections
 
 GitHub's branch rename operation was used. Before/after remote branch reads

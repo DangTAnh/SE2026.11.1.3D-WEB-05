@@ -21,8 +21,9 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Benchmark config identity (`configHash`) | Implemented | [`src/core/measurement/configHash.ts`](../src/core/measurement/configHash.ts) |
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
 | UI shell | Consumes an injected RendererPort; no backend init in UI | [`src/ui/app.ts`](../src/ui/app.ts) |
-| Simulation preview | Canvas2D mock removed; composition root must inject a real renderer | `src/main.ts` (integration pending) |
+| Simulation preview | Canvas2D mock removed; composition root injects a renderer port (placeholder until #12) | `src/main.ts` |
 | Renderer adapter (one, backend-flagged) | Not started | `src/simulations/rendererAdapter.ts` (planned) |
+| Composition root | Implemented (unavailable placeholder port until #12) | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
 | Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 
