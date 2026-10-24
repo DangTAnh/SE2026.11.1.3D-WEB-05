@@ -1,0 +1,149 @@
+:root {
+  --ui-bg: #090f1d;
+  --ui-surface: #101a2b;
+  --ui-surface-raised: #111d2e;
+  --ui-border: #26364b;
+  --ui-text: #e7eefc;
+  --ui-muted: #91a2b7;
+  --ui-accent: #74e5f4;
+  --ui-success: #69e2c1;
+  --ui-warning: #f2c76e;
+  --ui-danger: #ff8ea8;
+  --ui-focus: 2px solid var(--ui-accent);
+  --ui-radius-sm: 8px;
+  --ui-radius-md: 12px;
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-6: 24px;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: var(--ui-focus);
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.mode-btn,
+.playback button,
+.button {
+  min-height: 44px;
+}
+
+.runtime-notice {
+  display: grid;
+  gap: var(--ui-space-1);
+  padding: 13px var(--ui-space-4);
+  border: 1px solid #31566b;
+  border-radius: var(--ui-radius-md);
+  background: #102536;
+  color: #d8f7ff;
+}
+
+.runtime-notice strong {
+  font: 600 13px 'Space Grotesk', sans-serif;
+}
+
+.runtime-notice span {
+  color: #9fc0cf;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.runtime-notice[data-tone='warning'] {
+  border-color: #796738;
+  background: #342d1a;
+  color: #fff1bd;
+}
+
+.runtime-notice[data-tone='warning'] span {
+  color: #dacb99;
+}
+
+.runtime-notice[data-tone='error'] {
+  border-color: #8b4659;
+  background: #3a1f29;
+  color: #ffe2e8;
+}
+
+.runtime-notice[data-tone='error'] span {
+  color: #dfabb8;
+}
+
+.runtime-notice[hidden] {
+  display: none;
+}
+
+.integration-hint code {
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: #13273a;
+  color: #a7edf5;
+}
+
+.toast[data-tone='info'] {
+  border-color: #3f7188;
+  background: #17374a;
+  color: #e2f7ff;
+}
+
+/* Các token chữ phụ cần giữ tối thiểu 4.5:1 trên surface tương ứng. */
+.info-card small {
+  color: #7f95ad;
+}
+
+.scale,
+.settings-foot .muted {
+  color: #7d92aa;
+}
+
+.lab-shell[data-runtime-phase='fallback'] .status-dot {
+  background: var(--ui-warning);
+  box-shadow: 0 0 10px #f2c76e66;
+}
+
+.lab-shell[data-runtime-phase='unsupported'] .status-dot,
+.lab-shell[data-runtime-phase='error'] .status-dot {
+  background: var(--ui-danger);
+  box-shadow: 0 0 10px #ff8ea866;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .scene-column {
+    padding-right: 9px;
+    padding-left: 9px;
+  }
+
+  .scene-card {
+    min-height: 320px;
+  }
+
+  .settings-head,
+  .panel-scroll,
+  .settings-foot {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .preset-actions {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/3d-web-05/preset-schema-v1.json",
+  "title": "3D-WEB-05 Particle Lab Preset v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "app", "config"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "app": { "const": "3D-WEB-05" },
+    "config": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "backendPreference", "particleCount", "speed", "particleSize", "particleColor", "strength"],
+      "properties": {
+        "mode": { "enum": ["attractor", "vortex"] },
+        "backendPreference": { "enum": ["auto", "webgpu", "webgl2"] },
+        "particleCount": { "type": "integer", "minimum": 1000, "maximum": 50000, "multipleOf": 1000 },
+        "speed": { "type": "number", "minimum": 0.1, "maximum": 3 },
+        "particleSize": { "type": "number", "minimum": 1, "maximum": 8 },
+        "particleColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+        "strength": { "type": "number", "minimum": 0.2, "maximum": 4 }
+      }
+    }
+  }
+}
