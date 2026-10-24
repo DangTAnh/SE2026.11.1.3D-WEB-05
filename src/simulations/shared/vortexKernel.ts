@@ -1,4 +1,4 @@
-import { Fn, instanceIndex, vec3 } from 'three/tsl';
+import { Fn, If, instanceIndex, vec3 } from 'three/tsl';
 import type { ParticleBuffers } from './particleBuffers.ts';
 
 /**
@@ -14,12 +14,17 @@ export function createVortexKernel(system: ParticleBuffers) {
     const velocity = velocities.element(instanceIndex);
     const age = ages.element(instanceIndex);
 
-    const toCenter = position.negate().normalize();
-    const tangent = toCenter.cross(vec3(0, 1, 0));
+    // Guard giống reference step: hạt đúng tâm thì không chuyển động (tránh 0/0),
+    // nhưng age vẫn tăng ở ngoài guard.
+    const distance = position.length();
+    If(distance.greaterThan(1e-6), () => {
+      const toCenter = position.negate().normalize();
+      const tangent = toCenter.cross(vec3(0, 1, 0));
 
-    velocity.addAssign(tangent.mul(uniforms.strength).mul(uniforms.delta));
-    velocity.assign(velocity.mul(uniforms.vortexDamping));
-    position.addAssign(velocity.mul(uniforms.delta));
+      velocity.addAssign(tangent.mul(uniforms.strength).mul(uniforms.delta));
+      velocity.assign(velocity.mul(uniforms.vortexDamping));
+      position.addAssign(velocity.mul(uniforms.delta));
+    });
     age.addAssign(uniforms.delta);
   })()
     .compute(count)
