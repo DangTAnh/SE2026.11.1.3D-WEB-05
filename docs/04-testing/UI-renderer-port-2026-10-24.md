@@ -44,6 +44,10 @@ Windows, Node/npm installed locally; exact dependencies installed with npm ci.
 
 - `npm run verify` with CI=1: source/tests TypeScript, **64 unit tests**, **26
   desktop/mobile Chromium E2E tests**, production build PASS.
+- After merging current dev `8f16d155` (backend capability PR #29), reran
+  `npm run verify`: **78 unit tests**, **26 E2E**, typechecks/build PASS.
+- Production preview checked on desktop/mobile: unavailable state, usable preset
+  actions and no horizontal overflow. No fake renderer/harness in build output.
 - E2E includes existing preset round-trip/invalid import and axe WCAG checks,
   and new port call-log assertions for controls, lifecycle, unavailable entry,
   initial apply recovery, reset failure sanitization, pending-file cancellation.

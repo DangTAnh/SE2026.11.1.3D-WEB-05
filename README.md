@@ -43,6 +43,8 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   It never creates or initializes a GPU backend.
 - **Core:** renderer/status contracts, config identity, aggregation and result
   parsing; a shared `FakeRenderer` for tests.
+- **Backend capability selection:** injectable probes and preference resolution
+  are integrated; actual renderer construction and fallback still need #12/#13.
 - **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
   uses v1 until issue #16 and its shared config/hash decisions are implemented.
 - **Verification:** UI interaction tests use an explicit

@@ -31,7 +31,7 @@ export function createLabMarkup(): string {
             <section class="scene-card" aria-label="Khu vực xem trước particle">
               <div class="grid-layer" aria-hidden="true"></div>
               <canvas id="preview-canvas" aria-label="Vùng hiển thị mô phỏng particle">Renderer chưa được kết nối.</canvas>
-              <div class="scene-upper"><span class="pill green">PARTICLE LAB</span><span class="render-tag">RENDERER PORT</span></div>
+              <div class="scene-upper"><span class="pill green">PARTICLE LAB</span><span class="render-tag">SIMULATION VIEW</span></div>
               <div class="crosshair" aria-hidden="true">+</div>
               <div class="scene-bottom">
                 <div><span class="scene-kicker">SIMULATION MODE</span><strong id="scene-mode">ATTRACTOR FIELD</strong></div>

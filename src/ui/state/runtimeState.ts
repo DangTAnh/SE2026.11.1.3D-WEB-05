@@ -1,3 +1,5 @@
+import type { RendererStatus } from '../../core/renderer/RendererPort.ts';
+
 export type RuntimePhase = 'initializing' | 'ready' | 'fallback' | 'unsupported' | 'error';
 export type ActualBackend = 'canvas2d-mock' | 'webgpu' | 'webgl2' | 'unavailable';
 export type RuntimeFixtureKey = 'canvas-mock' | 'initializing' | 'ready-webgpu' | 'fallback-webgl2' | 'unsupported' | 'error';
@@ -110,8 +112,6 @@ export function formatGpuTiming(state: UiRuntimeState): string {
   if (!state.gpuTimingAvailable || state.gpuTimeMs === null) return 'Không khả dụng';
   return `${state.gpuTimeMs.toFixed(2)} ms`;
 }
-import type { RendererStatus } from '../../core/renderer/RendererPort.ts';
-
 
 /** Projection of port facts. Query-string fixtures are never consulted here. */
 export function createRendererRuntimeState(status?: RendererStatus, failed = false): UiRuntimeState {
