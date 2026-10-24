@@ -8,66 +8,13 @@
 import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
-import type { LabConfig } from '../../src/presets/preset.ts';
-import type { ActualBackend } from '../../src/core/types/backend.ts';
-import type { RendererPort, RendererStatus, RendererTarget } from '../../src/core/renderer/RendererPort.ts';
-
-/** Minimal implementation: no canvas, no GPU, no three. */
-class FakeRenderer implements RendererPort {
-  readonly #backend: ActualBackend;
-  #status: RendererStatus;
-  #lastConfig: Readonly<LabConfig> | null = null;
-
-  constructor(backend: ActualBackend) {
-    this.#backend = backend;
-    this.#status = {
-      requested: 'auto',
-      actual: 'unavailable',
-      running: false,
-      gpuTimingAvailable: backend !== 'unavailable',
-      fps: null,
-      gpuTimeMs: null,
-    };
-  }
-
-  async init(_target: RendererTarget): Promise<ActualBackend> {
-    this.#status = { ...this.#status, actual: this.#backend };
-    return this.#backend;
-  }
-
-  applyConfig(config: Readonly<LabConfig>): void {
-    this.#lastConfig = config;
-  }
-
-  start(): void {
-    this.#status = { ...this.#status, running: true };
-  }
-
-  pause(): void {
-    this.#status = { ...this.#status, running: false };
-  }
-
-  reset(): void {
-    this.#lastConfig = null;
-  }
-
-  getStatus(): RendererStatus {
-    return { ...this.#status };
-  }
-
-  get lastConfig(): Readonly<LabConfig> | null {
-    return this.#lastConfig;
-  }
-
-  dispose(): void {
-    this.#status = { ...this.#status, running: false };
-  }
-}
+import type { RendererPort, RendererTarget } from '../../src/core/renderer/RendererPort.ts';
+import { FakeRenderer } from '../support/fakeRenderer.ts';
 
 const TARGET: RendererTarget = { width: 800, height: 600, pixelRatio: 1 };
 
 test('port contract: init reports the backend the engine ran, not the requested one', async () => {
-  const port: RendererPort = new FakeRenderer('webgl2');
+  const port: RendererPort = new FakeRenderer({ actual: 'webgl2' });
 
   const actual = await port.init(TARGET);
 
@@ -77,7 +24,7 @@ test('port contract: init reports the backend the engine ran, not the requested 
 });
 
 test('port contract: an unavailable backend never reports gpu timing', async () => {
-  const port: RendererPort = new FakeRenderer('unavailable');
+  const port: RendererPort = new FakeRenderer({ actual: 'unavailable' });
   await port.init(TARGET);
   port.start();
 
@@ -90,7 +37,7 @@ test('port contract: an unavailable backend never reports gpu timing', async () 
 });
 
 test('port contract: applyConfig accepts the preset config unchanged and does not retain it after reset', async () => {
-  const fake = new FakeRenderer('webgpu');
+  const fake = new FakeRenderer({ actual: 'webgpu' });
   const port: RendererPort = fake;
   await port.init(TARGET);
 
@@ -99,4 +46,39 @@ test('port contract: applyConfig accepts the preset config unchanged and does no
 
   port.reset();
   assert.equal(fake.lastConfig, null);
+});
+
+test('fake: status is configurable and every call is recorded in order', async () => {
+  const fake = new FakeRenderer({
+    requested: 'webgl2',
+    actual: 'webgpu',
+    running: true,
+    gpuTimingAvailable: true,
+    fps: 60,
+    gpuTimeMs: 2.5,
+  });
+
+  const status = fake.getStatus();
+  assert.equal(status.requested, 'webgl2');
+  assert.equal(status.actual, 'webgpu');
+  assert.equal(status.running, true);
+  assert.equal(status.gpuTimingAvailable, true);
+  assert.equal(status.fps, 60);
+  assert.equal(status.gpuTimeMs, 2.5);
+
+  await fake.init(TARGET);
+  fake.applyConfig(DEFAULT_CONFIG);
+  fake.pause();
+  fake.start();
+  fake.reset();
+  fake.dispose();
+  fake.dispose();
+
+  assert.deepEqual(
+    fake.calls.map((call) => call.type),
+    ['getStatus', 'init', 'applyConfig', 'pause', 'start', 'reset', 'dispose', 'dispose'],
+  );
+  assert.deepEqual(fake.calls[1], { type: 'init', target: TARGET });
+  assert.deepEqual(fake.calls[2], { type: 'applyConfig', config: DEFAULT_CONFIG });
+  assert.equal(fake.disposed, true);
 });
