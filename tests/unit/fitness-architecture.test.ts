@@ -78,6 +78,18 @@ test('fitness: allowed imports and package imports stay clean', () => {
   assert.deepEqual(violations, []);
 });
 
+test('fitness: the composition root does not import a concrete backend', () => {
+  const violations = checkArchitecture([
+    source('src/main.ts', "import { ThreeRendererAdapter } from './simulations/rendererAdapter.ts';"),
+    source('src/main.ts', "import { WebGPURenderer } from 'three/webgpu';"),
+  ]);
+
+  assert.deepEqual(
+    violations.map((violation) => violation.rule),
+    ['main-does-not-import-backend', 'main-does-not-import-backend'],
+  );
+});
+
 test('fitness: the repository itself follows the rules', () => {
   assert.deepEqual(checkArchitecture(readSources('src')), []);
 });

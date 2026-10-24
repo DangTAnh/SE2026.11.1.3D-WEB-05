@@ -58,6 +58,19 @@ export function checkArchitecture(files: readonly SourceFile[]): Violation[] {
       }
     }
 
+    if (file.path === 'src/main.ts') {
+      for (const specifier of imports) {
+        const target = importTarget(file.path, specifier);
+        if (
+          specifier === 'three'
+          || specifier.startsWith('three/')
+          || target?.startsWith('src/simulations/')
+        ) {
+          violations.push({ rule: 'main-does-not-import-backend', file: file.path, detail: specifier });
+        }
+      }
+    }
+
     if (!file.path.startsWith('src/core/')) continue;
 
     for (const specifier of imports) {
