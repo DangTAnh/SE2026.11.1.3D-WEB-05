@@ -1,9 +1,9 @@
 import type { ParticleState, SimulationConfig } from './shared/attributes.ts';
 
 const EPSILON = 1e-6;
-const DEFAULT_ATTRACTOR_RADIUS = 6;
-const DEFAULT_ATTRACTOR_DAMPING = 0.98;
-const DEFAULT_VORTEX_DAMPING = 0.99;
+export const DEFAULT_ATTRACTOR_RADIUS = 6;
+export const DEFAULT_ATTRACTOR_DAMPING = 0.98;
+export const DEFAULT_VORTEX_DAMPING = 0.99;
 
 /**
  * CPU reference step for both modes. It is deterministic and mutates state in
