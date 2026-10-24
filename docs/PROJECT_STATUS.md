@@ -3,8 +3,8 @@
 > **24/10/2026 — issue #14 draft, feat/14-ui-live-status:** the UI now has only
 > RendererStatus-based state projection; synthetic backend/fixture query helpers
 > are removed. Polling, failure/recovery and metric clearing are tested against
-> an explicitly injected FakeRenderer. Candidate is stacked on PR #32, not
-> accepted as GPU integration: adapter #12/#15 and real browser evidence remain
+> an explicitly injected FakeRenderer. PR #32 is merged; draft PR #33 targets
+> dev. GPU integration is not accepted: adapter #12/#15 and real browser evidence remain
 > pending. See [live status handoff](04-testing/UI-live-status-2026-10-24.md).
 
 > **24/10/2026 — TV4 issue #9/#25 branch checkpoint:** UI now consumes an

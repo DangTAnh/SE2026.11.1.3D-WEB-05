@@ -1,8 +1,9 @@
 # Live RendererStatus UI — issue #14, 24/10/2026
 
 Branch: `feat/14-ui-live-status`, following `type/<issue-number>-slug`.
-Stacked baseline: PR #32, commit `ed914c0b5831e4e4cb67058aee014662bb9df684`,
-which includes current dev `d58017f3cb9984f0e0ad2a88271090d38310bf92`.
+Initial baseline: PR #32, commit `ed914c0b5831e4e4cb67058aee014662bb9df684`.
+PR #32 merged into dev at `1c466d2b164ed9731bea9dacc125f23f0385fda1`;
+PR #33 now targets dev. The merged dev tree matches the initial baseline.
 
 ## Completed UI work
 
@@ -29,13 +30,13 @@ have been removed from `src/ui` and `tests/e2e`.
 
 ## Remaining integration gate
 
-This is a draft UI candidate, not closure of #14. #32/#9 is still under review,
-and adapter #12 plus composition root #15 are absent on the inspected baseline.
+This is a draft UI candidate, not closure of #14. #32/#9/#25 are merged,
+but adapter #12 plus composition root #15 are absent on the inspected baseline.
 Real renderer/backend/timing verification is NOT_RUN. Current port has no frame
 timestamp or measurement-age field, so UI cannot independently determine the
 freshness of numeric values while a producer claims it is running.
 
-After #32 merges, retarget this PR to dev and run checks on the integrated head.
+PR #33 targets dev after #32 merged; CI checks the candidate against that base.
 After #12/#15, exercise the same UI with actual WebGPU/WebGL2, forced fallback
 and unavailable/error paths before marking #14 accepted. No default branch,
 release, deployment or shared preset/configHash decision is changed here.
