@@ -32,7 +32,9 @@ export function step(state: ParticleState, dt: number, config: SimulationConfig)
     const x = positions[offset];
     const y = positions[offset + 1];
     const z = positions[offset + 2];
-    const r = Math.hypot(x, y, z);
+    // sqrt thay vì Math.hypot: kết quả IEEE ổn định giữa các engine/CPU,
+    // cần cho golden test và đối chiếu số với kernel TSL (#10/#11).
+    const r = Math.sqrt(x * x + y * y + z * z);
 
     if (r > EPSILON) {
       let vx = velocities[offset];

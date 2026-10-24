@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
 import {
   createState,
@@ -82,4 +83,63 @@ test('invalid input is rejected at the state boundary', () => {
   expect(() => createState({ ...config, speed: 0 })).toThrow(TypeError);
   expect(() => step(createState(config), Number.NaN, config)).toThrow(TypeError);
   expect(() => step(createState(config), -1, config)).toThrow(TypeError);
+});
+
+test('step actually moves particles in both modes', () => {
+  for (const mode of ['attractor', 'vortex'] as const) {
+    const modeConfig = { ...config, mode };
+    const state = createState(modeConfig, 11);
+    const before = Array.from(state.positions);
+    for (let i = 0; i < 30; i += 1) step(state, 1 / 60, modeConfig);
+    expect(Array.from(state.positions)).not.toEqual(before);
+  }
+});
+
+test('strength = 0 keeps positions unchanged while age still advances', () => {
+  for (const mode of ['attractor', 'vortex'] as const) {
+    const stillConfig = { ...config, mode, strength: 0 };
+    const state = createState(stillConfig, 5);
+    const before = Array.from(state.positions);
+
+    for (let i = 0; i < 60; i += 1) step(state, 1 / 60, stillConfig);
+
+    expect(Array.from(state.positions)).toEqual(before);
+    expect(state.ages[0]).toBeCloseTo((60 / 60) * stillConfig.speed, 5);
+  }
+});
+
+test('reference step does not import DOM or three', () => {
+  for (const file of ['src/simulations/simulation.ts', 'src/simulations/shared/attributes.ts']) {
+    const source = readFileSync(file, 'utf8');
+    expect(source).not.toMatch(/from\s+['"]three/);
+    expect(source).not.toMatch(/\b(document|window)\b/);
+  }
+});
+
+test('golden values give the kernels a numeric baseline', () => {
+  const goldenConfig: SimulationConfig = {
+    mode: 'attractor',
+    particleCount: 4,
+    speed: 1,
+    strength: 1,
+    spawnRadius: 1,
+    attractorRadius: 1,
+  };
+  const attractor = createState(goldenConfig, 123);
+  for (let i = 0; i < 60; i += 1) step(attractor, 1 / 60, goldenConfig);
+
+  const vortexConfig: SimulationConfig = { ...goldenConfig, mode: 'vortex' };
+  const vortex = createState(vortexConfig, 123);
+  for (let i = 0; i < 60; i += 1) step(vortex, 1 / 60, vortexConfig);
+
+  expect(attractor.positions[0]).toBeCloseTo(-0.24403072893619537, 6);
+  expect(attractor.positions[1]).toBeCloseTo(-0.5086816549301147, 6);
+  expect(attractor.positions[2]).toBeCloseTo(-0.6391481757164001, 6);
+  expect(attractor.velocities[0]).toBeCloseTo(-0.7608172297477722, 6);
+  expect(attractor.velocities[2]).toBeCloseTo(-0.021382778882980347, 6);
+
+  expect(vortex.positions[0]).toBeCloseTo(-0.17511485517024994, 6);
+  expect(vortex.positions[2]).toBeCloseTo(-0.6317195892333984, 6);
+  expect(vortex.velocities[0]).toBeCloseTo(-0.5698951482772827, 6);
+  expect(vortex.velocities[2]).toBeCloseTo(-0.016484029591083527, 6);
 });
