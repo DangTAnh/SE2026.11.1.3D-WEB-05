@@ -31,18 +31,23 @@ export function createParticleBuffers(count: number) {
     const age = ages.element(instanceIndex);
     const seed = seeds.element(instanceIndex);
 
-    // Hash cho hướng đều trên mặt cầu; bán kính lấy cbrt để phân bố đều theo thể tích,
-    // khớp `createState()` (radius = spawnRadius * cbrt(random())) ở reference step.
-    const direction = vec3(hash(instanceIndex), hash(instanceIndex.add(1)), hash(instanceIndex.add(2)))
-      .sub(0.5)
-      .normalize();
-    const radial = hash(instanceIndex.add(3)).pow(1 / 3);
+    // Lấy mẫu cầu đều: z = 2u - 1, phi = 2πv, rxy = sqrt(1 - z²).
+    // Không normalize một điểm đều trong cube vì cách đó bias về phía các góc.
+    const u = hash(instanceIndex);
+    const v = hash(instanceIndex.add(1));
+    const z = u.mul(2).sub(1);
+    const phi = v.mul(Math.PI * 2);
+    const rxy = z.mul(z).oneMinus().sqrt();
+    const direction = vec3(phi.cos().mul(rxy), z, phi.sin().mul(rxy));
+    // Bán kính lấy cbrt để phân bố đều theo thể tích, khớp `createState()`
+    // (radius = spawnRadius * cbrt(random())) ở reference step.
+    const radial = hash(instanceIndex.add(2)).pow(1 / 3);
 
     position.assign(direction.mul(uniforms.spawnRadius).mul(radial));
     velocity.assign(vec3(0, 0, 0));
     age.assign(0);
     // Cùng miền giá trị với `seeds: Uint32Array` của reference step.
-    seed.assign(hash(instanceIndex.add(4)).mul(0xffffffff).toUint());
+    seed.assign(hash(instanceIndex.add(3)).mul(0xffffffff).toUint());
   })()
     .compute(count)
     .setName('Init Particles');
