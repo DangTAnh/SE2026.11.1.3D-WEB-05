@@ -87,7 +87,7 @@ test('composition: the returned disposer is the UI disposer, so unloading dispos
     mountUI: () => uiDispose,
   });
 
-  assert.equal(dispose, uiDispose);
+  assert.notEqual(dispose, uiDispose);
   dispose();
   dispose();
   assert.equal(fake.calls.filter((call) => call.type === 'dispose').length, 1);

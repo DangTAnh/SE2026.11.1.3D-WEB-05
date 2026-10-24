@@ -63,7 +63,6 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   };
 
   const numericFields = {
-    'particle-count': 'particleCount',
     speed: 'speed',
     'particle-size': 'particleSize',
     strength: 'strength',
@@ -74,11 +73,18 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
       const value = Number((event.target as HTMLInputElement).value);
       callbacks.updateConfig(
         { ...callbacks.getConfig(), [numericFields[id]]: value },
-        numericFields[id] === 'particleCount',
       );
     });
   });
 
+  listen(byId<HTMLInputElement>('particle-count'), 'input', (event) => {
+    const value = Number((event.target as HTMLInputElement).value);
+    byId<HTMLOutputElement>('particle-count-value').textContent = formatNumber(value);
+  });
+  listen(byId<HTMLInputElement>('particle-count'), 'change', (event) => {
+    const value = Number((event.target as HTMLInputElement).value);
+    callbacks.updateConfig({ ...callbacks.getConfig(), particleCount: value }, true);
+  });
   listen(byId<HTMLInputElement>('particle-color'), 'input', (event) => {
     callbacks.updateConfig({
       ...callbacks.getConfig(),
