@@ -167,7 +167,7 @@ test('import applies atomically once and invalid imports do not call the port', 
   await page.locator('#preset-file').setInputFiles({ name: 'valid.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(preset)) });
   await expect(page.locator('#toast')).toHaveText('Đã nhập preset hợp lệ.');
   expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus').map(c => c.type)))
-    .toEqual(['applyConfig', 'reset']);
+    .toEqual(['applyConfig']);
   expect(await page.evaluate(() => window.uiTest.port.calls.find(c => c.type === 'applyConfig')))
     .toMatchObject({ config: preset.config });
   await page.evaluate(() => { window.uiTest.port.calls.length = 0; });
