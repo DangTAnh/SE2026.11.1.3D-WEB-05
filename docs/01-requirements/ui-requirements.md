@@ -4,7 +4,7 @@
 
 **Giai đoạn:** tuần 1 (12–18/10/2026)
 
-**Tình trạng:** bản phân tích đề xuất của TV4. Repo không có SRS riêng; nguồn sự thật về kiến trúc và contract hiện tại là [`docs/architecture.md`](../architecture.md).
+**Tình trạng:** phần UI độc lập engine đã có prototype và test; contract chung còn chờ TV2/TV3/TV5 review. Nguồn sự thật về kiến trúc và contract là [`docs/architecture.md`](../architecture.md).
 
 ## 1. Nguồn yêu cầu
 
