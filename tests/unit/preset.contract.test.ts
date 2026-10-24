@@ -2,7 +2,7 @@
  * Observable contract of the preset payload — pins CURRENT behavior before refactoring.
  * If a test here fails, the refactor changed observable behavior, not just structure.
  */
-import test from 'node:test';
+import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG, parsePreset, serializePreset } from '../../src/presets/preset.ts';
 import type { LabConfig } from '../../src/presets/preset.ts';
@@ -34,14 +34,12 @@ test('contract: particleCount boundaries 1000 and 50000 are valid; 999, 50001 an
   }
 });
 
-test('contract: unknown config keys are dropped and never reach the result', () => {
-  const raw = presetOf({ ...DEFAULT_CONFIG });
-  (raw.config as Record<string, unknown>).isAdmin = true;
-  (raw.config as Record<string, unknown>).__proto__x = 'x';
-  const parsed = parsePreset(JSON.stringify(raw));
-  assert.deepEqual(Object.keys(parsed).sort(), [
-    'backendPreference', 'mode', 'particleColor', 'particleCount', 'particleSize', 'speed', 'strength',
-  ]);
+test('contract: unknown config keys are rejected before reaching the result', () => {
+  for (const key of ['isAdmin', '__proto__x']) {
+    const raw = presetOf({ ...DEFAULT_CONFIG });
+    (raw.config as Record<string, unknown>)[key] = true;
+    assert.throws(() => parsePreset(JSON.stringify(raw)), /không được hỗ trợ/);
+  }
 });
 
 test('contract: parse returns a fresh object and keeps no reference to the input data', () => {

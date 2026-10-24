@@ -127,7 +127,7 @@ this table is about contracts, not about people.
 
 | Data | Owner | Rule |
 |---|---|---|
-| Preset JSON (v1) | Preset module | `schemaVersion: 1`, unknown keys dropped on parse |
+| Preset JSON (v1) | Preset module | `schemaVersion: 1`, unknown keys rejected on parse |
 | Backend identity | Renderer port | Only the engine may produce `ActualBackend` |
 | Performance samples | Perf collector (planned) | Must carry `actual`, never the requested backend |
 
@@ -166,9 +166,9 @@ Key order is fixed by this rule, not by object iteration order.
 64 characters.
 
 **Invalid or missing values.** A hash is computed only for a config that has
-already passed `parsePreset` (`src/presets/preset.ts:40`): it rejects
-out-of-range values, requires `particleCount` to be an integer multiple of
-1000, and rebuilds the object from the seven known fields (lines 67–75), so
+already passed `parsePreset` (`src/presets/preset.ts`): it rejects
+out-of-range values and unknown keys, requires `particleCount` to be an integer
+multiple of 1000 (v1), and rebuilds the object from the seven known fields, so
 unknown keys never reach the hash. Invalid input produces no sample at all —
 never a hash of a defaulted or partially filled config.
 
