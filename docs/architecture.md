@@ -24,7 +24,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Simulation preview | Canvas2D mock removed; composition root must inject a real renderer | `src/main.ts` (integration pending) |
 | Renderer adapter (one, backend-flagged) | Not started | `src/simulations/rendererAdapter.ts` (planned) |
 | Simulation: physics + material tree | Not started | `src/simulations/simulation.ts`, `src/simulations/shared/` (planned) |
-| Perf collector | Not started (TV5) | `src/perf/` |
+| Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 
 There is **one** renderer, not one per backend. `src/simulations/webgpu/` and
 `src/simulations/webgl2/` hold backend-specific parts only (capability probe,
@@ -130,7 +130,7 @@ this table is about contracts, not about people.
 |---|---|---|
 | Preset JSON (v1) | Preset module | `schemaVersion: 1`, unknown keys rejected on parse |
 | Backend identity | Renderer port | Only the engine may produce `ActualBackend` |
-| Performance samples | Perf collector (planned) | Must carry `actual`, never the requested backend |
+| Performance samples | Perf collector | Must carry `actual`, never the requested backend; unavailable GPU timing is `null` |
 
 There is no persistence layer in this repository yet. Any claim about stored
 data in the current codebase would be false.
