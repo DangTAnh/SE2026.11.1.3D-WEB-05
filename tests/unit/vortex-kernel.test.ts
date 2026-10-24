@@ -9,11 +9,20 @@ test('vortex kernel is a named compute node over the shared buffers', () => {
   const kernel = createVortexKernel(system);
 
   expect(kernel.name).toBe('Vortex');
+  expect(kernel.isComputeNode).toBe(true);
+  expect(kernel.count).toBe(8);
+});
+
+test('vortex has its own damping uniform so the adapter cannot inherit the attractor value', () => {
+  const system = createParticleBuffers(8);
+
+  expect(system.uniforms.vortexDamping.value).toBe(DEFAULT_VORTEX_DAMPING);
+  system.uniforms.damping.value = 0.5;
+  expect(system.uniforms.vortexDamping.value).toBe(DEFAULT_VORTEX_DAMPING);
 });
 
 test('vortex and attractor kernels stay distinct over the same buffers', () => {
   const system = createParticleBuffers(8);
-  system.uniforms.damping.value = DEFAULT_VORTEX_DAMPING;
 
   const vortex = createVortexKernel(system);
   const attractor = createAttractorKernel(system);
