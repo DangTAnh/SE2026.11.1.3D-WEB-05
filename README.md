@@ -1,5 +1,10 @@
 # 3D-WEB-05 — GPU Particle Lab
 
+Read [CONTRIBUTING](CONTRIBUTING.md) and [AGENTS](AGENTS.md) before coding.
+Use an assigned Issue, a numbered branch from current `dev`, G0 before push,
+and a PR into `dev` with evidence and another person's approval.
+See the [current workflow/progress audit](docs/05-management/workflow-audit-2026-10-24.md).
+
 Browser particle lab targeting WebGPU with a WebGL2 GPU fallback, two modes
 (Attractor/Vortex), live controls, preset import/export, and reproducible
 measurements on both backends.
