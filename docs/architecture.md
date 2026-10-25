@@ -22,7 +22,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
 | UI shell | Consumes an injected RendererPort; no backend init in UI | [`src/ui/app.ts`](../src/ui/app.ts) |
 | Simulation preview | Production canvas bound to the real adapter by the composition root; Canvas2D mock removed | `src/main.ts` |
-| Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; WebGL2 Chromium exercised, physical WebGPU acceptance pending | `src/simulations/rendererAdapter.ts` |
+| Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; Issue #52 adds one runtime WebGPU-to-WebGL2 recovery attempt; real GPU loss acceptance remains pending | `src/simulations/rendererAdapter.ts` |
 | Composition root | Implemented; initializes the adapter before mounting the port-consuming UI | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
 | Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
@@ -77,6 +77,15 @@ invalidates every comparison the project is built to produce.
 
 `RendererStatus` encodes this directly: `requested` exists only to explain a
 fallback, and `actual` is the only backend identity a benchmark row may store.
+
+**Runtime device/context loss policy (Issue #52).** If the active WebGPU device
+is lost after initialization, the adapter disposes it and attempts WebGL2 once,
+then resumes only if the renderer was running. If WebGL2 is already active or
+the recovery renderer is lost, the adapter reports `actual: unavailable` and
+stops; it does not loop or add a CPU path. The UI polls `RendererStatus`, so it
+shows the recovered backend or its unavailable state. This path is covered by
+adapter and Chromium context-loss tests; physical GPU device-loss behavior is
+not verified in the current environment.
 
 ## 4. Renderer contract
 

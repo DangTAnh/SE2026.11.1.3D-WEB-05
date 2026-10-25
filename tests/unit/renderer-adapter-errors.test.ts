@@ -11,6 +11,7 @@ const harness = vi.hoisted(() => ({
     backendDisposed: boolean;
     internalFallbackUsed: boolean;
     animationLoopValues: unknown[];
+    triggerDeviceLost: () => void;
   }>,
 }));
 
@@ -30,6 +31,7 @@ vi.mock('three/webgpu', async () => {
         backendDisposed: false,
         internalFallbackUsed: false,
         animationLoopValues: [],
+        triggerDeviceLost: () => this.onDeviceLost({ api: 'WebGPU', message: 'Device removed', reason: 'unknown', originalEvent: null }),
       };
       harness.instances.push(this.record);
       this.backend = this.record.forceWebGL
@@ -87,10 +89,12 @@ vi.mock('three/webgpu', async () => {
 });
 
 function makeCanvas(context: WebGL2RenderingContext | null = {} as WebGL2RenderingContext): HTMLCanvasElement {
-  return {
+  const canvas = new EventTarget() as HTMLCanvasElement;
+  Object.assign(canvas, {
     getContext: vi.fn(() => context),
     insertAdjacentElement: vi.fn(),
-  } as unknown as HTMLCanvasElement;
+  });
+  return canvas;
 }
 
 async function expectDisposed(record: (typeof harness.instances)[number], initialized = true): Promise<void> {
@@ -110,6 +114,14 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     harness.error = null;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
+    vi.stubGlobal('document', {
+      createElement: () => ({
+        className: '',
+        textContent: '',
+        setAttribute: vi.fn(),
+        remove: vi.fn(),
+      }),
+    });
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -206,6 +218,50 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     await expect(adapter.init({ width: 640, height: 480, pixelRatio: 1 })).resolves.toBe('webgl2');
 
     expect(harness.instances).toHaveLength(2);
+    await expectDisposed(harness.instances[0]!);
+    adapter.dispose();
+  });
+
+  it('recovers once to WebGL2 when the WebGPU device is lost after initialization', async () => {
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await expect(adapter.init({ width: 640, height: 480, pixelRatio: 1 })).resolves.toBe('webgpu');
+    adapter.start();
+
+    harness.instances[0]!.triggerDeviceLost();
+
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: true }));
+    expect(harness.instances).toHaveLength(2);
+    expect(harness.instances[1]?.forceWebGL).toBe(true);
+    await expectDisposed(harness.instances[0]!);
+    expect(harness.instances[1]?.disposed).toBe(false);
+    adapter.dispose();
+  });
+
+  it('does not retry after the recovered WebGL2 renderer is lost', async () => {
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    harness.instances[0]!.triggerDeviceLost();
+    await vi.waitFor(() => expect(adapter.getStatus().actual).toBe('webgl2'));
+
+    harness.instances[1]!.triggerDeviceLost();
+
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'unavailable', running: false }));
+    expect(harness.instances).toHaveLength(2);
+    await expectDisposed(harness.instances[1]!);
+    adapter.dispose();
+  });
+
+  it('marks a lost WebGL2 context unavailable without starting a recovery loop', async () => {
+    const canvas = makeCanvas();
+    const adapter = new ThreeRendererAdapter(canvas, { ...DEFAULT_CONFIG, backendPreference: 'webgl2' });
+    await expect(adapter.init({ width: 640, height: 480, pixelRatio: 1 })).resolves.toBe('webgl2');
+
+    const contextLost = new Event('webglcontextlost', { cancelable: true });
+    canvas.dispatchEvent(contextLost);
+
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'unavailable', running: false }));
+    expect(contextLost.defaultPrevented).toBe(true);
+    expect(harness.instances).toHaveLength(1);
     await expectDisposed(harness.instances[0]!);
     adapter.dispose();
   });

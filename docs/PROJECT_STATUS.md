@@ -1,5 +1,22 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 26/10/2026 — Issue #52 runtime device/context-loss candidate
+
+- Branch `fix/52-runtime-device-loss` starts from latest fetched `dev` at
+  `ac364912`. The adapter now makes one WebGPU-to-WebGL2 recovery attempt after
+  a reported post-init WebGPU loss, resumes only if it had been running, and
+  reports `actual: unavailable` after WebGL2 loss or failed recovery. No
+  `RendererPort` contract, shared TSL pipeline or CPU path was added.
+- Regression evidence: source/test typechecks pass; all 137 unit/contract/
+  integration tests pass; Chromium desktop/mobile E2E passes 40 tests with two
+  WebGPU adapter skips; production build passes. The new WebGL2 context-loss
+  E2E passed on both Chromium projects.
+- Real physical WebGPU device removal is **NOT_RUN**: this environment exposes
+  no WebGPU adapter. Browser context-loss tests validate adapter lifecycle and
+  UI reporting, not physical GPU recovery or performance.
+- Candidate PR/review is pending. Do not treat local checks as merge or GPU
+  acceptance; require TV3/TV1 review and the repository's human approval gate.
+
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
