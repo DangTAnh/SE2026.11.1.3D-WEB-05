@@ -13,8 +13,22 @@ import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAM
 import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
+import { BackendUnavailableError, startBackend, type InitializedBackend } from './backend/fallback.ts';
 
 const MAX_FRAME_DELTA = 0.05;
+const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 30;
+const THREE_NO_WEBGPU_ADAPTER_MESSAGE = 'THREE.WebGPUBackend: Unable to create WebGPU adapter.';
+
+/** Three r186.1 emits this exact generic Error only when requestAdapter() returns null. */
+function isThreeNoWebGpuAdapterError(error: unknown): boolean {
+  return error instanceof Error && error.message === THREE_NO_WEBGPU_ADAPTER_MESSAGE;
+}
+
+function hasWebGpuApi(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const gpu = (navigator as Navigator & { gpu?: { requestAdapter?: unknown } }).gpu;
+  return typeof gpu?.requestAdapter === 'function';
+}
 
 /** Three.js implementation of the app-facing renderer contract. */
 export class ThreeRendererAdapter implements RendererPort {
@@ -37,6 +51,11 @@ export class ThreeRendererAdapter implements RendererPort {
   #fpsStartedAt = 0;
   #lastFrameAt = 0;
   #target: RendererTarget = { width: 1, height: 1, pixelRatio: 1 };
+  #gpuTimingSupported = false;
+  #gpuTimingAvailable = false;
+  #gpuTimingInFlight = false;
+  #gpuTimeMs: number | null = null;
+  #computeFrames = 0;
   #unavailableNotice: HTMLElement | null = null;
 
   constructor(canvas: HTMLCanvasElement, initialConfig: Readonly<LabConfig>) {
@@ -56,43 +75,120 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#requested = this.#config.backendPreference;
     this.#target = target;
 
-    let renderer: WebGPURenderer | null = null;
-    try {
-      renderer = new WebGPURenderer({
-        canvas: this.#canvas,
+    const started = await startBackend<WebGPURenderer>(
+      this.#requested,
+      {
+        webgpu: () => this.#initializeRenderer(false, generation),
+        webgl2: () => this.#initializeRenderer(true, generation),
+      },
+    );
+    if (!this.#isInitActive(generation)) return 'unavailable';
+    this.#renderer = started.instance;
+    this.#actual = started.actual;
+    if (!this.#renderer) this.#showUnavailableNotice();
+
+    return this.#isInitActive(generation) ? this.#actual : 'unavailable';
+  }
+  async #initializeRenderer(forceWebGL: boolean, generation: number): Promise<InitializedBackend<WebGPURenderer>> {
+    if (!this.#isInitActive(generation)) {
+      throw new BackendUnavailableError('Renderer initialization is no longer active.');
+    }
+
+    if (!forceWebGL && !hasWebGpuApi()) {
+      throw new BackendUnavailableError('WebGPU is not available in this browser.');
+    }
+
+    const options: ConstructorParameters<typeof WebGPURenderer>[0] = {
+      canvas: this.#canvas,
+      antialias: true,
+      forceWebGL,
+      trackTimestamp: true,
+    };
+    if (forceWebGL) {
+      const context = this.#canvas.getContext('webgl2', {
         antialias: true,
-        forceWebGL: this.#requested === 'webgl2',
+        alpha: true,
+        depth: true,
+        stencil: false,
       });
-      await renderer.init();
+      if (context === null) {
+        throw new BackendUnavailableError('WebGL2 context is not available in this browser.');
+      }
+      options.context = context;
+    }
+
+    const renderer = new WebGPURenderer(options);
+    let rendererInitialized = false;
+    let deviceLost = false;
+    const onDeviceLost = renderer.onDeviceLost;
+    renderer.onDeviceLost = (info) => {
+      deviceLost = true;
+      onDeviceLost.call(renderer, info);
+    };
+
+    // WebGPURenderer otherwise catches every WebGPU init error and silently
+    // switches to WebGL2. Keep classification here so unknown errors propagate.
+    if (!forceWebGL) {
+      (renderer as WebGPURenderer & { _getFallback: ((error: unknown) => unknown) | null })._getFallback = null;
+    }
+
+    try {
+      try {
+        await renderer.init();
+        rendererInitialized = true;
+      } catch (error) {
+        if (deviceLost || (!forceWebGL && isThreeNoWebGpuAdapterError(error))) {
+          throw new BackendUnavailableError('Renderer backend/device is unavailable.', { cause: error });
+        }
+        throw error;
+      }
       if (!this.#isInitActive(generation)) {
-        this.#disposeRenderer(renderer);
-        return 'unavailable';
+        throw new BackendUnavailableError('Renderer initialization was cancelled.');
       }
 
       const actual = this.#resolveActualBackend(renderer);
-      if (actual === 'unavailable') throw new Error('Renderer initialized without a supported backend.');
+      if (actual === 'unavailable') {
+        throw new BackendUnavailableError('Renderer initialized without a supported backend.');
+      }
       this.#renderer = renderer;
       this.#actual = actual;
       this.#createScene();
       this.#createPipeline(this.#config.particleCount, this.#config);
-      if (this.#buffers) await renderer.compute(this.#buffers.initKernel);
-      if (!this.#isInitActive(generation)) return 'unavailable';
+      if (this.#buffers) {
+        try {
+          await renderer.compute(this.#buffers.initKernel);
+        } catch (error) {
+          if (deviceLost) {
+            throw new BackendUnavailableError('Renderer device was lost while initializing the particle pipeline.', { cause: error });
+          }
+          throw error;
+        }
+      }
+      if (!this.#isInitActive(generation)) {
+        throw new BackendUnavailableError('Renderer initialization was cancelled.');
+      }
 
-      await renderer.setAnimationLoop(this.#onFrame);
-      if (!this.#isInitActive(generation)) return 'unavailable';
-    } catch {
-      if (renderer && this.#renderer === renderer) {
-        this.#releaseRenderer();
-      } else if (renderer && this.#isInitActive(generation)) {
-        this.#disposeRenderer(renderer);
+      this.#gpuTimingSupported = renderer.hasFeature('timestamp-query');
+      try {
+        await renderer.setAnimationLoop(this.#onFrame);
+      } catch (error) {
+        if (deviceLost) {
+          throw new BackendUnavailableError('Renderer device was lost while starting its animation loop.', { cause: error });
+        }
+        throw error;
       }
-      if (this.#isInitActive(generation)) {
-        this.#actual = 'unavailable';
-        this.#showUnavailableNotice();
+      if (!this.#isInitActive(generation)) {
+        throw new BackendUnavailableError('Renderer initialization was cancelled.');
       }
+      return { actual, instance: renderer };
+    } catch (error) {
+      if (this.#renderer === renderer) this.#releaseRenderer();
+      else await this.#disposeRenderer(renderer, rendererInitialized);
+      if (!(error instanceof BackendUnavailableError)) {
+        console.error('Unexpected renderer initialization error.', error);
+      }
+      throw error;
     }
-
-    return this.#isInitActive(generation) ? this.#actual : 'unavailable';
   }
   #isInitActive(generation: number): boolean {
     return !this.#disposed && generation === this.#initGeneration;
@@ -104,14 +200,37 @@ export class ThreeRendererAdapter implements RendererPort {
     return 'unavailable';
   }
 
-  #disposeRenderer(renderer: WebGPURenderer): void {
-    void Promise.resolve()
-      .then(() => renderer.setAnimationLoop(null))
-      .catch(() => undefined)
-      .then(() => renderer.dispose())
-      .catch(() => undefined);
+  async #disposeRenderer(renderer: WebGPURenderer, initialized = true): Promise<void> {
+    if (!initialized) {
+      // Three r186.1's Renderer.dispose() calls setAnimationLoop(null) without
+      // awaiting it. Before successful init, that retries the rejected init and
+      // leaks an unhandled rejection. The partial backend owns the only resources
+      // created so far, so dispose it directly and finish before trying fallback.
+      // This also completes before startBackend can construct WebGLBackend on the same canvas.
+      try {
+        await (renderer.backend as typeof renderer.backend & { dispose: () => Promise<void> }).dispose();
+      } catch {
+        // Keep cleanup best-effort; the original initialization error is reported.
+      }
+      return;
+    }
+
+    try {
+      await renderer.setAnimationLoop(null);
+    } catch {
+      // Disposal must continue even if stopping the loop fails.
+    }
+    try {
+      await renderer.dispose();
+    } catch {
+      // Cleanup errors must not replace the initialization/runtime error.
+    }
   }
-  #watchCompute(run: () => Promise<unknown> | undefined, renderer: WebGPURenderer): boolean {
+  #watchCompute(
+    run: () => Promise<unknown> | undefined,
+    renderer: WebGPURenderer,
+    sampleGpuTime = false,
+  ): boolean {
     let task: Promise<unknown> | undefined;
     try {
       task = run();
@@ -119,8 +238,36 @@ export class ThreeRendererAdapter implements RendererPort {
       this.#handleComputeFailure(renderer);
       return false;
     }
-    if (task) void task.catch(() => this.#handleComputeFailure(renderer));
+    if (task) {
+      void task.then(() => {
+        if (sampleGpuTime) this.#resolveGpuTime(renderer);
+      }).catch(() => this.#handleComputeFailure(renderer));
+    }
     return this.#renderer === renderer && !this.#disposed;
+  }
+
+  #resolveGpuTime(renderer: WebGPURenderer): void {
+    if (!this.#gpuTimingSupported || this.#gpuTimingInFlight || this.#renderer !== renderer || this.#disposed) return;
+    this.#gpuTimingInFlight = true;
+    void renderer.resolveTimestampsAsync('compute')
+      .then((durationMs) => {
+        if (this.#renderer !== renderer || this.#disposed) return;
+        if (durationMs !== undefined && durationMs !== null && Number.isFinite(durationMs) && durationMs > 0) {
+          this.#gpuTimeMs = durationMs;
+          this.#gpuTimingAvailable = true;
+        } else {
+          this.#gpuTimeMs = null;
+          this.#gpuTimingAvailable = false;
+        }
+      })
+      .catch(() => {
+        if (this.#renderer !== renderer || this.#disposed) return;
+        this.#gpuTimeMs = null;
+        this.#gpuTimingAvailable = false;
+      })
+      .finally(() => {
+        this.#gpuTimingInFlight = false;
+      });
   }
 
   #handleComputeFailure(renderer: WebGPURenderer): void {
@@ -172,13 +319,14 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   getStatus(): RendererStatus {
+    const gpuTimingAvailable = this.#gpuTimingAvailable && this.#gpuTimeMs !== null;
     return {
       requested: this.#requested,
       actual: this.#actual,
       running: this.#running,
-      gpuTimingAvailable: false,
+      gpuTimingAvailable,
       fps: this.#fps > 0 ? this.#fps : null,
-      gpuTimeMs: null,
+      gpuTimeMs: gpuTimingAvailable ? this.#gpuTimeMs : null,
     };
   }
 
@@ -280,7 +428,9 @@ export class ThreeRendererAdapter implements RendererPort {
       if (buffers) {
         buffers.uniforms.delta.value = delta * this.#config.speed;
         if (this.#computeKernel) {
-          if (!this.#watchCompute(() => renderer.compute(this.#computeKernel!), renderer)) return;
+          this.#computeFrames += 1;
+          const sampleGpuTime = this.#computeFrames % GPU_TIMING_SAMPLE_INTERVAL_FRAMES === 0;
+          if (!this.#watchCompute(() => renderer.compute(this.#computeKernel!), renderer, sampleGpuTime)) return;
         }
       }
       this.#fpsFrames += 1;
@@ -324,13 +474,18 @@ export class ThreeRendererAdapter implements RendererPort {
 
   #releaseRenderer(): void {
     const renderer = this.#renderer;
-    if (renderer) this.#disposeRenderer(renderer);
+    if (renderer) void this.#disposeRenderer(renderer);
     this.#geometryAndMaterialDispose();
     this.#renderer = null;
     this.#scene = null;
     this.#camera = null;
     this.#buffers = null;
     this.#computeKernel = null;
+    this.#gpuTimingSupported = false;
+    this.#gpuTimingAvailable = false;
+    this.#gpuTimingInFlight = false;
+    this.#gpuTimeMs = null;
+    this.#computeFrames = 0;
   }
 
   #showUnavailableNotice(): void {
