@@ -22,6 +22,15 @@ describe('backend fallback', () => {
     expect(result).toEqual({ actual: 'webgl2', instance: 'gl' });
   });
 
+  it('falls back to WebGL2 when an explicit WebGPU preference cannot initialize', async () => {
+    const result = await startBackend('webgpu', {
+      webgpu: async () => { throw new BackendUnavailableError('device unavailable'); },
+      webgl2: async () => ({ actual: 'webgl2', instance: 'gl' }),
+    });
+
+    expect(result).toEqual({ actual: 'webgl2', instance: 'gl' });
+  });
+
   it('reports unavailable after both initializers fail', async () => {
     const result = await startBackend('auto', {
       webgpu: async () => { throw new BackendUnavailableError('no WebGPU'); },
