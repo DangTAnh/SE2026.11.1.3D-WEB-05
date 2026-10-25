@@ -1,6 +1,6 @@
 export function createLabMarkup(): string {
   return `
-    <div class="lab-shell" id="lab-shell" data-runtime-phase="initializing">
+    <div class="lab-shell" id="lab-shell" data-runtime-phase="unsupported">
       <aside class="rail" aria-label="Điều hướng">
         <div class="rail-brand" title="GPU Particle Lab">P<span>•</span></div>
         <div class="rail-icons">
@@ -14,7 +14,7 @@ export function createLabMarkup(): string {
         <header class="topbar">
           <div class="breadcrumbs"><span>WORKSPACE</span><span class="slash">/</span><strong>GPU PARTICLE LAB</strong></div>
           <div class="top-actions">
-            <span class="pill small"><span class="status-dot" aria-hidden="true"></span><span id="runtime-phase-label">INITIALIZING</span></span>
+            <span class="pill small"><span class="status-dot" aria-hidden="true"></span><span id="runtime-phase-label">UNSUPPORTED</span></span>
             <span class="top-version">3D-WEB-05</span>
           </div>
         </header>
@@ -42,7 +42,7 @@ export function createLabMarkup(): string {
               </div>
             </section>
             <div class="scene-info" aria-live="polite">
-              <div class="info-card"><span>BACKEND THỰC TẾ</span><strong id="actual-backend">Đang khởi tạo</strong><small id="backend-detail">Chờ trạng thái UI.</small></div>
+              <div class="info-card"><span>BACKEND THỰC TẾ</span><strong id="actual-backend">Không khả dụng</strong><small id="backend-detail">Renderer chưa được kết nối.</small></div>
               <div class="info-card"><span>FPS</span><strong id="runtime-fps">—</strong><small id="runtime-fps-detail">Chưa có số liệu.</small></div>
               <div class="info-card"><span>GPU TIMING</span><strong id="gpu-timing">Không khả dụng</strong><small id="gpu-timing-detail">Chờ tích hợp.</small></div>
             </div>

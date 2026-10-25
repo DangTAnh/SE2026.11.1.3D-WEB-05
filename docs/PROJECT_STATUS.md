@@ -1,5 +1,52 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 25/10/2026 — TV4 integration of dev `04f1522`
+
+- PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
+  are preserved unchanged in PR #33's integration result. No backend/contract
+  or simulation implementation was changed by TV4.
+- #33 adds UI-only initialization projection (no backend/metric claim until
+  init completes), with Promise-controlled loading tests and production WebGL2
+  live-FPS/pause/resume tests. Invalid/paused GPU timing remains null/unavailable.
+- #42 remains head `43563fe`, conflict-free against this dev baseline, with
+  successful head CI. TV3 review is requested and still pending; no replacement
+  approval or unnecessary synchronization commit was made.
+- #16 remains blocked on owner-confirmed hash scope and Vortex mapping.
+  #18 belongs to TV1 with TV5 runtime evidence; neither task is implicitly done
+  by this UI integration. Physical WebGPU/parity/benchmark acceptance is NOT_RUN.
+- Verification and next gate: see the current section of the
+  [UI handoff](04-testing/UI-live-status-2026-10-24.md). Human TV1 re-review of
+  the new #33 head is required; no PR merge or release is authorized here.
+- Local source/test typechecks and `CI=1 npm run verify` PASS: 134 tests,
+  38 desktop/mobile E2E passed, two WebGPU skips, build passed. Remote CI for
+  the pushed head is a separate gate; these results do not establish GPU parity.
+
+## Historical checkpoints (superseded by the current section above)
+
+> **25/10/2026 — issue #14 timing projection follow-up:** UI now rejects zero GPU
+> timing even if a producer marks it available, matching `RendererPort` and the
+> pending #40 producer. A small positive duration shows `<0.01 ms` instead of
+> rounding to zero. Source/test typechecks, 120 unit/integration tests and the
+> production build passed on this TV4 branch; desktop/mobile Chromium E2E passed
+> 32 tests with two WebGPU skips. UI fixture tests are not GPU timing evidence.
+> PR #40 remains unmerged and WebGPU hardware/timestamp evidence is still open.
+> Earlier checkpoints below are historical.
+
+> **25/10/2026 — issue #14 integration checkpoint:** PR #33's branch now
+> incorporates `dev@140eb41` (merged adapter #12). Source typecheck, test
+> typecheck, production build and 119 unit/integration tests passed locally.
+> Four focused production/fallback Chromium checks passed on desktop/mobile;
+> the full browser suite passed 32 tests with two WebGPU skips when run with
+> one worker. This
+> environment has no WebGPU adapter, so WebGPU runtime proof and benchmark
+> remain open. See [live status handoff](04-testing/UI-live-status-2026-10-24.md).
+
+> **24/10/2026 — issue #14 draft, feat/14-ui-live-status:** the UI now has only
+> RendererStatus-based state projection; synthetic backend/fixture query helpers
+> are removed. Polling, failure/recovery and metric clearing are tested against
+> an explicitly injected FakeRenderer. PR #32 is merged; draft PR #33 targets
+> dev. GPU integration is not accepted: adapter #12/#15 and real browser evidence remain
+> pending. See [live status handoff](04-testing/UI-live-status-2026-10-24.md).
 > **24/10/2026 — dev update after #38:** composition root #15 has merged at
 > `de6665a`; production still uses an unavailable placeholder pending adapter
 > #12. PRs #39/#40 now propose adapter/fallback changes and require review and

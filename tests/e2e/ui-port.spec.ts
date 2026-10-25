@@ -2,15 +2,15 @@ import { expect, test } from '@playwright/test';
 
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
-test('production reports the backend that its capability probe can initialize', async ({ page }) => {
+test('production ignores the removed UI state query and reports the initialized backend', async ({ page }) => {
+  await page.goto('/?uiState=ready-webgpu');
   const capabilities = await page.evaluate(async () => {
     const gpu = (navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown | null> } }).gpu;
     const webgpu = gpu ? (await gpu.requestAdapter()) !== null : false;
     const webgl2 = document.createElement('canvas').getContext('webgl2') !== null;
     return { webgpu, webgl2 };
   });
-  await page.goto('/?uiState=ready-webgpu');
-  await expect(page.locator('#lab-shell')).toHaveAttribute('data-fixture', 'false');
+  await expect(page.locator('#lab-shell')).not.toHaveAttribute('data-fixture', 'true');
   await expect(page.locator('#runtime-phase-label')).not.toContainText('UI FIXTURE');
   await expect.poll(async () => page.locator('#actual-backend').textContent()).not.toBe('Đang khởi tạo');
   const actual = await page.locator('#actual-backend').textContent();
@@ -24,10 +24,10 @@ test('production reports the backend that its capability probe can initialize', 
 });
 
 test('webgl=1 forces the WebGL2 backend when available', async ({ page }) => {
+  await page.goto('/?webgl=1');
   const webgl2Available = await page.evaluate(() =>
     document.createElement('canvas').getContext('webgl2') !== null,
   );
-  await page.goto('/?webgl=1');
   await expect.poll(async () => page.locator('#actual-backend').textContent()).not.toBe('Đang khởi tạo');
   if (webgl2Available) await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
   else await expect(page.locator('#actual-backend')).toHaveText('Không khả dụng');
@@ -98,7 +98,8 @@ test('pause, resume, reset and defaults use the port; unmount and unload dispose
 
 test('initial apply failure stays disabled across polling until a successful import', async ({ page }) => {
   await page.clock.install();
-  await page.goto(`${fixturePage}?uiState=apply-error`);
+  await page.addInitScript(() => { window.initialRendererApplyFailure = true; });
+  await page.goto(fixturePage);
   await expect(page.locator('#lab-shell')).toHaveAttribute('data-runtime-phase', 'error');
   await page.clock.fastForward(2000);
   await expect(page.locator('#mode-vortex')).toBeDisabled();

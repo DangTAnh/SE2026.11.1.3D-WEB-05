@@ -5,13 +5,14 @@ import { bindLabControls, renderLabControls } from './controls/controlBindings.t
 import { byId } from './dom.ts';
 import { createToastController } from './notifications.ts';
 import { renderRuntimeStatus } from './overlays/statusOverlay.ts';
-import { createRendererRuntimeState } from './state/runtimeState.ts';
+import { createInitializingRuntimeState, createRendererRuntimeState } from './state/runtimeState.ts';
 import { createLabMarkup } from './template.ts';
 import { measureRendererTarget } from './rendererTarget.ts';
 
 /** The composition root owns init/canvas binding; UI only consumes the injected port. */
 export function prepareLabUI(root: HTMLElement): HTMLCanvasElement {
   root.innerHTML = createLabMarkup();
+  renderRuntimeStatus(createInitializingRuntimeState());
   const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
   if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
   return canvas;
