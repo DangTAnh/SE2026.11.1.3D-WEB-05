@@ -17,6 +17,18 @@ import { BackendUnavailableError, startBackend, type InitializedBackend } from '
 
 const MAX_FRAME_DELTA = 0.05;
 const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 30;
+const THREE_NO_WEBGPU_ADAPTER_MESSAGE = 'THREE.WebGPUBackend: Unable to create WebGPU adapter.';
+
+/** Three r186.1 emits this exact generic Error only when requestAdapter() returns null. */
+function isThreeNoWebGpuAdapterError(error: unknown): boolean {
+  return error instanceof Error && error.message === THREE_NO_WEBGPU_ADAPTER_MESSAGE;
+}
+
+function hasWebGpuApi(): boolean {
+  if (typeof navigator === 'undefined') return false;
+  const gpu = (navigator as Navigator & { gpu?: { requestAdapter?: unknown } }).gpu;
+  return typeof gpu?.requestAdapter === 'function';
+}
 
 /** Three.js implementation of the app-facing renderer contract. */
 export class ThreeRendererAdapter implements RendererPort {
@@ -81,17 +93,52 @@ export class ThreeRendererAdapter implements RendererPort {
     if (!this.#isInitActive(generation)) {
       throw new BackendUnavailableError('Renderer initialization is no longer active.');
     }
-    const renderer = new WebGPURenderer({
+
+    if (!forceWebGL && !hasWebGpuApi()) {
+      throw new BackendUnavailableError('WebGPU is not available in this browser.');
+    }
+
+    const options: ConstructorParameters<typeof WebGPURenderer>[0] = {
       canvas: this.#canvas,
       antialias: true,
       forceWebGL,
       trackTimestamp: true,
-    });
+    };
+    if (forceWebGL) {
+      const context = this.#canvas.getContext('webgl2', {
+        antialias: true,
+        alpha: true,
+        depth: true,
+        stencil: false,
+      });
+      if (context === null) {
+        throw new BackendUnavailableError('WebGL2 context is not available in this browser.');
+      }
+      options.context = context;
+    }
+
+    const renderer = new WebGPURenderer(options);
+    let deviceLost = false;
+    const onDeviceLost = renderer.onDeviceLost;
+    renderer.onDeviceLost = (info) => {
+      deviceLost = true;
+      onDeviceLost.call(renderer, info);
+    };
+
+    // WebGPURenderer otherwise catches every WebGPU init error and silently
+    // switches to WebGL2. Keep classification here so unknown errors propagate.
+    if (!forceWebGL) {
+      (renderer as WebGPURenderer & { _getFallback: ((error: unknown) => unknown) | null })._getFallback = null;
+    }
+
     try {
       try {
         await renderer.init();
       } catch (error) {
-        throw new BackendUnavailableError('Renderer backend initialization failed.', { cause: error });
+        if (deviceLost || (!forceWebGL && isThreeNoWebGpuAdapterError(error))) {
+          throw new BackendUnavailableError('Renderer backend/device is unavailable.', { cause: error });
+        }
+        throw error;
       }
       if (!this.#isInitActive(generation)) {
         throw new BackendUnavailableError('Renderer initialization was cancelled.');
@@ -109,7 +156,10 @@ export class ThreeRendererAdapter implements RendererPort {
         try {
           await renderer.compute(this.#buffers.initKernel);
         } catch (error) {
-          throw new BackendUnavailableError('Renderer could not initialize the particle pipeline.', { cause: error });
+          if (deviceLost) {
+            throw new BackendUnavailableError('Renderer device was lost while initializing the particle pipeline.', { cause: error });
+          }
+          throw error;
         }
       }
       if (!this.#isInitActive(generation)) {
@@ -120,7 +170,10 @@ export class ThreeRendererAdapter implements RendererPort {
       try {
         await renderer.setAnimationLoop(this.#onFrame);
       } catch (error) {
-        throw new BackendUnavailableError('Renderer could not start its animation loop.', { cause: error });
+        if (deviceLost) {
+          throw new BackendUnavailableError('Renderer device was lost while starting its animation loop.', { cause: error });
+        }
+        throw error;
       }
       if (!this.#isInitActive(generation)) {
         throw new BackendUnavailableError('Renderer initialization was cancelled.');
