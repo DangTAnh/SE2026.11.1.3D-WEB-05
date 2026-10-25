@@ -15,16 +15,16 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 
 | Area | State | Location |
 |---|---|---|
-| Renderer contract | **Holds a written type, no implementation yet** | [`src/core/renderer/RendererPort.ts`](../src/core/renderer/RendererPort.ts) |
+| Renderer contract | Typed port implemented by ThreeRendererAdapter; UI consumes the injected port | [`src/core/renderer/RendererPort.ts`](../src/core/renderer/RendererPort.ts) |
 | Backend identity types | Implemented (types only) | [`src/core/types/backend.ts`](../src/core/types/backend.ts) |
 | Perf sample shape (`PerformanceSnapshot`) | Implemented (type only) | [`src/core/types/measurement.ts`](../src/core/types/measurement.ts) |
 | Benchmark config identity (`configHash`) | Implemented | [`src/core/measurement/configHash.ts`](../src/core/measurement/configHash.ts) |
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
 | UI shell | Consumes an injected RendererPort; no backend init in UI | [`src/ui/app.ts`](../src/ui/app.ts) |
-| Simulation preview | Canvas2D mock removed; composition root injects a renderer port (placeholder until #12) | `src/main.ts` |
-| Renderer adapter (one, backend-flagged) | Not started | `src/simulations/rendererAdapter.ts` (planned) |
-| Composition root | Implemented (unavailable placeholder port until #12) | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
-| Simulation: physics + material tree | Not started | `src/simulations/simulation.ts`, `src/simulations/shared/` (planned) |
+| Simulation preview | Production canvas bound to the real adapter by the composition root; Canvas2D mock removed | `src/main.ts` |
+| Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; WebGL2 Chromium exercised, physical WebGPU acceptance pending | `src/simulations/rendererAdapter.ts` |
+| Composition root | Implemented; initializes the adapter before mounting the port-consuming UI | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
+| Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 
 There is **one** renderer, not one per backend. `src/simulations/webgpu/` and

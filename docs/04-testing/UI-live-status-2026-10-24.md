@@ -1,5 +1,39 @@
 # Live RendererStatus UI — issue #14, 24/10/2026
 
+## Current integration — 25/10/2026
+
+Local verification on the integration candidate: `npm run typecheck`,
+`npm run typecheck:tests` and `CI=1 npm run verify` PASS. The combined run passed
+134/134 unit/integration tests, 38 desktop/mobile Chromium E2E and production
+build, with exactly two WebGPU E2E SKIPPED (no adapter). This includes the real
+Three r186.1 failed-init cleanup regression imported unchanged from dev.
+No test failure occurred in this run. Vite's existing >500 kB chunk warning
+remains non-fatal. Remote CI must independently pass the pushed head.
+
+Merged `origin/dev@04f1522` (#40) into the existing #33 branch without rebase
+or force-push. The only conflict was PROJECT_STATUS; both historical checkpoint
+sets are retained below a new current summary. Backend, composition and main
+match dev exactly. No TV1/TV2/TV3 source contract was changed.
+
+`prepareLabUI` now projects INITIALIZING while composition waits for init.
+Simulation controls are disabled, backend identity is pending and measurements
+are null. Mounting an initialized/missing/failing port then shows the matching
+live, unsupported or error state. A deferred-init Promise test covers transition
+to ready; the rest of the fixture suite covers failure and recovery.
+
+Production `/?webgl=1` is tested on the actual application canvas: backend WebGL2,
+live numeric FPS, pause clears FPS/timing and resume restores live FPS. Separate
+backend E2E checks supported timestamp values/unavailable behavior. These tests
+are distinct from FakeRenderer projection tests. Chromium software rendering is
+not evidence of physical WebGPU, numeric parity or a fair two-backend benchmark.
+
+The prior draft dependency on an unimplemented adapter is resolved by #39/#40.
+The updated #33 candidate must pass verify/CI and obtain fresh TV1 review before
+any merge; an old approval is not approval of a new head. Full WebGPU acceptance
+and the measurement-age contract remain separate, unresolved evidence limits.
+
+## Historical evidence (the draft gates below describe their original heads)
+
 Branch: `feat/14-ui-live-status`, following `type/<issue-number>-slug`.
 Initial baseline: PR #32, commit `ed914c0b5831e4e4cb67058aee014662bb9df684`.
 PR #32 merged into dev at `1c466d2b164ed9731bea9dacc125f23f0385fda1`;

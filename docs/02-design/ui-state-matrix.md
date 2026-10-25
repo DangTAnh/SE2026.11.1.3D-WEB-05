@@ -1,13 +1,15 @@
 # Ma trận trạng thái UI runtime — TV4
 
-**Cập nhật:** 24/10/2026. UI chiếu trạng thái từ `RendererPort.getStatus()`;
+**Cập nhật:** 25/10/2026. UI chiếu trạng thái từ `RendererPort.getStatus()`;
 production không còn Canvas2D mock hoặc `?uiState=` fixture. Trang được chuẩn bị
-với nội dung tĩnh `unsupported` cho tới khi port được gắn và trạng thái thật
-được đọc. Test dùng FakeRenderer được inject riêng tại
+với `initializing` sau khi tạo canvas và trước khi init hoàn tất; không nhận
+backend hay metric là thật trước khi port được gắn. Thiếu port sau mount là
+`unsupported`. Test dùng FakeRenderer được inject riêng tại
 `tests/e2e/fixtures/renderer-port.html`.
 
 | Phase | Nguồn trạng thái | Backend hiển thị | Controls simulation | FPS/GPU timing |
 |---|---|---|---|---|
+| initializing | composition đang chờ init; chưa có port đã khởi tạo | Đang khởi tạo | Khóa | `null`, không có số đo |
 | ready | `actual: webgpu`, hoặc WebGL2 được yêu cầu rõ | Giá trị `actual` | Bật | Chỉ số hữu hạn/hợp lệ khi `running` |
 | fallback | `actual: webgl2`, `requested` khác `webgl2` | WebGL2 fallback | Bật; warning | Cùng quy tắc; thiếu timing là `null` |
 | unsupported | thiếu port hoặc `actual: unavailable` | Không khả dụng | Khóa | Không khả dụng |

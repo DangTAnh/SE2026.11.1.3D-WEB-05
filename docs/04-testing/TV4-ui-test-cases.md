@@ -2,7 +2,8 @@
 
 **Cập nhật:** 24/10/2026. Các case runtime dùng FakeRenderer được inject tại
 `tests/e2e/fixtures/renderer-port.html`; không dùng query fixture hoặc Canvas2D
-mock trong production. Test GPU thật vẫn chờ adapter và máy phù hợp.
+mock trong production. Adapter #12 và fallback #13 đã tích hợp; E2E production
+WebGL2 kiểm số FPS sống và pause/resume. WebGPU vẫn cần máy có adapter phù hợp.
 
 ## Unit test tự động bằng Vitest
 
@@ -17,6 +18,7 @@ mock trong production. Test GPU thật vẫn chờ adapter và máy phù hợp.
 | UT-S02 | UI-FR-04/05 | số đo hợp lệ/không hợp lệ và tạm dừng | không giữ metric cũ hoặc nhãn nguồn sai |
 | UT-S03 | UI-FR-10 | error/unsupported | khóa simulation controls |
 | UT-S04 | UI-FR-05 | timing không khả dụng/zero không hợp lệ | `null` và `0` hiện “Không khả dụng”; số dương rất nhỏ không bị làm tròn thành 0 |
+| UT-S05 | UI-FR-10 | init chưa hoàn tất | loading, không claim backend/metric, khóa controls |
 
 ## Checklist trình duyệt
 
@@ -42,6 +44,7 @@ mock trong production. Test GPU thật vẫn chờ adapter và máy phù hợp.
 | E2E-01 | UI-01/02/06/08 | đổi mode, slider, reset và kiểm tra overflow | desktop + mobile |
 | E2E-02 | UI-04/05/06/08/10 | fallback/error, banner, backend và disabled controls | desktop + mobile |
 | E2E-03 | UI-05/06/07 | import hợp lệ, lỗi giữ state, export đúng schema | desktop + mobile |
+| E2E-04 | UI-FR-04/05/10 | init bị giữ bằng Promise rồi hoàn tất; WebGL2 production FPS và pause/resume | desktop + mobile; phân biệt harness với canvas thật |
 | A11Y-01 | UI-NFR-02/03 | quét WCAG A/AA bằng axe-core | desktop + mobile |
 | EVID-01 | UI-01/02/06/08 | chụp trạng thái port minh họa, ghi rõ là test input | 1440×1000 + 500×844 |
 

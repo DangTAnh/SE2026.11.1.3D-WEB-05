@@ -1,7 +1,7 @@
 import type { RendererStatus } from '../../core/renderer/RendererPort.ts';
 import type { ActualBackend } from '../../core/types/backend.ts';
 
-export type RuntimePhase = 'ready' | 'fallback' | 'unsupported' | 'error';
+export type RuntimePhase = 'initializing' | 'ready' | 'fallback' | 'unsupported' | 'error';
 export type RuntimeNoticeTone = 'info' | 'warning' | 'error';
 
 export interface RuntimeNotice {
@@ -23,6 +23,18 @@ export interface UiRuntimeState {
   gpuTimingDetail: string;
   controlsDisabled: boolean;
   notice?: RuntimeNotice;
+}
+
+/** Composition has prepared the canvas but has not supplied an initialized port yet. */
+export function createInitializingRuntimeState(): UiRuntimeState {
+  return {
+    phase: 'initializing', actualBackend: 'unavailable',
+    backendLabel: 'Đang khởi tạo', backendDetail: 'Đang chờ renderer xác nhận backend',
+    fps: null, fpsDetail: 'Chưa có số đo', gpuTimeMs: null,
+    gpuTimingAvailable: false, gpuTimingDetail: 'Không khả dụng', controlsDisabled: true,
+    notice: { tone: 'info', title: 'Đang khởi tạo renderer',
+      message: 'Số đo sẽ xuất hiện khi renderer sẵn sàng và báo dữ liệu hợp lệ.' },
+  };
 }
 
 export function formatFps(state: UiRuntimeState): string {

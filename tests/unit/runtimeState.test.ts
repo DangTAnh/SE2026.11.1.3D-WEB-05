@@ -1,11 +1,21 @@
 import { expect, test } from 'vitest';
-import { createRendererRuntimeState, formatFps, formatGpuTiming } from '../../src/ui/state/runtimeState.ts';
+import { createInitializingRuntimeState, createRendererRuntimeState, formatFps, formatGpuTiming } from '../../src/ui/state/runtimeState.ts';
 import type { RendererStatus } from '../../src/core/renderer/RendererPort.ts';
 
 const ready: RendererStatus = {
   actual: 'webgpu', requested: 'auto', running: true, fps: 59.6,
   gpuTimingAvailable: true, gpuTimeMs: 4.126,
 };
+
+test('pending initialization has no backend claim or measurements and disables simulation controls', () => {
+  const state = createInitializingRuntimeState();
+  expect(state.phase).toBe('initializing');
+  expect(state.actualBackend).toBe('unavailable');
+  expect(state.fps).toBeNull();
+  expect(state.gpuTimeMs).toBeNull();
+  expect(state.controlsDisabled).toBe(true);
+  expect(formatGpuTiming(state)).toBe('Không khả dụng');
+});
 
 for (const actual of ['webgpu', 'webgl2', 'unavailable'] as const) {
   for (const requested of ['auto', 'webgpu', 'webgl2'] as const) {

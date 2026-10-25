@@ -3,6 +3,7 @@ import { formatFps, formatGpuTiming } from '../state/runtimeState.ts';
 import type { UiRuntimeState } from '../state/runtimeState.ts';
 
 const phaseLabels: Record<UiRuntimeState['phase'], string> = {
+  initializing: 'INITIALIZING',
   ready: 'READY', fallback: 'FALLBACK ACTIVE',
   unsupported: 'UNSUPPORTED', error: 'RENDERER ERROR',
 };

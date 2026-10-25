@@ -1,5 +1,28 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 25/10/2026 — TV4 integration of dev `04f1522`
+
+- PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
+  are preserved unchanged in PR #33's integration result. No backend/contract
+  or simulation implementation was changed by TV4.
+- #33 adds UI-only initialization projection (no backend/metric claim until
+  init completes), with Promise-controlled loading tests and production WebGL2
+  live-FPS/pause/resume tests. Invalid/paused GPU timing remains null/unavailable.
+- #42 remains head `43563fe`, conflict-free against this dev baseline, with
+  successful head CI. TV3 review is requested and still pending; no replacement
+  approval or unnecessary synchronization commit was made.
+- #16 remains blocked on owner-confirmed hash scope and Vortex mapping.
+  #18 belongs to TV1 with TV5 runtime evidence; neither task is implicitly done
+  by this UI integration. Physical WebGPU/parity/benchmark acceptance is NOT_RUN.
+- Verification and next gate: see the current section of the
+  [UI handoff](04-testing/UI-live-status-2026-10-24.md). Human TV1 re-review of
+  the new #33 head is required; no PR merge or release is authorized here.
+- Local source/test typechecks and `CI=1 npm run verify` PASS: 134 tests,
+  38 desktop/mobile E2E passed, two WebGPU skips, build passed. Remote CI for
+  the pushed head is a separate gate; these results do not establish GPU parity.
+
+## Historical checkpoints (superseded by the current section above)
+
 > **25/10/2026 — issue #14 timing projection follow-up:** UI now rejects zero GPU
 > timing even if a producer marks it available, matching `RendererPort` and the
 > pending #40 producer. A small positive duration shows `<0.01 ms` instead of
@@ -24,6 +47,19 @@
 > an explicitly injected FakeRenderer. PR #32 is merged; draft PR #33 targets
 > dev. GPU integration is not accepted: adapter #12/#15 and real browser evidence remain
 > pending. See [live status handoff](04-testing/UI-live-status-2026-10-24.md).
+> **24/10/2026 — dev update after #38:** composition root #15 has merged at
+> `de6665a`; production still uses an unavailable placeholder pending adapter
+> #12. PRs #39/#40 now propose adapter/fallback changes and require review and
+> runtime evidence. Issue #37 remains open while the collector test repair in
+> #38 is assessed. The checkpoint below uses the earlier `888626a` baseline.
+
+> **24/10/2026 — workflow/current-dev checkpoint (#36):** dev at `888626a`
+> includes #32 UI controls and #35 shared TSL kernels. Adapter #12, fallback
+> #13 and composition #15 remain pending; GPU runtime/parity/benchmark NOT_RUN.
+> TV4 #33 is a draft live-status candidate into dev; #16 is blocked on shared
+> hash/Vortex decisions. Four legacy branches have been renamed with identical
+> SHAs. See [workflow audit and next actions](05-management/workflow-audit-2026-10-24.md)
+> and [CONTRIBUTING](../CONTRIBUTING.md). Prior checkpoints below are historical.
 
 > **24/10/2026 — TV4 issue #9/#25 branch checkpoint:** UI now consumes an
 > injected RendererPort, with explicit FakeRenderer browser tests and no

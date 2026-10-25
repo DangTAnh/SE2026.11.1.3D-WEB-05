@@ -2,6 +2,39 @@ import { expect, test } from '@playwright/test';
 
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
+test('production WebGL2 shows live FPS and clears metrics when paused', async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
+  await page.goto('/?webgl=1');
+  const supported = await page.locator('#preview-canvas').evaluate(canvas =>
+    (canvas as HTMLCanvasElement).getContext('webgl2') !== null);
+  test.skip(!supported, 'This browser cannot initialize WebGL2 on the application canvas.');
+  await expect(page.locator('#actual-backend')).toHaveText('WebGL2', { timeout: 20_000 });
+  await expect(page.locator('#runtime-phase-label')).toHaveText('READY');
+  await expect(page.locator('#runtime-fps')).toHaveText(/^\d+ FPS$/, { timeout: 20_000 });
+  await expect(page.locator('#runtime-fps-detail')).toHaveText('Dữ liệu từ renderer');
+  await page.screenshot({ path: testInfo.outputPath('live-webgl2.png') });
+  await page.locator('#toggle-preview').click();
+  await expect(page.locator('#runtime-fps')).toHaveText('—');
+  await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
+  await expect(page.locator('#gpu-timing-detail')).toContainText('tạm dừng');
+  await page.locator('#toggle-preview').click();
+  await expect(page.locator('#runtime-fps')).toHaveText(/^\d+ FPS$/, { timeout: 20_000 });
+});
+
+test('pending init shows loading without fabricated metrics, then displays the initialized port', async ({ page }) => {
+  await page.addInitScript(() => { window.deferRendererInit = true; });
+  await page.goto(fixturePage);
+  await expect(page.locator('#runtime-phase-label')).toHaveText('INITIALIZING');
+  await expect(page.locator('#actual-backend')).toHaveText('Đang khởi tạo');
+  await expect(page.locator('#runtime-fps')).toHaveText('—');
+  await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
+  await expect(page.locator('[data-runtime-control]:not(:disabled)')).toHaveCount(0);
+  await page.evaluate(() => window.finishRendererInit?.());
+  await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
+  await expect(page.locator('#runtime-phase-label')).toHaveText('READY');
+  await expect(page.locator('#mode-vortex')).toBeEnabled();
+});
+
 test('live status replaces metrics and backend identity across failure and recovery', async ({ page }) => {
   await page.clock.install();
   await page.goto(fixturePage);

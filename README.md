@@ -1,5 +1,10 @@
 # 3D-WEB-05 — GPU Particle Lab
 
+Read [CONTRIBUTING](CONTRIBUTING.md) and [AGENTS](AGENTS.md) before coding.
+Use an assigned Issue, a numbered branch from current `dev`, G0 before push,
+and a PR into `dev` with evidence and another person's approval.
+See the [current workflow/progress audit](docs/05-management/workflow-audit-2026-10-24.md).
+
 Browser particle lab targeting WebGPU with a WebGL2 GPU fallback, two modes
 (Attractor/Vortex), live controls, preset import/export, and reproducible
 measurements on both backends.
@@ -62,10 +67,12 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   evidence. Runtime state is not selected by URL parameters: tests change the
   injected port status directly and exercise polling, failure and recovery.
 
-## Integration still required
+## Integration and remaining evidence
 
-- Integrate and review #13's fallback/timing behavior from PR #40. The #12
-  adapter is already bound to the production canvas through the composition root.
+- PR #40 / #13 is merged into dev at `04f1522` and included in this UI branch.
+  The #12 adapter stays bound to the production canvas through the composition root.
+- The prepared UI shows INITIALIZING without backend or metric claims until the
+  initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
   lifetime/respawn, perf collection and the two-backend benchmark separately.
 - A requested backend preference takes effect at the next renderer init.
