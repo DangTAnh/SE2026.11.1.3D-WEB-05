@@ -1,5 +1,14 @@
 # PROJECT STATUS — 3D-WEB-05
 
+> **25/10/2026 — issue #14 integration checkpoint:** PR #33's branch now
+> incorporates `dev@140eb41` (merged adapter #12). Source typecheck, test
+> typecheck, production build and 119 unit/integration tests passed locally.
+> Four focused production/fallback Chromium checks passed on desktop/mobile;
+> the full browser suite passed 32 tests with two WebGPU skips when run with
+> one worker. This
+> environment has no WebGPU adapter, so WebGPU runtime proof and benchmark
+> remain open. See [live status handoff](04-testing/UI-live-status-2026-10-24.md).
+
 > **24/10/2026 — issue #14 draft, feat/14-ui-live-status:** the UI now has only
 > RendererStatus-based state projection; synthetic backend/fixture query helpers
 > are removed. Polling, failure/recovery and metric clearing are tested against

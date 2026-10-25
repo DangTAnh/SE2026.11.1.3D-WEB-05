@@ -4,12 +4,12 @@ Browser particle lab targeting WebGPU with a WebGL2 GPU fallback, two modes
 (Attractor/Vortex), live controls, preset import/export, and reproducible
 measurements on both backends.
 
-**Current implementation: UI through RendererPort; GPU integration pending.**
-The Canvas2D preview has been removed. The default entry point initializes a
-renderer port before mounting the UI; until #12 supplies the real adapter that
-port reports unavailable, so the UI shows unsupported with no FPS or GPU
-timing. Preset import/export remains available. Nothing in the default build
-currently demonstrates a running GPU simulation.
+**Current implementation: the real renderer adapter is wired through RendererPort.**
+The Canvas2D preview has been removed. The default entry point initializes the
+adapter before mounting the UI. On this branch, browser tests exercise a real
+WebGL2 path; the available Chromium environment has no WebGPU adapter, so its
+WebGPU smoke test is skipped. Preset import/export remains available. GPU
+parity and a two-backend benchmark are still unverified.
 
 ## Run and verify
 
@@ -44,15 +44,16 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   It never creates or initializes a GPU backend.
 - **Composition root:** `composeLab` initializes the port before the UI reads its
   status, survives an unavailable or rejecting init (the UI renders unsupported),
-  and returns the UI disposer wired to `beforeunload`. `src/main.ts` injects an
-  unavailable placeholder port until #12 lands the real adapter.
+  and returns the UI disposer wired to `beforeunload`. `src/main.ts` constructs
+  the real adapter supplied by #12.
 - **Core:** renderer/status contracts, config identity, aggregation and result
   parsing; a shared `FakeRenderer` for tests.
 - **Backend capability selection:** injectable probes and preference resolution
-  are integrated; actual renderer construction and fallback still need #12/#13.
+  are integrated; #12 constructs the renderer and #13's WebGL2 fallback is
+  under review in PR #40.
 - **Simulation reference and sampling:** deterministic CPU reference steps and
-  the RendererPort performance collector are integrated; GPU runtime evidence
-  and wiring remain pending.
+  the RendererPort performance collector are integrated. The renderer uses the
+  shared TSL simulation pipeline; measured GPU parity remains pending.
 - **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
   uses v1 until issue #16 and its shared config/hash decisions are implemented.
 - **Verification:** UI interaction tests use an explicit
@@ -63,14 +64,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## Integration still required
 
-- TV1/TV3 implement the real adapter and bind the canvas (#12). The composition
-  root (#15) already initializes and injects whatever port it is given; today
-  that port is an unavailable placeholder, so simulation controls stay disabled.
-- Simulation kernels and backend probes on other branches/PRs are not implied
-  to be part of this build. There is no renderer adapter in this baseline.
-- Actual WebGPU/WebGL2 fallback, GPU numeric parity, live timing validation,
-  lifetime/respawn, perf collection and the two-backend benchmark need their
-  own integration and browser evidence.
+- Integrate and review #13's fallback/timing behavior from PR #40. The #12
+  adapter is already bound to the production canvas through the composition root.
+- Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
+  lifetime/respawn, perf collection and the two-backend benchmark separately.
 - A requested backend preference takes effect at the next renderer init.
   Only `RendererStatus.actual` identifies the backend that ran.
 - Unsupported/invalid GPU timing stays `null`, never a fabricated zero.

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { setTimeout as realDelay } from 'node:timers/promises';
 import { afterEach, test, vi } from 'vitest';
 import { configHash } from '../../src/core/measurement/configHash.ts';
 import type { PerformanceSnapshot } from '../../src/core/types/measurement.ts';
@@ -17,7 +18,9 @@ afterEach(() => {
  */
 async function flushSamples(samples: PerformanceSnapshot[], expected: number): Promise<void> {
   for (let attempt = 0; attempt < 100 && samples.length < expected; attempt += 1) {
-    await vi.advanceTimersByTimeAsync(0);
+    // `crypto.subtle.digest` completes on a real worker; a zero-duration fake
+    // timer loop does not reliably yield to it on slower CI runners.
+    await realDelay(1);
   }
   assert.equal(samples.length, expected);
 }
