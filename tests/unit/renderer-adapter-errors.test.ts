@@ -8,6 +8,7 @@ const harness = vi.hoisted(() => ({
   instances: [] as Array<{
     forceWebGL: boolean;
     disposed: boolean;
+    backendDisposed: boolean;
     internalFallbackUsed: boolean;
     animationLoopValues: unknown[];
   }>,
@@ -17,7 +18,7 @@ vi.mock('three/webgpu', async () => {
   const actual = await vi.importActual<typeof import('three/webgpu')>('three/webgpu');
 
   class MockWebGPURenderer {
-    readonly backend: { isWebGPUBackend?: boolean; isWebGLBackend?: boolean };
+    readonly backend: { isWebGPUBackend?: boolean; isWebGLBackend?: boolean; dispose?: () => Promise<void> };
     readonly record: (typeof harness.instances)[number];
     _getFallback: ((error: unknown) => void) | null;
     onDeviceLost: (info: { api: string; message: string; reason: string | null; originalEvent: unknown }) => void = () => {};
@@ -26,11 +27,14 @@ vi.mock('three/webgpu', async () => {
       this.record = {
         forceWebGL: options.forceWebGL === true,
         disposed: false,
+        backendDisposed: false,
         internalFallbackUsed: false,
         animationLoopValues: [],
       };
       harness.instances.push(this.record);
-      this.backend = this.record.forceWebGL ? { isWebGLBackend: true } : { isWebGPUBackend: true };
+      this.backend = this.record.forceWebGL
+        ? { isWebGLBackend: true, dispose: async () => { this.record.backendDisposed = true; } }
+        : { isWebGPUBackend: true, dispose: async () => { this.record.backendDisposed = true; } };
       this._getFallback = this.record.forceWebGL
         ? null
         : () => {
@@ -89,7 +93,13 @@ function makeCanvas(context: WebGL2RenderingContext | null = {} as WebGL2Renderi
   } as unknown as HTMLCanvasElement;
 }
 
-async function expectDisposed(record: (typeof harness.instances)[number]): Promise<void> {
+async function expectDisposed(record: (typeof harness.instances)[number], initialized = true): Promise<void> {
+  if (!initialized) {
+    await vi.waitFor(() => expect(record.backendDisposed).toBe(true));
+    expect(record.disposed).toBe(false);
+    expect(record.animationLoopValues).not.toContain(null);
+    return;
+  }
   await vi.waitFor(() => expect(record.disposed).toBe(true));
   expect(record.animationLoopValues).toContain(null);
 }
@@ -100,10 +110,12 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     harness.error = null;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
   it('propagates an unexpected renderer.init error and disposes without trying WebGL2', async () => {
@@ -117,7 +129,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     expect(harness.instances).toHaveLength(1);
     expect(harness.instances[0]?.forceWebGL).toBe(false);
     expect(harness.instances[0]?.internalFallbackUsed).toBe(false);
-    await expectDisposed(harness.instances[0]!);
+    await expectDisposed(harness.instances[0]!, false);
   });
 
   it('falls back for Three r186.1 explicit no-adapter result and disposes the failed renderer', async () => {
@@ -129,7 +141,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     expect(harness.instances).toHaveLength(2);
     expect(harness.instances[0]?.forceWebGL).toBe(false);
     expect(harness.instances[1]?.forceWebGL).toBe(true);
-    await expectDisposed(harness.instances[0]!);
+    await expectDisposed(harness.instances[0]!, false);
     adapter.dispose();
   });
 

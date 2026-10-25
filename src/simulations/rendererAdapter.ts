@@ -118,6 +118,7 @@ export class ThreeRendererAdapter implements RendererPort {
     }
 
     const renderer = new WebGPURenderer(options);
+    let rendererInitialized = false;
     let deviceLost = false;
     const onDeviceLost = renderer.onDeviceLost;
     renderer.onDeviceLost = (info) => {
@@ -134,6 +135,7 @@ export class ThreeRendererAdapter implements RendererPort {
     try {
       try {
         await renderer.init();
+        rendererInitialized = true;
       } catch (error) {
         if (deviceLost || (!forceWebGL && isThreeNoWebGpuAdapterError(error))) {
           throw new BackendUnavailableError('Renderer backend/device is unavailable.', { cause: error });
@@ -181,7 +183,10 @@ export class ThreeRendererAdapter implements RendererPort {
       return { actual, instance: renderer };
     } catch (error) {
       if (this.#renderer === renderer) this.#releaseRenderer();
-      else this.#disposeRenderer(renderer);
+      else await this.#disposeRenderer(renderer, rendererInitialized);
+      if (!(error instanceof BackendUnavailableError)) {
+        console.error('Unexpected renderer initialization error.', error);
+      }
       throw error;
     }
   }
@@ -195,12 +200,31 @@ export class ThreeRendererAdapter implements RendererPort {
     return 'unavailable';
   }
 
-  #disposeRenderer(renderer: WebGPURenderer): void {
-    void Promise.resolve()
-      .then(() => renderer.setAnimationLoop(null))
-      .catch(() => undefined)
-      .then(() => renderer.dispose())
-      .catch(() => undefined);
+  async #disposeRenderer(renderer: WebGPURenderer, initialized = true): Promise<void> {
+    if (!initialized) {
+      // Three r186.1's Renderer.dispose() calls setAnimationLoop(null) without
+      // awaiting it. Before successful init, that retries the rejected init and
+      // leaks an unhandled rejection. The partial backend owns the only resources
+      // created so far, so dispose it directly and finish before trying fallback.
+      // This also completes before startBackend can construct WebGLBackend on the same canvas.
+      try {
+        await (renderer.backend as typeof renderer.backend & { dispose: () => Promise<void> }).dispose();
+      } catch {
+        // Keep cleanup best-effort; the original initialization error is reported.
+      }
+      return;
+    }
+
+    try {
+      await renderer.setAnimationLoop(null);
+    } catch {
+      // Disposal must continue even if stopping the loop fails.
+    }
+    try {
+      await renderer.dispose();
+    } catch {
+      // Cleanup errors must not replace the initialization/runtime error.
+    }
   }
   #watchCompute(
     run: () => Promise<unknown> | undefined,
@@ -450,7 +474,7 @@ export class ThreeRendererAdapter implements RendererPort {
 
   #releaseRenderer(): void {
     const renderer = this.#renderer;
-    if (renderer) this.#disposeRenderer(renderer);
+    if (renderer) void this.#disposeRenderer(renderer);
     this.#geometryAndMaterialDispose();
     this.#renderer = null;
     this.#scene = null;
