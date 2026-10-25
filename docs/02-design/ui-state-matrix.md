@@ -15,8 +15,9 @@ với nội dung tĩnh `unsupported` cho tới khi port được gắn và trạ
 
 `requested` chỉ giải thích lựa chọn/fallback, không thay thế `actual`. Khi dừng,
 UI xóa FPS và GPU timing cũ. Khi `running` nhưng FPS không hợp lệ, số đo và
-nhãn “Dữ liệu từ renderer” đều biến mất. Zero là số đo hợp lệ nếu producer
-báo timing có sẵn; `null` với `gpuTimingAvailable: false` nghĩa là chưa đo.
+nhãn “Dữ liệu từ renderer” đều biến mất. GPU timing chỉ hợp lệ khi hữu hạn
+và lớn hơn 0; `0`, giá trị lỗi hoặc `null` đều hiện “Không khả dụng”. Giá trị
+dương dưới 0,005 ms hiện `<0.01 ms` để không bị làm tròn thành số 0.
 
 Test UI kiểm ready → fallback → unsupported → error → recovery bằng
 `window.uiTest.setStatus()`/`setFailure()` trên FakeRenderer. Các nhãn và số đo

@@ -14,9 +14,10 @@ transitions. On 25/10 it integrated `dev@140eb41` with the real adapter from
   preview-FPS helpers from source; removed URL-driven state from browser tests.
 - RendererStatus.actual remains the only backend identity. Requested preference
   explains automatic fallback; it never replaces actual in the backend card.
-- Finite, nonnegative values are displayed only with appropriate availability.
-  Unavailable/invalid timing and measurements retained while paused are hidden.
-  A measured zero is still a valid value when timing is available and running.
+- Finite FPS values and strictly positive GPU timing are displayed only with
+  appropriate availability. Unavailable/invalid timing and measurements retained
+  while paused are hidden. Zero timing remains unavailable even if a producer
+  incorrectly marks it available; tiny positive values show `<0.01 ms`.
 - Existing polling now has regression coverage for ready → fallback →
   unavailable → error → recovery and clearing old metrics/notices.
 - Tests use an explicit controlled FakeRenderer with no production query path.
@@ -40,6 +41,13 @@ On 25/10 after integrating `dev@140eb41`: `npm run typecheck` and
 passed 32 with 2 WebGPU skips (desktop/mobile) when run with one worker.
 The production checks observed the initialized WebGL2 backend on this machine,
 including `?webgl=1`; these checks do not prove WebGPU or GPU parity.
+
+On the later TV4 timing-projection follow-up, source/test typechecks, the
+production build and 120/120 unit/integration tests passed. The desktop/mobile
+Chromium E2E suite passed 32 with 2 WebGPU skips. The added FakeRenderer case
+rejects zero timing despite an incorrect availability flag; the unit suite also
+checks a small positive value is not displayed as zero. These tests validate UI
+projection, not a hardware GPU timestamp result.
 
 ## Remaining integration gate
 

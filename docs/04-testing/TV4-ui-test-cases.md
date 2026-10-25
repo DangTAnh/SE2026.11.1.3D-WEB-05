@@ -16,7 +16,7 @@ mock trong production. Test GPU thật vẫn chờ adapter và máy phù hợp.
 | UT-S01 | UI-FR-10 | `actual`/`requested` qua RendererStatus | chọn đúng ready/fallback/unsupported |
 | UT-S02 | UI-FR-04/05 | số đo hợp lệ/không hợp lệ và tạm dừng | không giữ metric cũ hoặc nhãn nguồn sai |
 | UT-S03 | UI-FR-10 | error/unsupported | khóa simulation controls |
-| UT-S04 | UI-FR-05 | timing không khả dụng/zero hợp lệ | `null` không hiển thị như số; zero hợp lệ được giữ |
+| UT-S04 | UI-FR-05 | timing không khả dụng/zero không hợp lệ | `null` và `0` hiện “Không khả dụng”; số dương rất nhỏ không bị làm tròn thành 0 |
 
 ## Checklist trình duyệt
 

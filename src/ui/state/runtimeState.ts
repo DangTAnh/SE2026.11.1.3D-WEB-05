@@ -31,6 +31,7 @@ export function formatFps(state: UiRuntimeState): string {
 
 export function formatGpuTiming(state: UiRuntimeState): string {
   if (!state.gpuTimingAvailable || state.gpuTimeMs === null) return 'Không khả dụng';
+  if (state.gpuTimeMs < 0.005) return '<0.01 ms';
   return `${state.gpuTimeMs.toFixed(2)} ms`;
 }
 
@@ -52,7 +53,7 @@ export function createRendererRuntimeState(status?: RendererStatus, failed = fal
   }
   const fallback = status.actual === 'webgl2' && status.requested !== 'webgl2';
   const gpuTimingAvailable = status.running && status.gpuTimingAvailable && status.gpuTimeMs !== null
-    && Number.isFinite(status.gpuTimeMs) && status.gpuTimeMs >= 0;
+    && Number.isFinite(status.gpuTimeMs) && status.gpuTimeMs > 0;
   const fps = status.running && status.fps !== null && Number.isFinite(status.fps) && status.fps >= 0
     ? status.fps : null;
   return {

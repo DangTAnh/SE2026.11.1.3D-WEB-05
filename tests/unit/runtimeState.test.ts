@@ -57,8 +57,15 @@ test('pause hides the last frame measurements and keeps resume enabled', () => {
   expect(state.gpuTimingDetail).toContain('tạm dừng');
 });
 
-test('a measured zero remains valid when timing is available', () => {
-  expect(formatGpuTiming(createRendererRuntimeState({ ...ready, gpuTimeMs: 0 }))).toBe('0.00 ms');
+test('zero timing is unavailable even when the producer marks it available', () => {
+  const state = createRendererRuntimeState({ ...ready, gpuTimeMs: 0 });
+  expect(state.gpuTimeMs).toBeNull();
+  expect(state.gpuTimingAvailable).toBe(false);
+  expect(formatGpuTiming(state)).toBe('Không khả dụng');
+});
+
+test('a small positive timing is not rounded down to a zero measurement', () => {
+  expect(formatGpuTiming(createRendererRuntimeState({ ...ready, gpuTimeMs: 0.004 }))).toBe('<0.01 ms');
 });
 
 test('missing renderer and renderer errors stay unavailable with safe explanations', () => {

@@ -1,5 +1,14 @@
 # PROJECT STATUS — 3D-WEB-05
 
+> **25/10/2026 — issue #14 timing projection follow-up:** UI now rejects zero GPU
+> timing even if a producer marks it available, matching `RendererPort` and the
+> pending #40 producer. A small positive duration shows `<0.01 ms` instead of
+> rounding to zero. Source/test typechecks, 120 unit/integration tests and the
+> production build passed on this TV4 branch; desktop/mobile Chromium E2E passed
+> 32 tests with two WebGPU skips. UI fixture tests are not GPU timing evidence.
+> PR #40 remains unmerged and WebGPU hardware/timestamp evidence is still open.
+> Earlier checkpoints below are historical.
+
 > **25/10/2026 — issue #14 integration checkpoint:** PR #33's branch now
 > incorporates `dev@140eb41` (merged adapter #12). Source typecheck, test
 > typecheck, production build and 119 unit/integration tests passed locally.

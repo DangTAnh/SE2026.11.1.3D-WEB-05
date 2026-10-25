@@ -11,6 +11,10 @@ test('live status replaces metrics and backend identity across failure and recov
   await expect(page.locator('#runtime-fps')).toHaveText('62 FPS');
   await expect(page.locator('#gpu-timing')).toHaveText('1.25 ms');
 
+  await page.evaluate(() => window.uiTest.setStatus({ gpuTimingAvailable: true, gpuTimeMs: 0 }));
+  await page.clock.fastForward(500);
+  await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
+
   await page.evaluate(() => window.uiTest.setStatus({ actual: 'webgl2', requested: 'webgpu', fps: 48,
     gpuTimingAvailable: false, gpuTimeMs: 0 }));
   await page.clock.fastForward(500);
