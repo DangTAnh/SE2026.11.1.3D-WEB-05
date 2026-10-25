@@ -330,6 +330,7 @@ export class ThreeRendererAdapter implements RendererPort {
   #scheduleRuntimeDeviceLoss(renderer: WebGPURenderer, generation: number): void {
     if (this.#runtimeRecoveryInFlight) return;
     this.#runtimeRecoveryTask = this.#handleRuntimeDeviceLoss(renderer, generation).catch((error: unknown) => {
+      this.#runtimeRecoveryInFlight = false;
       this.#actual = 'unavailable';
       this.#running = false;
       if (this.#renderer) this.#releaseRenderer();
