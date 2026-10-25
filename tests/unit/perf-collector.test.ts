@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { setTimeout as realDelay } from 'node:timers/promises';
 import { afterEach, test, vi } from 'vitest';
 import { configHash } from '../../src/core/measurement/configHash.ts';
 import type { PerformanceSnapshot } from '../../src/core/types/measurement.ts';
@@ -11,18 +10,25 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-/**
- * Flushes the collector's async `configHash` without moving the fake clock.
- * `vi.waitFor` would advance timers and fire extra sampling intervals, which
- * makes the sample count depend on machine load.
- */
-async function flushSamples(samples: PerformanceSnapshot[], expected: number): Promise<void> {
-  for (let attempt = 0; attempt < 100 && samples.length < expected; attempt += 1) {
-    // `crypto.subtle.digest` completes on a real worker; a zero-duration fake
-    // timer loop does not reliably yield to it on slower CI runners.
-    await realDelay(1);
-  }
-  assert.equal(samples.length, expected);
+function createSampleRecorder() {
+  const samples: PerformanceSnapshot[] = [];
+  let resolveNext: ((sample: PerformanceSnapshot) => void) | null = null;
+
+  return {
+    samples,
+    onSample(sample: PerformanceSnapshot): void {
+      samples.push(sample);
+      const resolve = resolveNext;
+      resolveNext = null;
+      resolve?.(sample);
+    },
+    nextSample(): Promise<PerformanceSnapshot> {
+      assert.equal(resolveNext, null, 'only one pending sample expectation is supported');
+      return new Promise((resolve) => {
+        resolveNext = resolve;
+      });
+    },
+  };
 }
 
 test('samples the actual backend after warm-up at a fixed cadence', async () => {
@@ -34,27 +40,29 @@ test('samples the actual backend after warm-up at a fixed cadence', async () => 
     fps: 58.5,
     gpuTimeMs: 3.25,
   });
-  const samples: PerformanceSnapshot[] = [];
+  const recorder = createSampleRecorder();
   const collector = new PerformanceCollector(port, {
     warmUpMs: 100,
     cadenceMs: 50,
     getConfig: () => DEFAULT_CONFIG,
-    onSample: (snapshot) => {
-      samples.push(snapshot);
-    },
+    onSample: recorder.onSample,
   });
 
+  const firstSample = recorder.nextSample();
   collector.start();
   await vi.advanceTimersByTimeAsync(99);
-  assert.equal(samples.length, 0);
+  assert.equal(recorder.samples.length, 0);
 
   await vi.advanceTimersByTimeAsync(1);
-  await flushSamples(samples, 1);
+  await firstSample;
+  assert.equal(recorder.samples.length, 1);
+  const secondSample = recorder.nextSample();
   await vi.advanceTimersByTimeAsync(50);
-  await flushSamples(samples, 2);
+  await secondSample;
+  assert.equal(recorder.samples.length, 2);
 
   const expectedHash = await configHash(DEFAULT_CONFIG);
-  for (const sample of samples) {
+  for (const sample of recorder.samples) {
     assert.equal(sample.actual, 'webgl2');
     assert.equal(sample.configHash, expectedHash);
     assert.match(sample.configHash, /^[0-9a-f]{64}$/);
@@ -76,56 +84,58 @@ test('unavailable GPU timing is always stored as null', async () => {
     // Deliberately inconsistent input to prove the collector preserves INV-1.
     gpuTimeMs: 4,
   });
-  const samples: PerformanceSnapshot[] = [];
+  const recorder = createSampleRecorder();
   const collector = new PerformanceCollector(port, {
     warmUpMs: 0,
     cadenceMs: 100,
     getConfig: () => DEFAULT_CONFIG,
-    onSample: (snapshot) => {
-      samples.push(snapshot);
-    },
+    onSample: recorder.onSample,
   });
 
+  const firstSample = recorder.nextSample();
   collector.start();
   await vi.advanceTimersByTimeAsync(0);
-  await flushSamples(samples, 1);
+  await firstSample;
+  assert.equal(recorder.samples.length, 1);
 
-  assert.equal(samples[0]?.gpuTimingAvailable, false);
-  assert.equal(samples[0]?.gpuTimeMs, null);
+  assert.equal(recorder.samples[0]?.gpuTimingAvailable, false);
+  assert.equal(recorder.samples[0]?.gpuTimeMs, null);
   collector.dispose();
 });
 
 test('start, stop and dispose are idempotent and cancelled work emits no more samples', async () => {
   vi.useFakeTimers();
   const port = new FakeRenderer({ actual: 'webgpu', running: true, fps: 60 });
-  const samples: PerformanceSnapshot[] = [];
+  const recorder = createSampleRecorder();
   const collector = new PerformanceCollector(port, {
     warmUpMs: 20,
     cadenceMs: 10,
     getConfig: () => DEFAULT_CONFIG,
-    onSample: (snapshot) => {
-      samples.push(snapshot);
-    },
+    onSample: recorder.onSample,
   });
 
+  const firstSample = recorder.nextSample();
   collector.start();
   collector.start();
   await vi.advanceTimersByTimeAsync(20);
-  await flushSamples(samples, 1);
+  await firstSample;
+  assert.equal(recorder.samples.length, 1);
 
   collector.stop();
   collector.stop();
   await vi.advanceTimersByTimeAsync(100);
-  assert.equal(samples.length, 1);
+  assert.equal(recorder.samples.length, 1);
 
+  const secondSample = recorder.nextSample();
   collector.start();
   await vi.advanceTimersByTimeAsync(20);
-  await flushSamples(samples, 2);
+  await secondSample;
+  assert.equal(recorder.samples.length, 2);
   collector.dispose();
   collector.dispose();
   collector.start();
   await vi.advanceTimersByTimeAsync(100);
-  assert.equal(samples.length, 2);
+  assert.equal(recorder.samples.length, 2);
 });
 
 test('rejects invalid warm-up and cadence values', () => {
