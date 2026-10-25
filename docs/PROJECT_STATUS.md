@@ -1,5 +1,24 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 26/10/2026 — Issue #53 measurement freshness candidate
+
+- Branch `fix/53-measurement-age` starts from latest fetched `dev@ac364912`.
+  The proposed `RendererStatus.measurementAgeMs` is the monotonic age of the
+  latest valid GPU timing sample; `MAX_GPU_MEASUREMENT_AGE_MS` is 2 seconds.
+  Adapter pause/reset/reinit clears timing, ignores late in-flight results, and
+  reports stale timing unavailable. The UI hides stale/inconsistent timing;
+  the collector emits no paused or stale status sample.
+- Verification: source/test typechecks and build PASS; 140 unit/contract/
+  integration tests PASS; Chromium desktop/mobile E2E 38 PASS, two WebGPU
+  adapter cases skipped. Vite's existing >500 kB chunk warning remains.
+- Contract threshold is a proposal pending TV1 review; TV5 must review collector
+  behavior. Issue #11 is closed but is the vortex-kernel issue (not the UI
+  consumer referenced by #53); Issue #18 remains open and consumes the collector
+  but does not block this candidate. Real hardware GPU timing-age behavior is
+  **NOT_RUN**; browser/fake-clock tests do not prove hardware timestamp cadence.
+- PR/reviewer state is pending. Do not merge until contract/collector owners
+  review and at least one human approves.
+
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition

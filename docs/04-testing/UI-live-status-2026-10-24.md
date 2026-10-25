@@ -88,9 +88,12 @@ projection, not a hardware GPU timestamp result.
 This is a draft UI candidate, not closure of #14. #32/#9/#25, composition root
 #15 and adapter #12 are merged. Real WebGL2 initialization has been exercised
 in Chromium; WebGPU is unavailable in this browser environment. GPU parity,
-timing acceptance and the two-backend benchmark are NOT_RUN. Current port has no frame
-timestamp or measurement-age field, so UI cannot independently determine the
-freshness of numeric values while a producer claims it is running.
+timing acceptance and the two-backend benchmark are NOT_RUN. At the original
+#33 checkpoint, RendererStatus had no measurement-age field, so UI could not
+independently detect stale timing while `running` stayed true. Issue #53 now
+proposes monotonic `measurementAgeMs`, a 2-second freshness limit, and clearing
+timing on pause/reset. TV1 review remains required; real hardware timing
+freshness is unverified.
 
 PR #33 targets dev; CI checks the final candidate head.
 Exercise the same UI with actual WebGPU and WebGL2, forced fallback and

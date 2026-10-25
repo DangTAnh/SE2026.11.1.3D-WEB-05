@@ -26,6 +26,7 @@ export interface FakeRendererOptions {
   readonly running?: boolean;
   /** Defaults to `actual !== 'unavailable'`. */
   readonly gpuTimingAvailable?: boolean;
+  readonly measurementAgeMs?: number | null;
   readonly fps?: number | null;
   readonly gpuTimeMs?: number | null;
 }
@@ -39,11 +40,15 @@ export class FakeRenderer implements RendererPort {
 
   constructor(options: FakeRendererOptions = {}) {
     const actual = options.actual ?? 'unavailable';
+    const gpuTimingAvailable = options.gpuTimingAvailable ?? actual !== 'unavailable';
     this.#status = {
       requested: options.requested ?? 'auto',
       actual,
       running: options.running ?? false,
-      gpuTimingAvailable: options.gpuTimingAvailable ?? actual !== 'unavailable',
+      gpuTimingAvailable,
+      measurementAgeMs: options.measurementAgeMs === undefined
+        ? gpuTimingAvailable ? 0 : null
+        : options.measurementAgeMs,
       fps: options.fps ?? null,
       gpuTimeMs: options.gpuTimeMs ?? null,
     };
@@ -79,12 +84,24 @@ export class FakeRenderer implements RendererPort {
 
   pause(): void {
     this.calls.push({ type: 'pause' });
-    this.#status = { ...this.#status, running: false };
+    this.#status = {
+      ...this.#status,
+      running: false,
+      gpuTimingAvailable: false,
+      measurementAgeMs: null,
+      gpuTimeMs: null,
+    };
   }
 
   reset(): void {
     this.calls.push({ type: 'reset' });
     this.#lastConfig = null;
+    this.#status = {
+      ...this.#status,
+      gpuTimingAvailable: false,
+      measurementAgeMs: null,
+      gpuTimeMs: null,
+    };
   }
 
   getStatus(): RendererStatus {
@@ -96,6 +113,12 @@ export class FakeRenderer implements RendererPort {
     this.calls.push({ type: 'dispose' });
     if (this.#disposed) return;
     this.#disposed = true;
-    this.#status = { ...this.#status, running: false };
+    this.#status = {
+      ...this.#status,
+      running: false,
+      gpuTimingAvailable: false,
+      measurementAgeMs: null,
+      gpuTimeMs: null,
+    };
   }
 }

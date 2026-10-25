@@ -7,7 +7,7 @@ import {
 } from 'three/webgpu';
 import { PointsNodeMaterial, WebGPURenderer } from 'three/webgpu';
 import type { ActualBackend } from '../core/types/backend.ts';
-import type { RendererPort, RendererStatus, RendererTarget } from '../core/renderer/RendererPort.ts';
+import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererPort, type RendererStatus, type RendererTarget } from '../core/renderer/RendererPort.ts';
 import type { LabConfig } from '../presets/preset.ts';
 import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAMPING } from './simulation.ts';
 import { createAttractorKernel } from './shared/attractorKernel.ts';
@@ -55,6 +55,9 @@ export class ThreeRendererAdapter implements RendererPort {
   #gpuTimingAvailable = false;
   #gpuTimingInFlight = false;
   #gpuTimeMs: number | null = null;
+  #gpuTimeSampledAt: number | null = null;
+  #measurementGeneration = 0;
+  #gpuTimingRequestId = 0;
   #computeFrames = 0;
   #unavailableNotice: HTMLElement | null = null;
 
@@ -72,6 +75,7 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#unavailableNotice = null;
     this.#actual = 'unavailable';
     this.#running = false;
+    this.#clearGpuTiming();
     this.#requested = this.#config.backendPreference;
     this.#target = target;
 
@@ -249,24 +253,29 @@ export class ThreeRendererAdapter implements RendererPort {
   #resolveGpuTime(renderer: WebGPURenderer): void {
     if (!this.#gpuTimingSupported || this.#gpuTimingInFlight || this.#renderer !== renderer || this.#disposed) return;
     this.#gpuTimingInFlight = true;
+    const measurementGeneration = this.#measurementGeneration;
+    const requestId = ++this.#gpuTimingRequestId;
     void renderer.resolveTimestampsAsync('compute')
       .then((durationMs) => {
-        if (this.#renderer !== renderer || this.#disposed) return;
+        if (this.#renderer !== renderer || this.#disposed || measurementGeneration !== this.#measurementGeneration) return;
         if (durationMs !== undefined && durationMs !== null && Number.isFinite(durationMs) && durationMs > 0) {
           this.#gpuTimeMs = durationMs;
           this.#gpuTimingAvailable = true;
+          this.#gpuTimeSampledAt = performance.now();
         } else {
           this.#gpuTimeMs = null;
           this.#gpuTimingAvailable = false;
+          this.#gpuTimeSampledAt = null;
         }
       })
       .catch(() => {
-        if (this.#renderer !== renderer || this.#disposed) return;
+        if (this.#renderer !== renderer || this.#disposed || measurementGeneration !== this.#measurementGeneration) return;
         this.#gpuTimeMs = null;
         this.#gpuTimingAvailable = false;
+        this.#gpuTimeSampledAt = null;
       })
       .finally(() => {
-        this.#gpuTimingInFlight = false;
+        if (requestId === this.#gpuTimingRequestId) this.#gpuTimingInFlight = false;
       });
   }
 
@@ -306,6 +315,7 @@ export class ThreeRendererAdapter implements RendererPort {
 
   pause(): void {
     this.#running = false;
+    this.#clearGpuTiming();
   }
 
   resize(target: RendererTarget): void {
@@ -315,16 +325,26 @@ export class ThreeRendererAdapter implements RendererPort {
 
   reset(): void {
     if (!this.#renderer || this.#disposed) return;
+    this.#clearGpuTiming();
     if (this.#buffers) this.#watchCompute(() => this.#renderer!.compute(this.#buffers!.initKernel), this.#renderer);
   }
 
   getStatus(): RendererStatus {
-    const gpuTimingAvailable = this.#gpuTimingAvailable && this.#gpuTimeMs !== null;
+    const measurementAgeMs = this.#gpuTimeSampledAt === null
+      ? null
+      : performance.now() - this.#gpuTimeSampledAt;
+    const gpuTimingAvailable = this.#gpuTimingAvailable
+      && this.#gpuTimeMs !== null
+      && measurementAgeMs !== null
+      && Number.isFinite(measurementAgeMs)
+      && measurementAgeMs >= 0
+      && measurementAgeMs <= MAX_GPU_MEASUREMENT_AGE_MS;
     return {
       requested: this.#requested,
       actual: this.#actual,
       running: this.#running,
       gpuTimingAvailable,
+      measurementAgeMs,
       fps: this.#fps > 0 ? this.#fps : null,
       gpuTimeMs: gpuTimingAvailable ? this.#gpuTimeMs : null,
     };
@@ -482,10 +502,17 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#buffers = null;
     this.#computeKernel = null;
     this.#gpuTimingSupported = false;
+    this.#clearGpuTiming();
+    this.#computeFrames = 0;
+  }
+
+  #clearGpuTiming(): void {
+    this.#measurementGeneration += 1;
+    this.#gpuTimingRequestId += 1;
     this.#gpuTimingAvailable = false;
     this.#gpuTimingInFlight = false;
     this.#gpuTimeMs = null;
-    this.#computeFrames = 0;
+    this.#gpuTimeSampledAt = null;
   }
 
   #showUnavailableNotice(): void {

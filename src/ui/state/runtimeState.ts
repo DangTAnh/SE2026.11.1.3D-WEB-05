@@ -1,4 +1,4 @@
-import type { RendererStatus } from '../../core/renderer/RendererPort.ts';
+import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererStatus } from '../../core/renderer/RendererPort.ts';
 import type { ActualBackend } from '../../core/types/backend.ts';
 
 export type RuntimePhase = 'initializing' | 'ready' | 'fallback' | 'unsupported' | 'error';
@@ -64,8 +64,11 @@ export function createRendererRuntimeState(status?: RendererStatus, failed = fal
     };
   }
   const fallback = status.actual === 'webgl2' && status.requested !== 'webgl2';
+  const measurementAgeMs = status.measurementAgeMs;
   const gpuTimingAvailable = status.running && status.gpuTimingAvailable && status.gpuTimeMs !== null
-    && Number.isFinite(status.gpuTimeMs) && status.gpuTimeMs > 0;
+    && Number.isFinite(status.gpuTimeMs) && status.gpuTimeMs > 0
+    && measurementAgeMs !== null && Number.isFinite(measurementAgeMs)
+    && measurementAgeMs >= 0 && measurementAgeMs <= MAX_GPU_MEASUREMENT_AGE_MS;
   const fps = status.running && status.fps !== null && Number.isFinite(status.fps) && status.fps >= 0
     ? status.fps : null;
   return {

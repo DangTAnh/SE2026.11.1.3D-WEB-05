@@ -1,5 +1,5 @@
 import type { PerformanceSnapshot } from '../core/types/measurement.ts';
-import type { RendererPort } from '../core/renderer/RendererPort.ts';
+import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererPort } from '../core/renderer/RendererPort.ts';
 import { configHash } from '../core/measurement/configHash.ts';
 import type { LabConfig } from '../presets/preset.ts';
 
@@ -90,9 +90,17 @@ export class PerformanceCollector {
     this.#sampling = true;
 
     try {
-      const status = this.port.getStatus();
       const hash = await configHash(this.options.getConfig());
       if (!this.#isActive(generation)) return;
+
+      const status = this.port.getStatus();
+      if (!status.running) return;
+      if (status.measurementAgeMs !== null && (
+        !Number.isFinite(status.measurementAgeMs)
+        || status.measurementAgeMs < 0
+        || status.measurementAgeMs > MAX_GPU_MEASUREMENT_AGE_MS
+      )) return;
+      if (status.gpuTimingAvailable && status.measurementAgeMs === null) return;
 
       // Enforce INV-1 even if a RendererPort implementation returns an
       // inconsistent status: unavailable or invalid timing is recorded as null.

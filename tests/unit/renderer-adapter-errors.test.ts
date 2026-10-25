@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MAX_GPU_MEASUREMENT_AGE_MS } from '../../src/core/renderer/RendererPort.ts';
 import { ThreeRendererAdapter } from '../../src/simulations/rendererAdapter.ts';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 
@@ -11,6 +12,8 @@ const harness = vi.hoisted(() => ({
     backendDisposed: boolean;
     internalFallbackUsed: boolean;
     animationLoopValues: unknown[];
+    animationLoopCallback: ((time: number) => void) | null;
+    resolveTimestamp: ((durationMs: number) => void) | null;
   }>,
 }));
 
@@ -30,6 +33,8 @@ vi.mock('three/webgpu', async () => {
         backendDisposed: false,
         internalFallbackUsed: false,
         animationLoopValues: [],
+        animationLoopCallback: null,
+        resolveTimestamp: null,
       };
       harness.instances.push(this.record);
       this.backend = this.record.forceWebGL
@@ -68,6 +73,7 @@ vi.mock('three/webgpu', async () => {
 
     async setAnimationLoop(callback: ((time: number) => void) | null): Promise<void> {
       this.record.animationLoopValues.push(callback);
+      if (callback) this.record.animationLoopCallback = callback;
       if (this.record.forceWebGL || callback === null) return;
       if (harness.scenario === 'animation-programming') throw harness.error;
       if (harness.scenario === 'animation-device-lost') {
@@ -78,7 +84,10 @@ vi.mock('three/webgpu', async () => {
 
     setPixelRatio(): void {}
     setSize(): void {}
-    hasFeature(): boolean { return false; }
+    hasFeature(): boolean { return true; }
+    resolveTimestampsAsync(): Promise<number> {
+      return new Promise((resolve) => { this.record.resolveTimestamp = resolve; });
+    }
     render(): void {}
     dispose(): void { this.record.disposed = true; }
   }
@@ -114,6 +123,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
@@ -207,6 +217,39 @@ describe('ThreeRendererAdapter initialization error classification', () => {
 
     expect(harness.instances).toHaveLength(2);
     await expectDisposed(harness.instances[0]!);
+    adapter.dispose();
+  });
+
+  it('clears GPU timing on pause and reset and ignores a result that resolves after pause', async () => {
+    vi.useFakeTimers();
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopCallback!;
+
+    for (let index = 1; index <= 30; index += 1) frame(index * 16);
+    await vi.waitFor(() => expect(harness.instances[0]?.resolveTimestamp).toBeTypeOf('function'));
+    adapter.pause();
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+
+    harness.instances[0]!.resolveTimestamp!(3.25);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+
+    adapter.start();
+    for (let index = 31; index <= 60; index += 1) frame(index * 16);
+    await vi.waitFor(() => expect(harness.instances[0]?.resolveTimestamp).toBeTypeOf('function'));
+    harness.instances[0]!.resolveTimestamp!(3.25);
+    await vi.waitFor(() => expect(adapter.getStatus().gpuTimingAvailable).toBe(true));
+    expect(adapter.getStatus().measurementAgeMs).not.toBeNull();
+
+    await vi.advanceTimersByTimeAsync(MAX_GPU_MEASUREMENT_AGE_MS + 1);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, gpuTimeMs: null });
+    expect(adapter.getStatus().measurementAgeMs).toBeGreaterThan(MAX_GPU_MEASUREMENT_AGE_MS);
+
+    adapter.reset();
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
     adapter.dispose();
   });
 });

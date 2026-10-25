@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test, vi } from 'vitest';
 import { configHash } from '../../src/core/measurement/configHash.ts';
+import { MAX_GPU_MEASUREMENT_AGE_MS } from '../../src/core/renderer/RendererPort.ts';
 import type { PerformanceSnapshot } from '../../src/core/types/measurement.ts';
 import { PerformanceCollector } from '../../src/perf/collector.ts';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
@@ -100,6 +101,53 @@ test('unavailable GPU timing is always stored as null', async () => {
 
   assert.equal(recorder.samples[0]?.gpuTimingAvailable, false);
   assert.equal(recorder.samples[0]?.gpuTimeMs, null);
+  collector.dispose();
+});
+
+test('does not emit a sample while the renderer is paused', async () => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({
+    actual: 'webgpu', running: false, gpuTimingAvailable: true, measurementAgeMs: 0,
+    fps: 60, gpuTimeMs: 3,
+  });
+  const recorder = createSampleRecorder();
+  const collector = new PerformanceCollector(port, {
+    warmUpMs: 0,
+    cadenceMs: 100,
+    getConfig: () => DEFAULT_CONFIG,
+    onSample: recorder.onSample,
+  });
+
+  collector.start();
+  await vi.advanceTimersByTimeAsync(0);
+  assert.equal(recorder.samples.length, 0);
+  collector.dispose();
+});
+
+test('rejects stale GPU timing samples, then resumes when a fresh measurement arrives', async () => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({
+    actual: 'webgpu', running: true, gpuTimingAvailable: false,
+    measurementAgeMs: MAX_GPU_MEASUREMENT_AGE_MS + 1, fps: 60,
+  });
+  const recorder = createSampleRecorder();
+  const collector = new PerformanceCollector(port, {
+    warmUpMs: 0,
+    cadenceMs: 100,
+    getConfig: () => DEFAULT_CONFIG,
+    onSample: recorder.onSample,
+  });
+
+  collector.start();
+  await vi.advanceTimersByTimeAsync(0);
+  assert.equal(recorder.samples.length, 0);
+
+  const nextSample = recorder.nextSample();
+  port.setStatus({ measurementAgeMs: 0, gpuTimingAvailable: true, gpuTimeMs: 3.5 });
+  await vi.advanceTimersByTimeAsync(100);
+  await nextSample;
+  assert.equal(recorder.samples.length, 1);
+  assert.equal(recorder.samples[0]?.gpuTimeMs, 3.5);
   collector.dispose();
 });
 

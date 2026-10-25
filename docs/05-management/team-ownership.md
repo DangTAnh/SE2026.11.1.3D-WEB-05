@@ -88,6 +88,12 @@ can start, except the ones marked *(after …)*.
 | Contract tests | adapter against `RendererPort` |
 | Handoff | browser notes for TV5 |
 
+GPU timing in `RendererStatus` now carries a monotonic `measurementAgeMs` in the
+Issue #53 candidate. The proposed shared contract treats values older than two
+seconds as unavailable; pause/reset clear the cached measurement. TV1 must
+review this contract, and TV5 reviews collector freshness filtering, before
+merge.
+
 **TV4 — UI and presets**
 
 | Block | Contents |
@@ -114,6 +120,11 @@ can start, except the ones marked *(after …)*.
 | Measurement runs | result files produced through TV1's tooling |
 | Fairness report | same host, same config, limitations written down |
 | Regression triage | failing measurements become tests, not anecdotes |
+
+The #53 collector change skips paused snapshots and GPU measurements older than
+the shared `MAX_GPU_MEASUREMENT_AGE_MS` contract threshold. Missing timing still
+allows a sample with `gpuTimeMs: null` so unsupported timing remains distinct
+from stale timing.
 
 ### 3.1.1 Handoffs
 

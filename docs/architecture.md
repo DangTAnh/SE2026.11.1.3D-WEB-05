@@ -78,6 +78,14 @@ invalidates every comparison the project is built to produce.
 `RendererStatus` encodes this directly: `requested` exists only to explain a
 fallback, and `actual` is the only backend identity a benchmark row may store.
 
+`measurementAgeMs` describes the age of the latest valid GPU timing sample,
+measured with the monotonic clock. A sample is fresh for at most
+`MAX_GPU_MEASUREMENT_AGE_MS` (2 seconds); stale timing is reported unavailable
+and its value is null. Pause, reset and renderer/backend reinitialization clear
+the timing and age. The performance collector also refuses paused or stale
+status snapshots. This threshold and field are the Issue #53 contract proposal
+and require TV1 review before merge.
+
 ## 4. Renderer contract
 
 `RendererPort` (see the file for full doc comments):
