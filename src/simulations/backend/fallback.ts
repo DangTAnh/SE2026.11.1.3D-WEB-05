@@ -23,10 +23,9 @@ export class BackendUnavailableError extends Error {
 /** Start the requested backend, falling back to WebGL2 without losing the user's preference. */
 export async function startBackend<T>(
   preference: BackendPreference,
-  forceWebGL: boolean,
   factories: BackendFactories<T>,
 ): Promise<StartedBackend<T>> {
-  if (!forceWebGL && preference !== 'webgl2') {
+  if (preference !== 'webgl2') {
     try {
       return await factories.webgpu();
     } catch (error) {
@@ -41,8 +40,4 @@ export async function startBackend<T>(
     if (!(error instanceof BackendUnavailableError)) throw error;
     return { actual: 'unavailable', instance: null };
   }
-}
-
-export function forceWebGLFromSearch(search: string): boolean {
-  return new URLSearchParams(search).get('webgl') === '1';
 }

@@ -13,7 +13,7 @@ import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAM
 import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
-import { BackendUnavailableError, forceWebGLFromSearch, startBackend, type InitializedBackend } from './backend/fallback.ts';
+import { BackendUnavailableError, startBackend, type InitializedBackend } from './backend/fallback.ts';
 
 const MAX_FRAME_DELTA = 0.05;
 const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 30;
@@ -63,26 +63,17 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#requested = this.#config.backendPreference;
     this.#target = target;
 
-    try {
-      const started = await startBackend<WebGPURenderer>(
-        this.#requested,
-        forceWebGLFromSearch(window.location.search),
-        {
-          webgpu: () => this.#initializeRenderer(false, generation),
-          webgl2: () => this.#initializeRenderer(true, generation),
-        },
-      );
-      if (!this.#isInitActive(generation)) return 'unavailable';
-      this.#renderer = started.instance;
-      this.#actual = started.actual;
-      if (!this.#renderer) this.#showUnavailableNotice();
-    } catch (error) {
-      if (this.#isInitActive(generation)) {
-        this.#actual = 'unavailable';
-        this.#showUnavailableNotice();
-      }
-      throw error;
-    }
+    const started = await startBackend<WebGPURenderer>(
+      this.#requested,
+      {
+        webgpu: () => this.#initializeRenderer(false, generation),
+        webgl2: () => this.#initializeRenderer(true, generation),
+      },
+    );
+    if (!this.#isInitActive(generation)) return 'unavailable';
+    this.#renderer = started.instance;
+    this.#actual = started.actual;
+    if (!this.#renderer) this.#showUnavailableNotice();
 
     return this.#isInitActive(generation) ? this.#actual : 'unavailable';
   }
