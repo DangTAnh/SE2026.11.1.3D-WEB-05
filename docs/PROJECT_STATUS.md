@@ -1,5 +1,19 @@
 # PROJECT STATUS — 3D-WEB-05
 
+> **24/10/2026 — dev update after #38:** composition root #15 has merged at
+> `de6665a`; production still uses an unavailable placeholder pending adapter
+> #12. PRs #39/#40 now propose adapter/fallback changes and require review and
+> runtime evidence. Issue #37 remains open while the collector test repair in
+> #38 is assessed. The checkpoint below uses the earlier `888626a` baseline.
+
+> **24/10/2026 — workflow/current-dev checkpoint (#36):** dev at `888626a`
+> includes #32 UI controls and #35 shared TSL kernels. Adapter #12, fallback
+> #13 and composition #15 remain pending; GPU runtime/parity/benchmark NOT_RUN.
+> TV4 #33 is a draft live-status candidate into dev; #16 is blocked on shared
+> hash/Vortex decisions. Four legacy branches have been renamed with identical
+> SHAs. See [workflow audit and next actions](05-management/workflow-audit-2026-10-24.md)
+> and [CONTRIBUTING](../CONTRIBUTING.md). Prior checkpoints below are historical.
+
 > **24/10/2026 — TV4 issue #9/#25 branch checkpoint:** UI now consumes an
 > injected RendererPort, with explicit FakeRenderer browser tests and no
 > Canvas2D preview. Production main initializes a placeholder port and shows
