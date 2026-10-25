@@ -8,7 +8,9 @@
  *  1. the spawn sampler is isotropic (uniform on the sphere, not a normalized
  *     cube vector), and
  *  2. both step kernels skip motion at the origin instead of calling
- *     `normalize(vec3(0))`, while still ageing the particle.
+ *     `normalize(vec3(0))`, while still ageing the particle, and
+ *  3. both step kernels leave velocity/position untouched when delta is zero,
+ *     matching `step()`'s early return for `dt * speed === 0`.
  *
  * The same file keeps the written contract in
  * `docs/03-research/gpu-kernel-contract.md` honest: the hash indices documented
@@ -65,6 +67,25 @@ for (const [name, file] of [
       /\}\);\s*age\.addAssign\(uniforms\.delta\);/,
       `${name} kernel must increment age outside the motion guard`,
     );
+  });
+
+  test(`contract: ${name} kernel no-ops velocity when delta is zero`, () => {
+    const deltaGuard = file.indexOf('If(uniforms.delta.greaterThan(0)');
+    const originGuard = file.indexOf('If(distance.greaterThan(1e-6)');
+    const age = file.indexOf('age.addAssign(uniforms.delta);');
+
+    assert.ok(deltaGuard >= 0, `${name} kernel is missing the delta > 0 guard`);
+    assert.ok(originGuard > deltaGuard, `${name} kernel must guard delta before motion`);
+    assert.ok(age > originGuard, `${name} kernel must add age after the motion guard`);
+
+    const motion = file.slice(deltaGuard, age);
+    assert.match(motion, /velocity\.addAssign\(tangent/, `${name} kernel updates velocity outside the delta guard`);
+    assert.match(
+      motion,
+      /velocity\.assign\(velocity\.mul\(uniforms\.(?:vortexD|d)amping\)\)/,
+      `${name} kernel applies damping outside the delta guard`,
+    );
+    assert.match(motion, /position\.addAssign/, `${name} kernel integrates position outside the delta guard`);
   });
 }
 
