@@ -11,10 +11,11 @@ if (!root) throw new Error('Không tìm thấy phần tử #app');
 
 // Prepare the host DOM first so the adapter receives the actual preview canvas.
 const canvas = prepareLabUI(root);
+const canvasHost = canvas.parentElement ?? canvas;
 const initialConfig = new URLSearchParams(window.location.search).get('webgl') === '1'
   ? { ...DEFAULT_CONFIG, backendPreference: 'webgl2' as const }
   : DEFAULT_CONFIG;
-const createTarget = () => measureRendererTarget(canvas);
+const createTarget = () => measureRendererTarget(canvasHost);
 
 void composeLab({
   createPort: () => createRendererPort(canvas, initialConfig),

@@ -87,12 +87,15 @@ invalidates every comparison the project is built to produce.
 fallback, and `actual` is the only backend identity a benchmark row may store.
 
 **Runtime device/context loss policy (Issue #52).** If the active WebGPU device
-is lost after initialization, the adapter disposes it and attempts WebGL2 once,
-then resumes only if the renderer was running. If WebGL2 is already active or
-the recovery renderer is lost, the adapter reports `actual: unavailable` and
-stops; it does not loop or add a CPU path. The UI polls `RendererStatus`, so it
-shows the recovered backend or its unavailable state. This path is covered by
-adapter and Chromium context-loss tests; physical GPU device-loss behavior is
+is lost after initialization, the adapter disposes it, replaces the canvas in
+the same stable host, and attempts WebGL2 once. A canvas cannot change its
+context mode after `getContext('webgpu')`, so recovery must use a fresh canvas.
+The adapter preserves the latest start/pause intent while asynchronous recovery
+runs. If WebGL2 is already active or the recovery renderer is lost, it reports
+`actual: unavailable` and stops; it does not loop or add a CPU path. The UI
+measures the stable host, so resize handling remains bound across canvas
+replacement. Adapter tests simulate context-mode locking and delayed recovery;
+Chromium tests cover WebGL2 context loss. Physical GPU device-loss behavior is
 not verified in the current environment.
 
 ## 4. Renderer contract

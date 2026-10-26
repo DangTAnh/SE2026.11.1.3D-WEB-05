@@ -51,6 +51,7 @@ export class ThreeRendererAdapter implements RendererPort {
   #initializingRenderer: WebGPURenderer | null = null;
   #readyRenderer: WebGPURenderer | null = null;
   #running = false;
+  #runningIntent = false;
   #disposed = false;
   #fps = 0;
   #fpsFrames = 0;
@@ -88,6 +89,7 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#unavailableNotice = null;
     this.#actual = 'unavailable';
     this.#running = false;
+    this.#runningIntent = false;
     this.#runtimeFallbackAttempted = false;
     this.#runtimeRecoveryInFlight = false;
     this.#runtimeRecoveryTask = null;
@@ -100,7 +102,16 @@ export class ThreeRendererAdapter implements RendererPort {
     const started = await startBackend<WebGPURenderer>(
       this.#requested,
       {
-        webgpu: () => this.#initializeRenderer(false, generation),
+        webgpu: async () => {
+          try {
+            return await this.#initializeRenderer(false, generation);
+          } catch (error) {
+            if (error instanceof BackendUnavailableError && this.#isInitActive(generation)) {
+              this.#replaceCanvasForRecovery();
+            }
+            throw error;
+          }
+        },
         webgl2: () => this.#initializeRenderer(true, generation),
       },
     );
@@ -342,7 +353,6 @@ export class ThreeRendererAdapter implements RendererPort {
   async #handleRuntimeDeviceLoss(renderer: WebGPURenderer, generation: number): Promise<void> {
     if (this.#disposed || !this.#isInitActive(generation) || this.#renderer !== renderer || this.#runtimeRecoveryInFlight) return;
     this.#runtimeRecoveryInFlight = true;
-    const wasRunning = this.#running;
     const canFallback = this.#actual === 'webgpu' && !this.#runtimeFallbackAttempted;
     if (canFallback) this.#runtimeFallbackAttempted = true;
 
@@ -363,9 +373,15 @@ export class ThreeRendererAdapter implements RendererPort {
     }
 
     try {
+      this.#replaceCanvasForRecovery();
       await this.#initializeRenderer(true, generation);
       if (!this.#isInitActive(generation) || this.getStatus().actual !== 'webgl2' || !this.#renderer) return;
-      this.#running = wasRunning;
+      this.#running = this.#runningIntent;
+      if (this.#running) {
+        this.#lastFrameAt = 0;
+        this.#fpsFrames = 0;
+        this.#fpsStartedAt = performance.now();
+      }
       this.#unavailableNotice?.remove();
       this.#unavailableNotice = null;
     } catch (error) {
@@ -378,6 +394,21 @@ export class ThreeRendererAdapter implements RendererPort {
       this.#runtimeRecoveryInFlight = false;
     }
   }
+
+  #replaceCanvasForRecovery(): void {
+    const previousCanvas = this.#canvas;
+    const parent = previousCanvas.parentElement;
+    if (!parent) {
+      throw new BackendUnavailableError('Cannot recover the renderer without an attached canvas host.');
+    }
+
+    const replacement = previousCanvas.cloneNode(true) as HTMLCanvasElement;
+    previousCanvas.removeEventListener('webglcontextlost', this.#onWebGLContextLost);
+    previousCanvas.replaceWith(replacement);
+    this.#canvas = replacement;
+    replacement.addEventListener('webglcontextlost', this.#onWebGLContextLost);
+  }
+
   applyConfig(config: Readonly<LabConfig>): void {
     const countChanged = config.particleCount !== this.#config.particleCount;
     const modeChanged = config.mode !== this.#config.mode;
@@ -398,7 +429,13 @@ export class ThreeRendererAdapter implements RendererPort {
     }
   }
   start(): void {
-    if (this.#disposed || this.#actual === 'unavailable') return;
+    if (this.#disposed) return;
+    if (this.#runtimeRecoveryInFlight) {
+      this.#runningIntent = true;
+      return;
+    }
+    if (this.#actual === 'unavailable') return;
+    this.#runningIntent = true;
     this.#running = true;
     this.#lastFrameAt = 0;
     this.#fpsFrames = 0;
@@ -406,6 +443,7 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   pause(): void {
+    this.#runningIntent = false;
     this.#running = false;
   }
 
@@ -435,6 +473,7 @@ export class ThreeRendererAdapter implements RendererPort {
     if (this.#disposed) return;
     this.#disposed = true;
     this.#running = false;
+    this.#runningIntent = false;
     this.#canvas.removeEventListener('webglcontextlost', this.#onWebGLContextLost);
     this.#releaseRenderer();
     this.#unavailableNotice?.remove();

@@ -5,8 +5,12 @@ import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 const harness = vi.hoisted(() => ({
   scenario: '' as string,
   error: null as Error | null,
+  deferWebGLInit: false,
+  webGLInitStarted: false,
+  resolveWebGLInit: null as (() => void) | null,
   instances: [] as Array<{
     forceWebGL: boolean;
+    canvas: HTMLCanvasElement | undefined;
     disposed: boolean;
     backendDisposed: boolean;
     internalFallbackUsed: boolean;
@@ -24,9 +28,10 @@ vi.mock('three/webgpu', async () => {
     _getFallback: ((error: unknown) => void) | null;
     onDeviceLost: (info: { api: string; message: string; reason: string | null; originalEvent: unknown }) => void = () => {};
 
-    constructor(readonly options: { forceWebGL?: boolean }) {
+    constructor(readonly options: { forceWebGL?: boolean; canvas?: HTMLCanvasElement }) {
       this.record = {
         forceWebGL: options.forceWebGL === true,
+        canvas: options.canvas,
         disposed: false,
         backendDisposed: false,
         internalFallbackUsed: false,
@@ -46,7 +51,16 @@ vi.mock('three/webgpu', async () => {
     }
 
     async init(): Promise<void> {
-      if (this.record.forceWebGL) return;
+      if (this.record.forceWebGL) {
+        if (harness.deferWebGLInit) {
+          harness.webGLInitStarted = true;
+          await new Promise<void>((resolve) => { harness.resolveWebGLInit = resolve; });
+        }
+        return;
+      }
+      if (this.options.canvas?.getContext('webgpu') === null) {
+        throw new Error('Canvas context mode is already locked to another API.');
+      }
       let error: Error | null = null;
       if (harness.scenario === 'init-programming') error = harness.error;
       if (harness.scenario === 'init-no-adapter') error = new Error('THREE.WebGPUBackend: Unable to create WebGPU adapter.');
@@ -89,11 +103,28 @@ vi.mock('three/webgpu', async () => {
 });
 
 function makeCanvas(context: WebGL2RenderingContext | null = {} as WebGL2RenderingContext): HTMLCanvasElement {
-  const canvas = new EventTarget() as HTMLCanvasElement;
-  Object.assign(canvas, {
-    getContext: vi.fn(() => context),
-    insertAdjacentElement: vi.fn(),
-  });
+  const host = { current: null as HTMLCanvasElement | null };
+  const create = (): HTMLCanvasElement => {
+    let contextMode: string | null = null;
+    const canvas = new EventTarget() as HTMLCanvasElement;
+    Object.defineProperties(canvas, {
+      parentElement: { configurable: true, get: () => host },
+      parentNode: { configurable: true, get: () => host },
+    });
+    Object.assign(canvas, {
+      getContext: vi.fn((type: string) => {
+        if (contextMode !== null && contextMode !== type) return null;
+        contextMode = type;
+        return context;
+      }),
+      cloneNode: vi.fn(() => create()),
+      replaceWith: vi.fn((replacement: HTMLCanvasElement) => { host.current = replacement; }),
+      insertAdjacentElement: vi.fn(),
+    });
+    return canvas;
+  };
+  const canvas = create();
+  host.current = canvas;
   return canvas;
 }
 
@@ -112,6 +143,9 @@ describe('ThreeRendererAdapter initialization error classification', () => {
   beforeEach(() => {
     harness.scenario = '';
     harness.error = null;
+    harness.deferWebGLInit = false;
+    harness.webGLInitStarted = false;
+    harness.resolveWebGLInit = null;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
     vi.stubGlobal('document', {
@@ -223,7 +257,8 @@ describe('ThreeRendererAdapter initialization error classification', () => {
   });
 
   it('recovers once to WebGL2 when the WebGPU device is lost after initialization', async () => {
-    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    const canvas = makeCanvas();
+    const adapter = new ThreeRendererAdapter(canvas, DEFAULT_CONFIG);
     await expect(adapter.init({ width: 640, height: 480, pixelRatio: 1 })).resolves.toBe('webgpu');
     adapter.start();
 
@@ -232,8 +267,56 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: true }));
     expect(harness.instances).toHaveLength(2);
     expect(harness.instances[1]?.forceWebGL).toBe(true);
+    expect(harness.instances[1]?.canvas).not.toBe(canvas);
+    expect(canvas.replaceWith).toHaveBeenCalledOnce();
     await expectDisposed(harness.instances[0]!);
     expect(harness.instances[1]?.disposed).toBe(false);
+    adapter.dispose();
+  });
+
+  it('uses a fresh canvas because a canvas cannot switch from its WebGPU context to WebGL2', async () => {
+    const canvas = makeCanvas();
+    const adapter = new ThreeRendererAdapter(canvas, DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    expect(canvas.getContext('webgpu')).not.toBeNull();
+
+    harness.instances[0]!.triggerDeviceLost();
+
+    await vi.waitFor(() => expect(adapter.getStatus().actual).toBe('webgl2'));
+    expect(harness.instances[1]?.canvas).not.toBe(canvas);
+    expect(harness.instances[1]?.canvas?.getContext('webgl2')).not.toBeNull();
+    adapter.dispose();
+  });
+
+  it('keeps a pause requested while WebGL2 recovery initialization is pending', async () => {
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    harness.deferWebGLInit = true;
+    harness.instances[0]!.triggerDeviceLost();
+    await vi.waitFor(() => expect(harness.webGLInitStarted).toBe(true));
+
+    adapter.pause();
+    harness.resolveWebGLInit?.();
+
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: false }));
+    expect(harness.instances).toHaveLength(2);
+    adapter.dispose();
+  });
+
+  it('keeps a start requested while WebGL2 recovery initialization is pending', async () => {
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.pause();
+    harness.deferWebGLInit = true;
+    harness.instances[0]!.triggerDeviceLost();
+    await vi.waitFor(() => expect(harness.webGLInitStarted).toBe(true));
+
+    adapter.start();
+    harness.resolveWebGLInit?.();
+
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: true }));
+    expect(harness.instances).toHaveLength(2);
     adapter.dispose();
   });
 

@@ -1,5 +1,21 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 26/10/2026 — Issue #52 review-fix candidate
+
+- PR #61 review found that WebGPU-to-WebGL2 recovery reused a canvas already
+  bound to WebGPU and that async recovery overwrote newer start/pause intent.
+  The adapter now replaces the canvas within the stable host for initial/runtime
+  fallback and applies the latest start/pause intent when recovery completes.
+- Regression tests model canvas context-mode locking and delayed WebGL2 init;
+  they cover fresh-canvas fallback and start/pause changes during recovery.
+- `npm run typecheck`, `npm run typecheck:tests`, and `npm run build`: PASS;
+  `npm test`: 130 tests across 18 files PASS; `npm run test:e2e -- --workers=1`
+  (CI mode): 40 passed, 2 skipped because WebGPU is unavailable. Build retains
+  the existing >500 kB Vite chunk warning.
+- Real physical WebGPU loss remains **NOT_RUN** in the current Chromium
+  environment; mocks prove context-mode orchestration and UI host retention,
+  not hardware recovery.
+
 ## 26/10/2026 — Issue #52 runtime device/context-loss candidate
 
 - Branch `fix/52-runtime-device-loss` starts from latest fetched `dev` at
