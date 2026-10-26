@@ -1,5 +1,19 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 26/10/2026 — #49/#48/#50 simulation checkpoint
+
+- #49 freezes the public vortex parameters to `vortexStrength` + `vortexDamping`
+  (no `vortexRadius`); schema v2, `LabConfig`, `SimulationConfig` and the adapter
+  now share one default and validation rule. No hardcoded damping uniform.
+- #48 adds deterministic seed-based lifetime respawn to the CPU reference and
+  both TSL kernels, with `spawnRadius`/`lifetime` uniform wiring. `delta = 0`
+  remains a strict no-op, including for expired particles.
+- #50 adds a real GPU readback harness. WebGL2 (SwiftShader) passes 5/5 cases;
+  WebGPU is SKIPPED with an explicit missing-adapter reason. Evidence:
+  [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
+- These branches target `dev` and have not merged; no release or physical-GPU
+  acceptance is implied.
+
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
