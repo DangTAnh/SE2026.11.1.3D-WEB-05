@@ -9,7 +9,7 @@ import { PointsNodeMaterial, WebGPURenderer } from 'three/webgpu';
 import type { ActualBackend } from '../core/types/backend.ts';
 import type { RendererPort, RendererStatus, RendererTarget } from '../core/renderer/RendererPort.ts';
 import type { LabConfig } from '../presets/preset.ts';
-import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAMPING } from './simulation.ts';
+import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, resolveVortexDamping } from './simulation.ts';
 import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
@@ -546,7 +546,7 @@ export class ThreeRendererAdapter implements RendererPort {
     uniforms.delta.value = 0;
     uniforms.radius.value = DEFAULT_ATTRACTOR_RADIUS;
     uniforms.damping.value = DEFAULT_ATTRACTOR_DAMPING;
-    uniforms.vortexDamping.value = DEFAULT_VORTEX_DAMPING;
+    uniforms.vortexDamping.value = resolveVortexDamping(config.vortexDamping);
   }
 
   #selectComputeKernel(buffers: ParticleBuffers | null = this.#buffers, config: Readonly<LabConfig> = this.#config): void {

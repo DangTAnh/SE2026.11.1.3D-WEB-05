@@ -34,6 +34,22 @@ test('configHash: canonical form ignores property insertion order and unrelated 
   assert.equal(canonicalConfig(reordered), canonicalConfig(DEFAULT_CONFIG));
 });
 
+test('configHash: vortexDamping is hashed only while the vortex mode is active (#49)', () => {
+  // Inactive mode parameters do not change the GPU work that runs.
+  assert.equal(
+    canonicalConfig(withConfig({ vortexDamping: 0.9 })),
+    canonicalConfig(DEFAULT_CONFIG),
+  );
+
+  const vortex = canonicalConfig(withConfig({ mode: 'vortex' }));
+  assert.match(vortex, /"vortexDamping":0.99/);
+  assert.notEqual(vortex, canonicalConfig(withConfig({ mode: 'vortex', vortexDamping: 0.9 })));
+  assert.equal(
+    canonicalConfig(withConfig({ mode: 'vortex', vortexDamping: 0.99004 })),
+    vortex,
+  );
+});
+
 test('configHash: deterministic, SHA-256 lowercase hex, 64 chars', async () => {
   const first = await configHash(DEFAULT_CONFIG);
   const second = await configHash({ ...DEFAULT_CONFIG });

@@ -133,16 +133,22 @@
       }
     },
     "vortex": {
-      "description": "MVP vortex parameter set from v1/mock UI; TV2 adds fields if the vortex formula requires them.",
+      "description": "MVP vortex parameters. TV2 froze vortexStrength + vortexDamping in #49; the formula has no radial threshold, so there is no vortexRadius.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["vortexStrength"],
+      "required": ["vortexStrength", "vortexDamping"],
       "properties": {
         "vortexStrength": {
           "type": "number",
           "minimum": 0,
           "maximum": 100,
           "description": "Engine strength uniform range is 0-100; TV4 updates the UI range."
+        },
+        "vortexDamping": {
+          "type": "number",
+          "minimum": 0.8,
+          "maximum": 1,
+          "description": "Per-step velocity multiplier applied every vortex step. Default 0.99."
         }
       }
     }
