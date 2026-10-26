@@ -1,5 +1,28 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 26/10/2026 — TV4 Issue #54 backend re-initialization candidate
+
+- Baseline: `dev@ac364912`; branch `feat/54-backend-reinit`, assigned to TV4
+  (`duyanhtr130905`). Backend selection now has an explicit Apply action that
+  replaces the adapter and canvas without page reload. Configuration and pause
+  intent survive; measurements are cleared while initialization is pending.
+- Composition owns generations/disposal; UI stays mounted once and retains one
+  poller and host ResizeObserver. `RendererPort` and backend/simulation source
+  are unchanged. TV1 composition and TV3 lifecycle review are required.
+- Focused evidence: 10 session/composition integration tests PASS; six new
+  desktop/mobile E2E checks PASS, including real production backend apply.
+  Full `CI=1 npm run verify` PASS: typechecks, 140 unit/integration tests,
+  44 browser E2E passed and two WebGPU skips, production build. Evidence is in
+  [backend re-init handoff](04-testing/backend-reinit-2026-10-26.md).
+- #16 remains BLOCKED by #49/hash/Vortex owner decisions; #55 by Draft #62 and
+  freshness contract review; #56 by #16/#49. These are not included in #54.
+- Hardware WebGPU, numeric GPU parity, fair benchmarks and MVP/release acceptance
+  remain NOT_RUN. New tests exercise WebGL2/fallback in this environment and
+  explicitly labelled fake ports for races/failure paths. Do not infer GPU parity.
+- Next: human TV1/TV3 review → address findings → owner merge; TV2/TV1 settle
+  #49/hash; TV1/TV5 settle #62 before TV4 continues #16/#55/#56. No self-approval,
+  merge, release or direct push to dev/main is part of this candidate.
+
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition

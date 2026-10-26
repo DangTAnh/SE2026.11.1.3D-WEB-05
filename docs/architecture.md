@@ -112,6 +112,16 @@ would duplicate the same TSL material tree.
 
 ### 4.1 Who owns each contract
 
+Issue #54 adds an explicit next-init action through `RendererSession` in the
+composition layer. The session implements the unchanged `RendererPort` and
+replaces concrete adapters on request. `main.ts` supplies a fresh canvas per
+generation because a canvas cannot change its context type. UI remains mounted
+once (one poller, control binding and ResizeObserver of the stable host), and
+receives only a re-init callback and loading predicate. Generation checks prevent
+late init completion from publishing an obsolete backend. User config and running
+intent survive re-init; metrics come only from the current ready adapter. This
+composition/lifecycle change requires TV1/TV3 review before merge.
+
 | Contract | Defined in | Producer | Consumers | Owner |
 |---|---|---|---|---|
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |

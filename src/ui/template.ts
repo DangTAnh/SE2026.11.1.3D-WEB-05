@@ -78,7 +78,8 @@ export function createLabMarkup(): string {
                 <div class="section-title"><span>04</span><h3>Rendering preference</h3></div>
                 <label for="backend" class="field-label">Backend được yêu cầu</label>
                 <select id="backend"><option value="auto">Auto (ưu tiên WebGPU)</option><option value="webgpu">WebGPU</option><option value="webgl2">WebGL2</option></select>
-                <p class="field-hint">Lựa chọn backend có hiệu lực ở lần khởi tạo renderer tiếp theo.</p>
+                <button id="apply-backend" type="button" class="button secondary" disabled>Áp dụng backend</button>
+                <p class="field-hint">Chọn backend rồi nhấn Áp dụng. Renderer khởi tạo lại và giữ cấu hình; hạt bắt đầu lại từ trạng thái ban đầu.</p>
               </section>
               <section class="control-section preset-section">
                 <div class="section-title"><span>05</span><h3>Preset configuration</h3></div>

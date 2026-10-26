@@ -75,7 +75,11 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
   lifetime/respawn, perf collection and the two-backend benchmark separately.
-- A requested backend preference takes effect at the next renderer init.
+- Choose Auto/WebGPU/WebGL2, then click **Áp dụng backend** to initialize a new
+  renderer without reloading. Configuration and pause state are preserved;
+  particles restart from their initial state. A fresh canvas permits changing
+  context type. Rapid requests use the latest generation; failed init reports
+  unavailable and allows another attempt. Old FPS/GPU timing is not carried over.
   Only `RendererStatus.actual` identifies the backend that ran.
 - Unsupported/invalid GPU timing stays `null`, never a fabricated zero.
 - No server, login, database or network persistence is included.

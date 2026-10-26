@@ -20,8 +20,13 @@ export function prepareLabUI(root: HTMLElement): HTMLCanvasElement {
 export function mountLabUI(
   root: HTMLElement,
   port?: RendererPort,
+  options: {
+    initialConfig?: Readonly<LabConfig>;
+    isInitializing?: () => boolean;
+    reinitializeBackend?: () => Promise<void>;
+  } = {},
 ): () => void {
-  let config: LabConfig = { ...DEFAULT_CONFIG };
+  let config: LabConfig = { ...(options.initialConfig ?? DEFAULT_CONFIG) };
   let disposed = false;
   let configApplied = !port;
 
@@ -30,7 +35,9 @@ export function mountLabUI(
   const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
   if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
   const rendererPort = port;
-  const getRendererTarget = () => measureRendererTarget(canvas);
+  const getRendererTarget = () => measureRendererTarget(
+    root.querySelector<HTMLCanvasElement>('#preview-canvas') ?? canvas,
+  );
   const resizeObserver = rendererPort?.resize
     ? new ResizeObserver(() => rendererPort.resize?.(getRendererTarget()))
     : null;
@@ -40,6 +47,10 @@ export function mountLabUI(
 
   const refreshStatus = (): void => {
     if (disposed) return;
+    if (options.isInitializing?.()) {
+      renderRuntimeStatus(createInitializingRuntimeState());
+      return;
+    }
     if (!configApplied) {
       renderRuntimeStatus(createRendererRuntimeState(undefined, true));
       return;
@@ -93,8 +104,18 @@ export function mountLabUI(
       else rendererPort.start();
       refreshStatus();
     },
+    applyBackend: () => {
+      if (!options.reinitializeBackend) return;
+      const task = options.reinitializeBackend();
+      refreshStatus();
+      void task.catch(() => {
+        if (!disposed) toast.notify('Không thể khởi tạo renderer. Vui lòng thử lại.', 'error');
+      }).finally(() => { if (!disposed) refreshStatus(); });
+    },
     notify: toast.notify,
   });
+
+  byId<HTMLButtonElement>('apply-backend').disabled = !options.reinitializeBackend;
 
   renderLabControls(config);
   try {
