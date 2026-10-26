@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible defect in the application or test harness.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for defects. Security issues must follow SECURITY.md, not a public Issue.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken, and where?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Exact inputs, preset, URL parameters, and backend.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      description: State both, including whether the failure is deterministic.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser/version, actual backend, OS, Node version, commit.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Console errors, screenshots, failing test name, or a trace link.
+    validations:
+      required: false
+  - type: textarea
+    id: scope
+    attributes:
+      label: Suspected scope
+      description: Modules, contracts, or owners that may be affected.
+    validations:
+      required: false

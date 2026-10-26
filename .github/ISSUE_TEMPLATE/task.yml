@@ -1,0 +1,46 @@
+name: Task or feature
+description: Plan a scoped change with acceptance criteria and dependencies.
+title: "[task] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this work is needed and what changed.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Concrete changes, in and out of scope.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Verifiable outcomes, one per line.
+      placeholder: |
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Blocking Issues/PRs, owners, or decisions. Write "None" if unblocked.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification
+      description: Commands or runtime checks that will prove completion.
+      placeholder: |
+        npm run typecheck
+        npm run build
+        npm test
+    validations:
+      required: true
