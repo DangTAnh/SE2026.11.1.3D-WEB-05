@@ -26,6 +26,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Composition root | Implemented; initializes the adapter before mounting the port-consuming UI | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
 | Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
+| Server, auth, persistence | **Out of scope for this repo** | — |
 
 There is **one** renderer, not one per backend. Backend choice and fallback are
 implemented by `ThreeRendererAdapter` together with `startBackend()` in
@@ -38,7 +39,6 @@ successfully initialized. The separate `capabilities.ts` probe/resolver was
 removed because it duplicated this decision and could not establish that a
 renderer would initialize. Backend-specific modules must not copy simulation
 rules.
-| Server, auth, persistence | **Out of scope for this repo** | — |
 
 Without an injected port the default build reports unavailable and keeps preset
 import/export available. FakeRenderer is used only by the explicit E2E harness;
@@ -195,16 +195,19 @@ browser with no dependency added. It rejects missing, non-finite or invalid
 | ID | Debt | Where |
 |---|---|---|
 | D-02 | Domain module touches the DOM (`downloadPreset`) | `src/presets/preset.ts` |
-| D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/app.ts` |
-| D-04 | Backend label hardcoded in the UI template | `src/ui/app.ts` |
+| D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/controls/controlBindings.ts` |
 | D-05 | `serializePreset` re-parses its own output to self-validate | `src/presets/preset.ts` |
 | D-06 | `RendererPort` depends on `src/presets` for the `LabConfig` type | `src/core/renderer/RendererPort.ts` |
-| D-07 | UI injection API is available; TV1 supplies the initialized port from main. Full live-status acceptance remains #14 | `src/main.ts`, `src/ui/overlays/statusOverlay.ts` |
+| D-07 | UI injection API is available; TV1 supplies the initialized port from main. Live-status source merged in #33; remaining acceptance is tracked in #14 | `src/main.ts`, `src/ui/overlays/statusOverlay.ts` |
 
 D-06 disappears once the config types move into `src/core/types/`; that change
 needs TV4's agreement because `src/presets/` is theirs.
 
 D-01 was resolved by the adapter and composition-root work in #12/#15.
+
+D-04 was resolved by #33: the UI now renders `backendLabel` from
+`RendererStatus.actual` in `src/ui/state/runtimeState.ts`, and no Canvas 2D or
+mockup label remains. The ID is not reused.
 
 D-08 is retired: a changed `backendPreference` applies on the next `init()`
 (§4). The ID is not reused.

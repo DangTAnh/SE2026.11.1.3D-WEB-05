@@ -11,10 +11,11 @@ measurements on both backends.
 
 **Current implementation: the real renderer adapter is wired through RendererPort.**
 The Canvas2D preview has been removed. The default entry point initializes the
-adapter before mounting the UI. On this branch, browser tests exercise a real
-WebGL2 path; the available Chromium environment has no WebGPU adapter, so its
-WebGPU smoke test is skipped. Preset import/export remains available. GPU
-parity and a two-backend benchmark are still unverified.
+adapter before mounting the UI. On `dev` at `a6e460d` (26/10/2026), browser
+tests exercise a real WebGL2 path; the available Chromium environment has no
+WebGPU adapter, so its WebGPU smoke test is skipped. Preset import/export
+remains available. GPU parity and a two-backend benchmark run are still
+unverified.
 
 ## Run and verify
 
@@ -72,8 +73,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## Integration and remaining evidence
 
-- PR #40 / #13 is merged into dev at `04f1522` and included in this UI branch.
-  The #12 adapter stays bound to the production canvas through the composition root.
+- The #12 adapter (#39/#40 at `04f1522`), live RendererStatus UI (#33 at
+  `ac36491`), collector-test fix (#42 at `dc7bb3a`) and capability-probe removal
+  (#60 at `a6e460d`) are merged into `dev`. The adapter stays bound to the
+  production canvas through the composition root.
 - The prepared UI shows INITIALIZING without backend or metric claims until the
   initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,

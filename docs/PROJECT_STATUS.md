@@ -1,6 +1,27 @@
 # PROJECT STATUS — 3D-WEB-05
 
-## 25/10/2026 — TV4 integration of dev `04f1522`
+## 26/10/2026 — dev reconciliation at `a6e460d`
+
+- Current `dev` is `a6e460d` (26/10/2026). It includes adapter/fallback #40 at
+  `04f1522`, live RendererStatus UI #33 at `ac36491`, collector-test fix #42 at
+  `dc7bb3a`, zero-delta kernel #44 at `94a4c22` and capability-probe removal
+  #60 at `a6e460d`.
+- #13 and #42 are merged and closed; the adapter, WebGL2 fallback/timing,
+  RendererStatus UI and capability-probe removal are in `dev`. This checkpoint
+  corrects the stale "under review"/"pending #42" statements in README,
+  architecture, ownership and this file (#45). Earlier checkpoints below are
+  preserved as history and do not describe current state.
+- Docs-only change: `git diff --check` clean; `npm run typecheck` and
+  `npm run build` PASS. Source/test suites were not rerun for this docs change.
+- NOT_RUN: physical WebGPU execution, GPU numeric parity, live GPU-timing
+  evidence and the two-backend benchmark run. Benchmark-runner source is
+  proposed in PR #64, not merged. #14 and #51 remain open for their own
+  acceptance reconciliation; #16 remains blocked on shared hash/Vortex
+  decisions.
+
+## Historical checkpoints (superseded by the current section above)
+
+### 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
   are preserved unchanged in PR #33's integration result. No backend/contract
@@ -20,8 +41,6 @@
 - Local source/test typechecks and `CI=1 npm run verify` PASS: 134 tests,
   38 desktop/mobile E2E passed, two WebGPU skips, build passed. Remote CI for
   the pushed head is a separate gate; these results do not establish GPU parity.
-
-## Historical checkpoints (superseded by the current section above)
 
 > **25/10/2026 — issue #14 timing projection follow-up:** UI now rejects zero GPU
 > timing even if a producer marks it available, matching `RendererPort` and the
