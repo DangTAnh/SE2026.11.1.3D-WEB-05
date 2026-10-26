@@ -159,7 +159,9 @@ may be aggregated only when they agree on `(mode, configHash) × actual`; across
 a hash boundary they are different experiments.
 
 **Included fields** — the `LabConfig` values that change the work the GPU does:
-`mode`, `particleCount`, `speed`, `particleSize`, `strength`.
+`mode`, `particleCount`, `speed`, `particleSize`, `strength`, plus
+`vortexDamping` while `mode` is `vortex` (#49). The inactive mode's parameters
+are excluded: they do not change the kernel that runs.
 
 **Excluded, with reasons:**
 
@@ -178,6 +180,10 @@ trailing zeros (`1.2`, not `1.20`):
 {"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}
 ```
 
+For `mode: "vortex"` the object additionally carries `"vortexDamping":0.99`. The
+inactive mode's fields never appear, so a change to them cannot invalidate a
+sample.
+
 Key order is fixed by this rule, not by object iteration order.
 
 **Algorithm.** SHA-256 over the UTF-8 bytes of that string, lowercase hex,
@@ -186,7 +192,7 @@ Key order is fixed by this rule, not by object iteration order.
 **Invalid or missing values.** A hash is computed only for a config that has
 already passed `parsePreset` (`src/presets/preset.ts`): it rejects
 out-of-range values and unknown keys, requires `particleCount` to be an integer
-multiple of 1000 (v1), and rebuilds the object from the seven known fields, so
+multiple of 1000 (v1), and rebuilds the object from the known fields, so
 unknown keys never reach the hash. Invalid input produces no sample at all —
 never a hash of a defaulted or partially filled config.
 

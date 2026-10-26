@@ -6,6 +6,7 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG, parsePreset, serializePreset } from '../../src/presets/preset.ts';
 import type { LabConfig } from '../../src/presets/preset.ts';
+import { DEFAULT_VORTEX_DAMPING } from '../../src/simulations/simulation.ts';
 
 const presetOf = (config: LabConfig) => JSON.parse(serializePreset(config)) as Record<string, unknown>;
 
@@ -23,6 +24,22 @@ test('contract: parse -> serialize -> parse is idempotent', () => {
   const once = parsePreset(serializePreset({ ...DEFAULT_CONFIG }));
   const twice = parsePreset(serializePreset(once));
   assert.deepEqual(twice, once);
+});
+
+test('contract: vortexDamping has one default and v1 cannot persist it (#49)', () => {
+  assert.equal(DEFAULT_CONFIG.vortexDamping, DEFAULT_VORTEX_DAMPING);
+
+  const raw = presetOf({ ...DEFAULT_CONFIG });
+  assert.equal('vortexDamping' in (raw.config as object), false, 'the frozen v1 payload must not grow');
+
+  // Parsing a v1 payload applies the public default; a programmatic value is not round-tripped.
+  const imported = parsePreset(serializePreset({ ...DEFAULT_CONFIG, vortexDamping: 0.9 }));
+  assert.equal(imported.vortexDamping, DEFAULT_VORTEX_DAMPING);
+
+  // A v1 file that tries to set it is still rejected as an unknown key.
+  const extra = presetOf({ ...DEFAULT_CONFIG });
+  (extra.config as Record<string, unknown>).vortexDamping = 0.9;
+  assert.throws(() => parsePreset(JSON.stringify(extra)), /không được hỗ trợ/);
 });
 
 test('contract: particleCount boundaries 1000 and 50000 are valid; 999, 50001 and off-step values are rejected', () => {
