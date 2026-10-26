@@ -30,6 +30,14 @@ If `dev` moves during the work, fetch it and merge `origin/dev` into the feature
 branch, resolve conflicts and rerun checks. New work starts from `dev`; do not
 open new stacked PRs against another feature branch.
 
+## Issue templates and review routing
+
+Open new work from **Issues → New issue** and pick `Task`, `Bug` or `Decision`.
+Each template asks for scope, acceptance criteria, dependencies and evidence;
+assign exactly one person. `.github/CODEOWNERS` routes the affected module owner
+for review, but the PR still needs at least one other person's approval before
+merge.
+
 ## Local setup and G0
 
 Use Node >= 22.16 and the committed npm lockfile:
