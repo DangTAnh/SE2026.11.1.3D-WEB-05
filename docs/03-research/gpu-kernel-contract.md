@@ -63,20 +63,24 @@ Vortex dùng uniform riêng (`vortexDamping`) để adapter không vô tình dù
 
 ```
 d        = |position|
-nếu d > 1e-6:
-  toCenter = normalize(-position)
-  tangent  = toCenter × (0, 1, 0)        // = (z/r, 0, -x/r), r = d
-  v       += tangent * strength * delta
-  attractor: nếu d > radius: v *= damping
-  vortex:                    v *= vortexDamping
-  p       += v * delta
+nếu delta > 0:
+  nếu d > 1e-6:
+    toCenter = normalize(-position)
+    tangent  = toCenter × (0, 1, 0)        // = (z/r, 0, -x/r), r = d
+    v       += tangent * strength * delta
+    attractor: nếu d > radius: v *= damping
+    vortex:                    v *= vortexDamping
+    p       += v * delta
 age     += delta
 ```
 
 - Thứ tự cố định: cộng vận tốc → damping → tích phân vị trí → tăng age.
-- **Guard gốc toạ độ**: `normalize(vec3(0))` là `0/0` → NaN, nên cả hai kernel bọc phần
-  chuyển động trong `If(distance.greaterThan(1e-6), ...)`, giống `if (r > EPSILON)` của
-  reference (`EPSILON = 1e-6`). `age` tăng **ngoài** guard để hạt ở tâm vẫn già đi.
+- **Guard delta**: reference trả sớm khi `dt * speed === 0`, nên cả hai kernel bọc toàn bộ
+  phần cập nhật (kể cả damping) trong `If(uniforms.delta.greaterThan(0), ...)`. Khi
+  `delta = 0`, velocity/position giữ nguyên; `age` chỉ cộng 0 ở ngoài guard.
+- **Guard gốc toạ độ**: `normalize(vec3(0))` là `0/0` → NaN, nên phần chuyển động nằm
+  trong `If(distance.greaterThan(1e-6), ...)`, giống `if (r > EPSILON)` của reference
+  (`EPSILON = 1e-6`). `age` tăng **ngoài** guard để hạt ở tâm vẫn già đi.
 - Attractor: chỉ damping khi ra ngoài `radius`.
 - Vortex: damping mỗi bước, không có lực hướng tâm (xem §6).
 - Kernel không đọc `seeds`; buffer này dành cho respawn/nhiễu ở giai đoạn sau.
@@ -89,9 +93,12 @@ Hiện có (unit, chạy trong Node):
 - `initKernel` / attractor / vortex đều là compute node đúng tên, đúng `count`;
 - validate `count` nguyên dương;
 - vortex dùng `vortexDamping` riêng;
-- `tests/unit/kernel-contract.test.ts` khoá hai tính chất không thấy được từ node graph:
+- `tests/unit/kernel-contract.test.ts` khoá ba tính chất không thấy được từ node graph:
   sampler cầu đều (không có `normalize(cube - 0.5)`), guard gốc toạ độ trong **cả hai**
-  kernel với `age` tăng ngoài guard, và hash index trong tài liệu này khớp code.
+  kernel với `age` tăng ngoài guard, và guard `delta > 0` để kernel no-op khi `delta = 0`;
+  hash index trong tài liệu này cũng phải khớp code.
+- `tests/unit/simulation.test.ts` xác nhận reference `step()` với `dt = 0` không đổi cả
+  velocity lẫn position, kể cả khi particle đang ở ngoài `radius` và damping sẽ áp dụng.
 
 **Chưa có numeric parity GPU** vì Vitest không chạy được WebGPU. Điều kiện để test thật:
 

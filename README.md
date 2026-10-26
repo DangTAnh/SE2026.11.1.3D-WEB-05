@@ -53,9 +53,12 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   the real adapter supplied by #12.
 - **Core:** renderer/status contracts, config identity, aggregation and result
   parsing; a shared `FakeRenderer` for tests.
-- **Backend capability selection:** injectable probes and preference resolution
-  are integrated; #12 constructs the renderer and #13's WebGL2 fallback is
-  under review in PR #40.
+- **Backend selection / fallback:** `ThreeRendererAdapter` initializes the
+  requested backend through `startBackend()` in `src/simulations/backend/fallback.ts`.
+  `auto` and `webgpu` try WebGPU first; an expected `BackendUnavailableError`
+  permits WebGL2 fallback, while explicit `webgl2` goes directly there. The
+  adapter reports the backend that initialized. There is no separate
+  capability-probe/resolver path; the duplicate module and tests were removed.
 - **Simulation reference and sampling:** deterministic CPU reference steps and
   the RendererPort performance collector are integrated. The renderer uses the
   shared TSL simulation pipeline; measured GPU parity remains pending.
