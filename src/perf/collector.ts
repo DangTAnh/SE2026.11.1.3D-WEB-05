@@ -95,17 +95,18 @@ export class PerformanceCollector {
 
       const status = this.port.getStatus();
       if (!status.running) return;
-      if (status.measurementAgeMs !== null && (
-        !Number.isFinite(status.measurementAgeMs)
-        || status.measurementAgeMs < 0
-        || status.measurementAgeMs > MAX_GPU_MEASUREMENT_AGE_MS
-      )) return;
-      if (status.gpuTimingAvailable && status.measurementAgeMs === null) return;
 
       // Enforce INV-1 even if a RendererPort implementation returns an
-      // inconsistent status: unavailable or invalid timing is recorded as null.
+      // inconsistent status: unsupported, stale or invalid GPU timing is null.
+      // GPU timing age is independent of FPS freshness; preserve a valid FPS.
+      const measurementAgeMs = status.measurementAgeMs;
+      const gpuMeasurementFresh = measurementAgeMs !== null
+        && Number.isFinite(measurementAgeMs)
+        && measurementAgeMs >= 0
+        && measurementAgeMs <= MAX_GPU_MEASUREMENT_AGE_MS;
       const gpuTimingAvailable =
         status.gpuTimingAvailable &&
+        gpuMeasurementFresh &&
         status.gpuTimeMs !== null &&
         Number.isFinite(status.gpuTimeMs);
       const snapshot: PerformanceSnapshot = {

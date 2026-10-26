@@ -16,7 +16,9 @@ import { createParticleBuffers, type ParticleBuffers } from './shared/particleBu
 import { BackendUnavailableError, startBackend, type InitializedBackend } from './backend/fallback.ts';
 
 const MAX_FRAME_DELTA = 0.05;
-const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 30;
+// At 60 FPS this samples about 6 times/second; the 2 s freshness window
+// nominally covers scenes down to 5 FPS, allowing for asynchronous query resolve.
+const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 10;
 const THREE_NO_WEBGPU_ADAPTER_MESSAGE = 'THREE.WebGPUBackend: Unable to create WebGPU adapter.';
 
 /** Three r186.1 emits this exact generic Error only when requestAdapter() returns null. */
@@ -235,6 +237,8 @@ export class ThreeRendererAdapter implements RendererPort {
     renderer: WebGPURenderer,
     sampleGpuTime = false,
   ): boolean {
+    const measurementGeneration = this.#measurementGeneration;
+    const sampledAt = sampleGpuTime ? performance.now() : null;
     let task: Promise<unknown> | undefined;
     try {
       task = run();
@@ -244,24 +248,41 @@ export class ThreeRendererAdapter implements RendererPort {
     }
     if (task) {
       void task.then(() => {
-        if (sampleGpuTime) this.#resolveGpuTime(renderer);
+        if (sampleGpuTime && sampledAt !== null) {
+          this.#resolveGpuTime(renderer, measurementGeneration, sampledAt);
+        }
       }).catch(() => this.#handleComputeFailure(renderer));
+    } else if (sampleGpuTime && sampledAt !== null) {
+      // Three r186's initialized compute() submits synchronously and returns
+      // undefined; resolve its timestamp query after that submission too.
+      this.#resolveGpuTime(renderer, measurementGeneration, sampledAt);
     }
     return this.#renderer === renderer && !this.#disposed;
   }
 
-  #resolveGpuTime(renderer: WebGPURenderer): void {
-    if (!this.#gpuTimingSupported || this.#gpuTimingInFlight || this.#renderer !== renderer || this.#disposed) return;
+  #resolveGpuTime(
+    renderer: WebGPURenderer,
+    measurementGeneration: number,
+    sampledAt: number,
+  ): void {
+    if (!this.#gpuTimingSupported
+      || this.#gpuTimingInFlight
+      || !this.#running
+      || measurementGeneration !== this.#measurementGeneration
+      || this.#renderer !== renderer
+      || this.#disposed) return;
     this.#gpuTimingInFlight = true;
-    const measurementGeneration = this.#measurementGeneration;
     const requestId = ++this.#gpuTimingRequestId;
     void renderer.resolveTimestampsAsync('compute')
       .then((durationMs) => {
-        if (this.#renderer !== renderer || this.#disposed || measurementGeneration !== this.#measurementGeneration) return;
+        if (this.#renderer !== renderer || this.#disposed || !this.#running
+          || measurementGeneration !== this.#measurementGeneration) return;
         if (durationMs !== undefined && durationMs !== null && Number.isFinite(durationMs) && durationMs > 0) {
           this.#gpuTimeMs = durationMs;
           this.#gpuTimingAvailable = true;
-          this.#gpuTimeSampledAt = performance.now();
+          // Age starts when the measured compute was submitted, not when the
+          // asynchronous timestamp readback happens to finish.
+          this.#gpuTimeSampledAt = sampledAt;
         } else {
           this.#gpuTimeMs = null;
           this.#gpuTimingAvailable = false;
@@ -269,7 +290,8 @@ export class ThreeRendererAdapter implements RendererPort {
         }
       })
       .catch(() => {
-        if (this.#renderer !== renderer || this.#disposed || measurementGeneration !== this.#measurementGeneration) return;
+        if (this.#renderer !== renderer || this.#disposed || !this.#running
+          || measurementGeneration !== this.#measurementGeneration) return;
         this.#gpuTimeMs = null;
         this.#gpuTimingAvailable = false;
         this.#gpuTimeSampledAt = null;

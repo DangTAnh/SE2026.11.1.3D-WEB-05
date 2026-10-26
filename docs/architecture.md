@@ -86,12 +86,17 @@ invalidates every comparison the project is built to produce.
 `RendererStatus` encodes this directly: `requested` exists only to explain a
 fallback, and `actual` is the only backend identity a benchmark row may store.
 
-`measurementAgeMs` describes the age of the latest valid GPU timing sample,
-measured with the monotonic clock. A sample is fresh for at most
-`MAX_GPU_MEASUREMENT_AGE_MS` (2 seconds); stale timing is reported unavailable
-and its value is null. Pause, reset and renderer/backend reinitialization clear
-the timing and age. The performance collector also refuses paused or stale
-status snapshots. This threshold and field are the Issue #53 contract proposal
+`measurementAgeMs` describes only the age of the latest valid GPU timing
+sample, measured from compute submission with a monotonic clock. Its age
+therefore includes asynchronous timestamp-readback delay. A sample is fresh for
+at most `MAX_GPU_MEASUREMENT_AGE_MS` (2 seconds); the adapter requests one query
+per 10 compute frames (nominally supports 5 FPS before readback latency), and
+slower frames or delayed queries may still make it stale. Stale timing is
+reported unavailable with a null value. Pause, reset and renderer/backend
+reinitialization clear timing and age. The collector skips paused samples; when
+only GPU timing is stale, it preserves valid FPS and records GPU timing as
+unavailable/null. This field does not establish FPS freshness; that remains the
+separate Issue #55 contract. The field and threshold are the Issue #53 proposal
 and require TV1 review before merge.
 
 ## 4. Renderer contract

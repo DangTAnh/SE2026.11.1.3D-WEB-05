@@ -1,23 +1,19 @@
 # PROJECT STATUS — 3D-WEB-05
 
-## 26/10/2026 — Issue #53 measurement freshness candidate
+## 26/10/2026 — Issue #53 review follow-up (PR #62 remains draft)
 
-- Branch `fix/53-measurement-age` starts from latest fetched `dev@ac364912`.
-  The proposed `RendererStatus.measurementAgeMs` is the monotonic age of the
-  latest valid GPU timing sample; `MAX_GPU_MEASUREMENT_AGE_MS` is 2 seconds.
-  Adapter pause/reset/reinit clears timing, ignores late in-flight results, and
-  reports stale timing unavailable. The UI hides stale/inconsistent timing;
-  the collector emits no paused or stale status sample.
-- Verification: source/test typechecks and build PASS; 140 unit/contract/
-  integration tests PASS; Chromium desktop/mobile E2E 38 PASS, two WebGPU
-  adapter cases skipped. Vite's existing >500 kB chunk warning remains.
-- Contract threshold is a proposal pending TV1 review; TV5 must review collector
-  behavior. Issue #11 is closed but is the vortex-kernel issue (not the UI
-  consumer referenced by #53); Issue #18 remains open and consumes the collector
-  but does not block this candidate. Real hardware GPU timing-age behavior is
-  **NOT_RUN**; browser/fake-clock tests do not prove hardware timestamp cadence.
-- PR/reviewer state is pending. Do not merge until contract/collector owners
-  review and at least one human approves.
+- Branch `fix/53-measurement-age` now includes latest fetched `dev@e226697`.
+  The local review-fix candidate timestamps GPU samples from compute submission,
+  requests one query every 10 compute frames, and preserves valid FPS when only
+  GPU timing is stale. FPS freshness remains the separate scope of Issue #55.
+- `npm run verify`: source/test typechecks PASS; 139 unit/contract/integration
+  tests PASS; Chromium desktop/mobile E2E 38 PASS, 2 WebGPU adapter cases
+  skipped; build PASS with the existing ~1,055 kB chunk warning. Focused
+  collector/adapter regressions: 18/18 PASS. Physical GPU timing-age behavior
+  is **NOT_RUN**.
+- PR #63 remains open and its pending `RendererStatus` omits required
+  `measurementAgeMs`; keep #62 draft until TV1 resolves merge-order
+  compatibility and TV1/TV5 re-review the contract/collector behavior.
 
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 

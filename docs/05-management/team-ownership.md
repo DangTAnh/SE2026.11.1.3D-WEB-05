@@ -88,11 +88,15 @@ can start, except the ones marked *(after …)*.
 | Contract tests | adapter against `RendererPort` |
 | Handoff | browser notes for TV5 |
 
-GPU timing in `RendererStatus` now carries a monotonic `measurementAgeMs` in the
-Issue #53 candidate. The proposed shared contract treats values older than two
-seconds as unavailable; pause/reset clear the cached measurement. TV1 must
-review this contract, and TV5 reviews collector freshness filtering, before
-merge.
+GPU timing in `RendererStatus` carries a monotonic `measurementAgeMs` proposal
+in Issue #53. Age starts at compute submission (including query-readback delay),
+with a two-second freshness limit and one timestamp query every 10 compute
+frames; below the nominal 5 FPS cadence, or with long readback delays, timing
+may still expire. Pause/reset clear cached GPU timing. The collector preserves
+FPS when only GPU timing is stale, but this field does not define FPS freshness;
+Issue #55 owns that separate contract. TV1 must review the shared contract and
+TV5 the collector behavior before merge. The pending status in #63 must also
+provide `measurementAgeMs: null` once this field lands.
 
 **TV4 — UI and presets**
 

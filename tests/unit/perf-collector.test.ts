@@ -124,7 +124,7 @@ test('does not emit a sample while the renderer is paused', async () => {
   collector.dispose();
 });
 
-test('rejects stale GPU timing samples, then resumes when a fresh measurement arrives', async () => {
+test('keeps valid FPS when GPU timing is stale, then resumes GPU timing when fresh', async () => {
   vi.useFakeTimers();
   const port = new FakeRenderer({
     actual: 'webgpu', running: true, gpuTimingAvailable: false,
@@ -138,16 +138,23 @@ test('rejects stale GPU timing samples, then resumes when a fresh measurement ar
     onSample: recorder.onSample,
   });
 
+  const firstSample = recorder.nextSample();
   collector.start();
   await vi.advanceTimersByTimeAsync(0);
-  assert.equal(recorder.samples.length, 0);
+  await firstSample;
+  assert.equal(recorder.samples.length, 1);
+  assert.equal(recorder.samples[0]?.fps, 60);
+  assert.equal(recorder.samples[0]?.gpuTimingAvailable, false);
+  assert.equal(recorder.samples[0]?.gpuTimeMs, null);
 
   const nextSample = recorder.nextSample();
   port.setStatus({ measurementAgeMs: 0, gpuTimingAvailable: true, gpuTimeMs: 3.5 });
   await vi.advanceTimersByTimeAsync(100);
   await nextSample;
-  assert.equal(recorder.samples.length, 1);
-  assert.equal(recorder.samples[0]?.gpuTimeMs, 3.5);
+  assert.equal(recorder.samples.length, 2);
+  assert.equal(recorder.samples[1]?.fps, 60);
+  assert.equal(recorder.samples[1]?.gpuTimingAvailable, true);
+  assert.equal(recorder.samples[1]?.gpuTimeMs, 3.5);
   collector.dispose();
 });
 
