@@ -65,11 +65,18 @@ the respawn guard therefore changes the GPU state and fails the case.
 ### Readback validation and negative coverage
 
 `parityValidation.ts` validates both the initial and final readback before
-computing deltas:
+computing deltas, and unpacks each channel with the stride the backend actually
+allocated:
 
-- expected length is `count * 3` for positions/velocities and `count` for
-  ages/seeds; storage-buffer padding is limited to the next 16-byte boundary;
+- vec3 channels are `count * itemSize` values: `itemSize` 3 for packed WebGL2
+  storage buffers and 4 for WebGPU, where Three pads each particle to
+  `x, y, z, padding` and updates the attribute `itemSize` to 4. The validator
+  reads `system.<channel>.value.itemSize` and unpacks xyz per particle; it never
+  slices the first `count * 3` floats, which would mix padding into the state;
+- scalar channels are `count` values, with storage-buffer padding limited to the
+  next 16-byte boundary;
 - empty, truncated and over-long buffers are rejected;
+- malformed vec3 strides (anything other than 3 or 4) are rejected;
 - `NaN`/`Infinity` are rejected in float channels;
 - both float channels must have equal lengths before `maxDelta` is computed;
 - final seeds are read back and must equal the initial seeds.
@@ -77,7 +84,11 @@ computing deltas:
 The fault-injection test monkey-patches the renderer readback to return an empty
 buffer, a truncated buffer and a `NaN` value. All three return `status: failed`
 with a `ParityValidationError` reason and `max*Delta: null`. Unit tests for the
-same functions are in `tests/unit/parity-validation.test.ts`.
+same functions are in `tests/unit/parity-validation.test.ts`; they cover packed
+WebGL2 readback, stride-4 WebGPU readback with interleaved padding, malformed
+strides and truncation at both strides. The stride-4 path is only covered by
+unit tests in this environment: the WebGPU parity subcases are `SKIP (no
+adapter)`, so physical WebGPU execution remains `NOT_RUN`.
 
 ### Why the respawn cases have a wider tolerance
 

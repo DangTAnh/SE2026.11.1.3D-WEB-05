@@ -21,10 +21,10 @@ import { createParticleBuffers, type ParticleBuffers } from '../../../src/simula
 import { createVortexKernel } from '../../../src/simulations/shared/vortexKernel.ts';
 import {
   assertSeedsUnchanged,
-  expectedReadbackLength,
   maxDelta,
   ParityValidationError,
-  validateReadback,
+  validateScalarReadback,
+  validateVec3Readback,
 } from './parityValidation.ts';
 
 export type ParityBackend = 'webgl2' | 'webgpu';
@@ -149,30 +149,38 @@ function result(
   };
 }
 
+/**
+ * Read one channel back and unpack it using the layout the backend actually
+ * allocated. `itemSize` is 3 for packed WebGL2 vec3 storage and 4 for the
+ * per-particle vec4 padding Three applies on WebGPU, so the harness must not
+ * assume `count * 3` floats.
+ */
 async function readState(
   renderer: WebGPURenderer,
   system: ParticleBuffers,
   count: number,
 ): Promise<ReadbackState> {
-  const positions = validateReadback(
+  const positions = validateVec3Readback(
     'positions',
     new Float32Array(await renderer.getArrayBufferAsync(system.positions.value)),
-    expectedReadbackLength('position', count),
+    count,
+    system.positions.value.itemSize,
   );
-  const velocities = validateReadback(
+  const velocities = validateVec3Readback(
     'velocities',
     new Float32Array(await renderer.getArrayBufferAsync(system.velocities.value)),
-    expectedReadbackLength('velocity', count),
+    count,
+    system.velocities.value.itemSize,
   );
-  const ages = validateReadback(
+  const ages = validateScalarReadback(
     'ages',
     new Float32Array(await renderer.getArrayBufferAsync(system.ages.value)),
-    expectedReadbackLength('age', count),
+    count,
   );
-  const seeds = validateReadback(
+  const seeds = validateScalarReadback(
     'seeds',
     new Uint32Array(await renderer.getArrayBufferAsync(system.seeds.value)),
-    expectedReadbackLength('seed', count),
+    count,
   );
   return { positions, velocities, ages, seeds };
 }
