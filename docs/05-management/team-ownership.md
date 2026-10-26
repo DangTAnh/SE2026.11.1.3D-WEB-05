@@ -129,8 +129,10 @@ can start, except the ones marked *(after …)*.
 
 - `src/simulations/shared/` holds the particle attributes and the material tree
   both backends draw with. TV2 writes it, TV3 reviews it.
-- `src/simulations/backend/` holds capability probe, `forceWebGL`, timestamp
-  query and the fallback decision. TV3 writes it.
+- `src/simulations/backend/` holds the fallback orchestrator and its expected
+  unavailable error. `rendererAdapter.ts` performs backend-specific
+  initialization, `forceWebGL` setup and timestamp queries. There is no
+  separate capability-probe/resolver layer. TV3 owns this path.
 - Neither directory holds a second copy of the simulation rules.
 
 **Open (decision with TV2 + TV3).** WebGL2 has no native compute shader, but

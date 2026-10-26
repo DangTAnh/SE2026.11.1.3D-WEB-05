@@ -51,6 +51,20 @@ test('step is deterministic and advances age by dt * speed', () => {
   expect(first.ages[0]).toBeCloseTo(1.25, 5);
 });
 
+test('zero delta is a no-op even when velocity would otherwise be damped', () => {
+  for (const mode of ['attractor', 'vortex'] as const) {
+    const modeConfig = { ...config, mode };
+    const state = createState(modeConfig, 9);
+    state.positions.set([10, 0, 0], 0);
+    state.velocities.set([1, 0, 0], 0);
+    const before = snapshot(state);
+
+    step(state, 0, modeConfig);
+
+    expect(snapshot(state)).toEqual(before);
+  }
+});
+
 test('both modes stay finite, including a particle at the origin', () => {
   for (const mode of ['attractor', 'vortex'] as const) {
     const state = createState({ ...config, mode }, 3);
