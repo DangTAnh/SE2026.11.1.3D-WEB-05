@@ -79,9 +79,16 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   The #12 adapter stays bound to the production canvas through the composition root.
 - The prepared UI shows INITIALIZING without backend or metric claims until the
   initialized port is mounted; missing/failed ports then show unavailable/error.
-- Obtain WebGPU browser evidence and verify the two-backend benchmark separately;
+- Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
+  lifetime/respawn, perf collection and the two-backend benchmark separately.
   WebGL2 kernel readback parity is recorded for #50.
-- A requested backend preference takes effect at the next renderer init.
+- Choose Auto/WebGPU/WebGL2, then click **Áp dụng backend** to initialize a new
+  renderer without reloading. Configuration and pause state are preserved;
+  particles restart from their initial state. A fresh canvas permits changing
+  context type. Candidates initialize in an inert, hidden staging surface; only
+  a ready backend replaces the live canvas. Failed switches keep the old renderer
+  and report rollback; initial failure reports unavailable and allows retry.
+  Rapid requests use the latest generation. Old FPS/GPU timing is not carried over.
   Only `RendererStatus.actual` identifies the backend that ran.
 - Unsupported/invalid GPU timing stays `null`, never a fabricated zero.
 - No server, login, database or network persistence is included.
