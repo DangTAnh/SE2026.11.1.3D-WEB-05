@@ -13,18 +13,21 @@ export function createAttractorKernel(system: ParticleBuffers) {
     const velocity = velocities.element(instanceIndex);
     const age = ages.element(instanceIndex);
 
-    // Guard giống reference step: hạt đúng tâm thì không chuyển động (tránh 0/0),
-    // nhưng age vẫn tăng ở ngoài guard.
+    // Reference step trả sớm khi dt * speed === 0. Giữ nguyên velocity/position
+    // (kể cả damping) khi delta = 0; age vẫn cộng delta ở ngoài guard.
     const distance = position.length();
-    If(distance.greaterThan(1e-6), () => {
-      const toCenter = position.negate().normalize();
-      const tangent = toCenter.cross(vec3(0, 1, 0));
+    If(uniforms.delta.greaterThan(0), () => {
+      // Hạt đúng tâm đứng yên để tránh normalize(0) → NaN.
+      If(distance.greaterThan(1e-6), () => {
+        const toCenter = position.negate().normalize();
+        const tangent = toCenter.cross(vec3(0, 1, 0));
 
-      velocity.addAssign(tangent.mul(uniforms.strength).mul(uniforms.delta));
-      If(distance.greaterThan(uniforms.radius), () => {
-        velocity.assign(velocity.mul(uniforms.damping));
+        velocity.addAssign(tangent.mul(uniforms.strength).mul(uniforms.delta));
+        If(distance.greaterThan(uniforms.radius), () => {
+          velocity.assign(velocity.mul(uniforms.damping));
+        });
+        position.addAssign(velocity.mul(uniforms.delta));
       });
-      position.addAssign(velocity.mul(uniforms.delta));
     });
     age.addAssign(uniforms.delta);
   })()
