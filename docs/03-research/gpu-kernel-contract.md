@@ -59,6 +59,22 @@ seed      = uint(hash(i+3) * 0xffffffff)
 `delta` đã gồm `speed`; kernel **không** nhân thêm `speed` để tránh nhân đôi.
 Vortex dùng uniform riêng (`vortexDamping`) để adapter không vô tình dùng damping của attractor.
 
+### 3.1 Tham số vortex public (#49)
+
+Bảng mapping được TV2 chốt; schema v2 và `LabConfig`/`SimulationConfig` phải khớp bảng này.
+
+| Kernel uniform | `SimulationConfig` | `LabConfig` (bridge v1) | Preset v2 | Default |
+|---|---|---|---|---|
+| `strength` (vortex) | `strength` | `strength` | `modes.vortex.vortexStrength` | 1 (config) |
+| `vortexDamping` | `vortexDamping` | `vortexDamping` | `modes.vortex.vortexDamping` | `0.99` |
+
+- **Không có `vortexRadius`:** công thức vortex không có ngưỡng bán kính; thêm trường này sẽ là một
+  tham số không có tác dụng. Nếu formula đổi sang lực hút/vành đai, đó là thay đổi contract mới.
+- `vortexDamping` hợp lệ trong `(0, 1]`; schema v2 giới hạn UI/import ở `[0.8, 1]`.
+- Adapter **không** hardcode damping: `resolveVortexDamping(config.vortexDamping)` là nguồn duy nhất.
+- Preset v1 đã đóng băng không có slot cho `vortexDamping`; parser dùng default và serializer bỏ trường
+  này. `configHash` chỉ hash `vortexDamping` khi `mode = vortex`.
+
 ## 4. Công thức step (khớp reference)
 
 ```

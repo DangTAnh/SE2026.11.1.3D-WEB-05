@@ -14,6 +14,11 @@ export interface SimulationConfig {
   readonly spawnRadius?: number;
   readonly attractorRadius?: number;
   readonly attractorDamping?: number;
+  /**
+   * Per-step velocity multiplier for the vortex mode, in `(0, 1]`.
+   * Public vortex parameter (preset v2 `modes.vortex.vortexDamping`); the
+   * reference step and both adapters share `DEFAULT_VORTEX_DAMPING`.
+   */
   readonly vortexDamping?: number;
 }
 
