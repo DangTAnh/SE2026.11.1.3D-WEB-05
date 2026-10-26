@@ -133,6 +133,29 @@ would duplicate the same TSL material tree.
 
 ### 4.1 Who owns each contract
 
+Issue #54 adds an explicit next-init action through `RendererSession` in the
+composition layer. The session implements the unchanged `RendererPort` and
+replaces concrete adapters transactionally. The shared composition canvas factory
+stages a deep-cloned canvas in an inert, hidden host because a canvas cannot change
+its context type. The live renderer remains available until the candidate is ready;
+failed initialization discards only the candidate. At commit the old simulation
+pauses before the replacement starts, then the old port/surface are disposed.
+Initialization may temporarily own two renderer resources; superseded candidates
+are disposed and cannot commit. The factory preserves fallback canvas content.
+UI remains mounted
+once (one poller, control binding and ResizeObserver of the stable host), and
+receives only a re-init callback and loading predicate. Generation checks prevent
+late init completion from publishing an obsolete backend. User config and running
+intent survive re-init; initial unavailable cannot create running intent. The
+application callback returns applied/failed/superseded plus requested/actual and
+rollback information so UI can report failure even when initialization resolves.
+Metrics come only from the current ready adapter. The #63 change merged into
+`dev` did not include the Draft #62 freshness proposal; the #62 branch now adds
+the shared field and reports `measurementAgeMs: null` while initialization is
+pending. TV1/TV5 contract and collector review remain required before merge.
+This
+composition/lifecycle change requires TV1/TV3 review before merge.
+
 | Contract | Defined in | Producer | Consumers | Owner |
 |---|---|---|---|---|
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
@@ -164,9 +187,10 @@ may be aggregated only when they agree on `(mode, configHash) × actual`; across
 a hash boundary they are different experiments.
 
 **Included fields** — the `LabConfig` values that change the work the GPU does:
-`mode`, `particleCount`, `speed`, `particleSize`, `strength`, plus
-`vortexDamping` while `mode` is `vortex` (#49). The inactive mode's parameters
-are excluded: they do not change the kernel that runs.
+`mode`, `particleCount`, `speed`, `particleSize`, `strength`, `spawnRadius`,
+`lifetime`, plus `vortexDamping` while `mode` is `vortex` (#48/#49). The
+inactive mode's parameters are excluded: they do not change the kernel that
+runs.
 
 **Excluded, with reasons:**
 
@@ -182,7 +206,7 @@ order, no whitespace, numbers rounded to 3 decimal places and written without
 trailing zeros (`1.2`, not `1.20`):
 
 ```json
-{"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}
+{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}
 ```
 
 For `mode: "vortex"` the object additionally carries `"vortexDamping":0.99`. The

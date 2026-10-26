@@ -2,12 +2,17 @@ import { readFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
 import {
   createState,
+  DEFAULT_LIFETIME,
+  DEFAULT_SPAWN_RADIUS,
   PARTICLE_ATTRIBUTES,
+  pcgHash,
+  spawnPositionFromSeed,
   type ParticleState,
   type SimulationConfig,
 } from '../../src/simulations/shared/attributes.ts';
 import {
   DEFAULT_VORTEX_DAMPING,
+  resolveLifetime,
   resolveVortexDamping,
   step,
 } from '../../src/simulations/simulation.ts';
@@ -154,6 +159,68 @@ test('step applies the configured vortex damping instead of the default', () => 
 
   expect(strong.velocities[0]).toBeCloseTo(1, 6);
   expect(weak.velocities[0]).toBeCloseTo(1.8, 6);
+});
+
+test('lifetime is a validated, shared default (#48)', () => {
+  expect(resolveLifetime(undefined)).toBe(DEFAULT_LIFETIME);
+  expect(resolveLifetime(0.5)).toBe(0.5);
+  for (const invalid of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+    expect(() => resolveLifetime(invalid)).toThrow(TypeError);
+    expect(() => createState({ ...config, lifetime: invalid })).toThrow(TypeError);
+  }
+});
+
+test('seed-based spawn positions are deterministic, bounded and seed-dependent', () => {
+  expect(pcgHash(0)).toBe(pcgHash(0));
+  expect(pcgHash(1)).not.toBe(pcgHash(2));
+  for (const seed of [0, 1, 42, 0xffffffff]) {
+    const first = spawnPositionFromSeed(seed, 4);
+    const second = spawnPositionFromSeed(seed, 4);
+    expect(first).toEqual(second);
+    expect(Math.hypot(...first)).toBeLessThanOrEqual(4 + 1e-6);
+  }
+  expect(spawnPositionFromSeed(7, DEFAULT_SPAWN_RADIUS)).not.toEqual(spawnPositionFromSeed(8, DEFAULT_SPAWN_RADIUS));
+});
+
+test('particles respawn deterministically after lifetime in both modes', () => {
+  for (const mode of ['attractor', 'vortex'] as const) {
+    const respawnConfig: SimulationConfig = {
+      ...config,
+      mode,
+      particleCount: 8,
+      speed: 1,
+      lifetime: 0.5,
+      spawnRadius: 2,
+    };
+    const first = createState(respawnConfig, 21);
+    const second = createState(respawnConfig, 21);
+
+    for (let i = 0; i < 5; i += 1) {
+      step(first, 0.1, respawnConfig);
+      step(second, 0.1, respawnConfig);
+    }
+
+    expect(snapshot(first)).toEqual(snapshot(second));
+    expect(first.ages[0]).toBe(0);
+    expect(first.velocities.slice(0, 3)).toEqual(new Float32Array(3));
+    expect(Math.hypot(first.positions[0]!, first.positions[1]!, first.positions[2]!)).toBeLessThanOrEqual(2 + 1e-5);
+    const expected = spawnPositionFromSeed(first.seeds[0]!, 2);
+    for (let axis = 0; axis < 3; axis += 1) {
+      expect(first.positions[axis]).toBeCloseTo(expected[axis]!, 5);
+    }
+  }
+});
+
+test('zero delta does not respawn an already-expired particle', () => {
+  for (const mode of ['attractor', 'vortex'] as const) {
+    const state = createState({ ...config, mode, lifetime: 0.5 }, 4);
+    state.ages.fill(1);
+    const before = snapshot(state);
+
+    step(state, 0, { ...config, mode, lifetime: 0.5 });
+
+    expect(snapshot(state)).toEqual(before);
+  }
 });
 
 test('reference step does not import DOM or three', () => {

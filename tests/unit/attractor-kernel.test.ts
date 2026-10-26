@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 import { createParticleBuffers } from '../../src/simulations/shared/particleBuffers.ts';
 import { createAttractorKernel } from '../../src/simulations/shared/attractorKernel.ts';
 import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS } from '../../src/simulations/simulation.ts';
-import { DEFAULT_SPAWN_RADIUS } from '../../src/simulations/shared/attributes.ts';
+import { DEFAULT_SPAWN_RADIUS, DEFAULT_LIFETIME } from '../../src/simulations/shared/attributes.ts';
 
 test('attractor buffers use the shared layout and reference defaults', () => {
   const system = createParticleBuffers(8);
@@ -15,6 +15,7 @@ test('attractor buffers use the shared layout and reference defaults', () => {
   expect(system.initKernel.name).toBe('Init Particles');
   expect(system.initKernel.isComputeNode).toBe(true);
   expect(system.uniforms.spawnRadius.value).toBe(DEFAULT_SPAWN_RADIUS);
+  expect(system.uniforms.lifetime.value).toBe(DEFAULT_LIFETIME);
   expect(system.uniforms.radius.value).toBe(DEFAULT_ATTRACTOR_RADIUS);
   expect(system.uniforms.damping.value).toBe(DEFAULT_ATTRACTOR_DAMPING);
   expect(system.uniforms.delta.value).toBe(0);

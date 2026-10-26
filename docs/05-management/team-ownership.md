@@ -95,8 +95,9 @@ frames; below the nominal 5 FPS cadence, or with long readback delays, timing
 may still expire. Pause/reset clear cached GPU timing. The collector preserves
 FPS when only GPU timing is stale, but this field does not define FPS freshness;
 Issue #55 owns that separate contract. TV1 must review the shared contract and
-TV5 the collector behavior before merge. The pending status in #63 must also
-provide `measurementAgeMs: null` once this field lands.
+TV5 the collector behavior before merge. The #62 integration now provides
+`measurementAgeMs: null` in the pending composition status; the active adapter
+reports the measured age or null when no fresh GPU timing is available.
 
 **TV4 — UI and presets**
 
