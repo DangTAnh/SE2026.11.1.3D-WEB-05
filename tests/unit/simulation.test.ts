@@ -6,7 +6,11 @@ import {
   type ParticleState,
   type SimulationConfig,
 } from '../../src/simulations/shared/attributes.ts';
-import { step } from '../../src/simulations/simulation.ts';
+import {
+  DEFAULT_VORTEX_DAMPING,
+  resolveVortexDamping,
+  step,
+} from '../../src/simulations/simulation.ts';
 
 const config: SimulationConfig = {
   mode: 'attractor',
@@ -120,6 +124,36 @@ test('strength = 0 keeps positions unchanged while age still advances', () => {
     expect(Array.from(state.positions)).toEqual(before);
     expect(state.ages[0]).toBeCloseTo((60 / 60) * stillConfig.speed, 5);
   }
+});
+
+test('vortex damping is a frozen, validated public parameter (#49)', () => {
+  expect(resolveVortexDamping(undefined)).toBe(DEFAULT_VORTEX_DAMPING);
+  expect(resolveVortexDamping(0.95)).toBe(0.95);
+  for (const invalid of [0, -0.5, 1.01, Number.NaN, Number.POSITIVE_INFINITY]) {
+    expect(() => resolveVortexDamping(invalid)).toThrow(TypeError);
+  }
+});
+
+test('step applies the configured vortex damping instead of the default', () => {
+  const strongConfig: SimulationConfig = {
+    mode: 'vortex',
+    particleCount: 1,
+    speed: 1,
+    strength: 0,
+    vortexDamping: 0.5,
+  };
+  const weakConfig: SimulationConfig = { ...strongConfig, vortexDamping: 0.9 };
+  const state = createState(strongConfig, 1);
+  state.positions.set([5, 0, 0], 0);
+  state.velocities.set([2, 0, 0], 0);
+
+  const strong = { ...state, velocities: state.velocities.slice(), positions: state.positions.slice(), ages: state.ages.slice() };
+  const weak = { ...state, velocities: state.velocities.slice(), positions: state.positions.slice(), ages: state.ages.slice() };
+  step(strong, 1, strongConfig);
+  step(weak, 1, weakConfig);
+
+  expect(strong.velocities[0]).toBeCloseTo(1, 6);
+  expect(weak.velocities[0]).toBeCloseTo(1.8, 6);
 });
 
 test('reference step does not import DOM or three', () => {

@@ -6,6 +6,19 @@ export const DEFAULT_ATTRACTOR_DAMPING = 0.98;
 export const DEFAULT_VORTEX_DAMPING = 0.99;
 
 /**
+ * Resolve the public vortex damping shared by the CPU reference, the kernels
+ * and the adapter. Keeping the default here (rather than in the adapter) is
+ * what issue #49 freezes: one value, one validation rule, no hardcoded uniform.
+ */
+export function resolveVortexDamping(value: number | undefined): number {
+  const damping = value ?? DEFAULT_VORTEX_DAMPING;
+  if (!Number.isFinite(damping) || damping <= 0 || damping > 1) {
+    throw new TypeError('vortexDamping must be a finite number in (0, 1]');
+  }
+  return damping;
+}
+
+/**
  * CPU reference step for both modes. It is deterministic and mutates state in
  * place; the TSL kernels must reproduce this contract. The final attractor and
  * vortex formulas are confirmed by TV2 before the GPU kernels are ported.
@@ -23,7 +36,7 @@ export function step(state: ParticleState, dt: number, config: SimulationConfig)
 
   const radius = config.attractorRadius ?? DEFAULT_ATTRACTOR_RADIUS;
   const attractorDamping = config.attractorDamping ?? DEFAULT_ATTRACTOR_DAMPING;
-  const vortexDamping = config.vortexDamping ?? DEFAULT_VORTEX_DAMPING;
+  const vortexDamping = resolveVortexDamping(config.vortexDamping);
   const { positions, velocities, ages, count } = state;
   const isAttractor = config.mode === 'attractor';
 

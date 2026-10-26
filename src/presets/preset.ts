@@ -14,12 +14,21 @@ export interface LabConfig {
   particleSize: number;
   particleColor: string;
   strength: number;
+  /**
+   * Public vortex damping (#49). Preset v1 has no slot for it, so parsing uses
+   * the default and serialization omits it; `configHash` includes it only for
+   * the vortex mode. Schema v2 carries it as `modes.vortex.vortexDamping`.
+   */
+  vortexDamping: number;
 }
+
+/** The frozen v1 payload shape; `LabConfig` may carry fields v1 cannot store. */
+export type LabPresetConfig = Omit<LabConfig, 'vortexDamping'>;
 
 export interface LabPreset {
   schemaVersion: 1;
   app: '3D-WEB-05';
-  config: LabConfig;
+  config: LabPresetConfig;
 }
 
 export const DEFAULT_CONFIG: Readonly<LabConfig> = Object.freeze({
@@ -30,6 +39,9 @@ export const DEFAULT_CONFIG: Readonly<LabConfig> = Object.freeze({
   particleSize: 2.5,
   particleColor: '#6ce6ff',
   strength: 1.5,
+  // Must stay equal to DEFAULT_VORTEX_DAMPING in src/simulations/simulation.ts;
+  // tests/unit/preset.contract.test.ts pins the two together.
+  vortexDamping: 0.99,
 });
 
 const validatePreset = new Ajv2020({ allErrors: true, strict: true }).compile<LabPreset>(presetSchema);
@@ -83,11 +95,27 @@ export function parsePreset(text: string): LabConfig {
     particleSize: value.config.particleSize,
     particleColor: value.config.particleColor,
     strength: value.config.strength,
+    // v1 has no vortex parameter group; the public default applies until v2.
+    vortexDamping: DEFAULT_CONFIG.vortexDamping,
   };
 }
 
 export function serializePreset(config: LabConfig): string {
-  const preset: LabPreset = { schemaVersion: 1, app: '3D-WEB-05', config: { ...config } };
+  const preset: LabPreset = {
+    schemaVersion: 1,
+    app: '3D-WEB-05',
+    // Explicit allow-list: LabConfig may carry fields (vortexDamping) that the
+    // frozen v1 schema does not accept as input.
+    config: {
+      mode: config.mode,
+      backendPreference: config.backendPreference,
+      particleCount: config.particleCount,
+      speed: config.speed,
+      particleSize: config.particleSize,
+      particleColor: config.particleColor,
+      strength: config.strength,
+    },
+  };
   // Validate chính dữ liệu xuất ra để tránh preset hỏng khi state thay đổi ở tương lai.
   parsePreset(JSON.stringify(preset));
   return `${JSON.stringify(preset, null, 2)}\n`;
