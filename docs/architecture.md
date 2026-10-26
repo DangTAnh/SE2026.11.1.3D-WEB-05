@@ -27,9 +27,17 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 
-There is **one** renderer, not one per backend. `src/simulations/webgpu/` and
-`src/simulations/webgl2/` hold backend-specific parts only (capability probe,
-timestamp query), never a second copy of the simulation rules.
+There is **one** renderer, not one per backend. Backend choice and fallback are
+implemented by `ThreeRendererAdapter` together with `startBackend()` in
+`src/simulations/backend/fallback.ts`: `auto` and `webgpu` attempt WebGPU first,
+then try WebGL2 only when initialization reports `BackendUnavailableError`;
+`webgl2` goes directly to that backend. The adapter's WebGPU API/WebGL2-context
+checks are part of initialization, not a prediction-only probe. Programming
+errors propagate. The adapter reports `actual` from the renderer that
+successfully initialized. The separate `capabilities.ts` probe/resolver was
+removed because it duplicated this decision and could not establish that a
+renderer would initialize. Backend-specific modules must not copy simulation
+rules.
 | Server, auth, persistence | **Out of scope for this repo** | — |
 
 Without an injected port the default build reports unavailable and keeps preset
@@ -61,8 +69,8 @@ Rules:
 5. `src/presets/` may not import `src/ui/`.
 
 Rule 4 is exercised by the UI port consumer and the fake-port interaction tests.
-The production adapter and composition-root injection are still missing (D-01).
-See [UI port handoff](04-testing/UI-renderer-port-2026-10-24.md) for lifecycle,
+The production adapter and composition-root injection implement this boundary;
+see [UI port handoff](04-testing/UI-renderer-port-2026-10-24.md) for lifecycle,
 default config application and the no-port compatibility path.
 
 ## 3. Backend boundary
@@ -194,7 +202,6 @@ browser with no dependency added. It rejects missing, non-finite or invalid
 
 | ID | Debt | Where |
 |---|---|---|
-| D-01 | UI consumes RendererPort and mock is removed; real adapter/composition-root injection still pending | `src/main.ts` (issues #12/#15) |
 | D-02 | Domain module touches the DOM (`downloadPreset`) | `src/presets/preset.ts` |
 | D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/app.ts` |
 | D-04 | Backend label hardcoded in the UI template | `src/ui/app.ts` |
@@ -204,6 +211,8 @@ browser with no dependency added. It rejects missing, non-finite or invalid
 
 D-06 disappears once the config types move into `src/core/types/`; that change
 needs TV4's agreement because `src/presets/` is theirs.
+
+D-01 was resolved by the adapter and composition-root work in #12/#15.
 
 D-08 is retired: a changed `backendPreference` applies on the next `init()`
 (§4). The ID is not reused.
