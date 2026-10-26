@@ -16,20 +16,23 @@ const withConfig = (patch: Partial<LabConfig>): LabConfig => ({ ...DEFAULT_CONFI
 test('configHash: canonical string is the documented one', () => {
   assert.equal(
     canonicalConfig(DEFAULT_CONFIG),
-    '{"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}',
+    '{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}',
   );
 });
 
 test('configHash: canonical form ignores property insertion order and unrelated fields', () => {
-  const reordered = {
+  const reordered: LabConfig = {
     strength: 1.5,
     speed: 1.2,
     particleColor: '#000000',
     particleSize: 2.5,
+    spawnRadius: 10,
     particleCount: 20000,
+    lifetime: 6,
+    vortexDamping: 0.99,
     backendPreference: 'webgl2',
     mode: 'attractor',
-  } as LabConfig;
+  };
 
   assert.equal(canonicalConfig(reordered), canonicalConfig(DEFAULT_CONFIG));
 });
@@ -57,7 +60,7 @@ test('configHash: deterministic, SHA-256 lowercase hex, 64 chars', async () => {
   assert.equal(first, second);
   assert.match(first, /^[0-9a-f]{64}$/);
   // Pinned value for DEFAULT_CONFIG; cross-checked against `node:crypto`.
-  assert.equal(first, '96f45d23374376e93b829d7e85053ddf8fe572de52e1b77d3fd217bb8d572faf');
+  assert.equal(first, '2a8003e259733173be6147385046b28a0a9d124bfe2a16ad63412e2348305a33');
 });
 
 test('configHash: numbers are rounded to 3 decimals, so equivalent configs agree', async () => {
@@ -76,6 +79,8 @@ test('configHash: every benchmark-relevant field changes the hash', async () => 
     withConfig({ particleSize: 3 }),
     withConfig({ speed: 1.3 }),
     withConfig({ strength: 1.6 }),
+    withConfig({ spawnRadius: 12 }),
+    withConfig({ lifetime: 8 }),
   ];
 
   const hashes = await Promise.all(variants.map((config) => configHash(config)));

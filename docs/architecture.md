@@ -94,9 +94,12 @@ The adapter preserves the latest start/pause intent while asynchronous recovery
 runs. If WebGL2 is already active or the recovery renderer is lost, it reports
 `actual: unavailable` and stops; it does not loop or add a CPU path. The UI
 measures the stable host, so resize handling remains bound across canvas
-replacement. Adapter tests simulate context-mode locking and delayed recovery;
-Chromium tests cover WebGL2 context loss. Physical GPU device-loss behavior is
-not verified in the current environment.
+replacement. The shared canvas factory re-resolves the connected preview canvas
+before a later user-requested backend switch, so adapter-owned replacement does
+not leave composition pointing at a detached canvas. Adapter tests simulate
+context-mode locking and delayed recovery; Chromium tests cover WebGL2 context
+loss. Physical GPU device-loss behavior is not verified in the current
+environment.
 
 ## 4. Renderer contract
 
@@ -132,6 +135,29 @@ would duplicate the same TSL material tree.
 
 ### 4.1 Who owns each contract
 
+Issue #54 adds an explicit next-init action through `RendererSession` in the
+composition layer. The session implements the unchanged `RendererPort` and
+replaces concrete adapters transactionally. The shared composition canvas factory
+stages a deep-cloned canvas in an inert, hidden host because a canvas cannot change
+its context type. The live renderer remains available until the candidate is ready;
+failed initialization discards only the candidate. At commit the old simulation
+pauses before the replacement starts, then the old port/surface are disposed.
+Initialization may temporarily own two renderer resources; superseded candidates
+are disposed and cannot commit. The factory preserves fallback canvas content
+and resolves the connected preview canvas before staging, so a canvas replaced by
+Issue #52 runtime recovery remains the starting surface for the next Apply.
+UI remains mounted
+once (one poller, control binding and ResizeObserver of the stable host), and
+receives only a re-init callback and loading predicate. Generation checks prevent
+late init completion from publishing an obsolete backend. User config and running
+intent survive re-init; initial unavailable cannot create running intent. The
+application callback returns applied/failed/superseded plus requested/actual and
+rollback information so UI can report failure even when initialization resolves.
+Metrics come only from the current ready adapter. No unapproved freshness contract
+from Draft #62 is included; its eventual empty-status fields require integration.
+This
+composition/lifecycle change requires TV1/TV3 review before merge.
+
 | Contract | Defined in | Producer | Consumers | Owner |
 |---|---|---|---|---|
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
@@ -163,9 +189,10 @@ may be aggregated only when they agree on `(mode, configHash) × actual`; across
 a hash boundary they are different experiments.
 
 **Included fields** — the `LabConfig` values that change the work the GPU does:
-`mode`, `particleCount`, `speed`, `particleSize`, `strength`, plus
-`vortexDamping` while `mode` is `vortex` (#49). The inactive mode's parameters
-are excluded: they do not change the kernel that runs.
+`mode`, `particleCount`, `speed`, `particleSize`, `strength`, `spawnRadius`,
+`lifetime`, plus `vortexDamping` while `mode` is `vortex` (#48/#49). The
+inactive mode's parameters are excluded: they do not change the kernel that
+runs.
 
 **Excluded, with reasons:**
 
@@ -181,7 +208,7 @@ order, no whitespace, numbers rounded to 3 decimal places and written without
 trailing zeros (`1.2`, not `1.20`):
 
 ```json
-{"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}
+{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}
 ```
 
 For `mode: "vortex"` the object additionally carries `"vortexDamping":0.99`. The

@@ -1,6 +1,7 @@
 import { DEFAULT_CONFIG } from '../presets/preset.ts';
 import type { LabConfig } from '../presets/preset.ts';
 import type { RendererPort } from '../core/renderer/RendererPort.ts';
+import type { BackendSwitchResult } from '../composition/backendSwitch.ts';
 import { bindLabControls, renderLabControls } from './controls/controlBindings.ts';
 import { byId } from './dom.ts';
 import { createToastController } from './notifications.ts';
@@ -20,8 +21,13 @@ export function prepareLabUI(root: HTMLElement): HTMLCanvasElement {
 export function mountLabUI(
   root: HTMLElement,
   port?: RendererPort,
+  options: {
+    initialConfig?: Readonly<LabConfig>;
+    isInitializing?: () => boolean;
+    reinitializeBackend?: () => Promise<BackendSwitchResult>;
+  } = {},
 ): () => void {
-  let config: LabConfig = { ...DEFAULT_CONFIG };
+  let config: LabConfig = { ...(options.initialConfig ?? DEFAULT_CONFIG) };
   let disposed = false;
   let configApplied = !port;
 
@@ -38,9 +44,14 @@ export function mountLabUI(
   if (resizeObserver) resizeObserver.observe(canvasHost);
 
   const toast = createToastController();
+  let backendRequest = 0;
 
   const refreshStatus = (): void => {
     if (disposed) return;
+    if (options.isInitializing?.()) {
+      renderRuntimeStatus(createInitializingRuntimeState());
+      return;
+    }
     if (!configApplied) {
       renderRuntimeStatus(createRendererRuntimeState(undefined, true));
       return;
@@ -94,8 +105,31 @@ export function mountLabUI(
       else rendererPort.start();
       refreshStatus();
     },
+    applyBackend: () => {
+      if (!options.reinitializeBackend) return;
+      const request = ++backendRequest;
+      const task = options.reinitializeBackend();
+      refreshStatus();
+      void task.then(result => {
+        if (disposed || request !== backendRequest || result.outcome === 'superseded') return;
+        const backend = result.actual === 'webgpu' ? 'WebGPU' : 'WebGL2';
+        if (result.outcome === 'failed' || result.actual === 'unavailable') {
+          toast.notify(result.retainedPrevious
+            ? `Không thể áp dụng backend. Vẫn sử dụng ${backend} trước đó.`
+            : 'Không thể áp dụng backend. Không có renderer khả dụng; vui lòng thử lại.', 'error');
+        } else if (result.actual === 'webgl2' && result.requested !== 'webgl2') {
+          toast.notify('Đã áp dụng backend: WebGL2 fallback thay cho WebGPU.', 'info');
+        } else {
+          toast.notify(`Đã áp dụng backend: ${backend}.`);
+        }
+      }).catch(() => {
+        if (!disposed && request === backendRequest) toast.notify('Không thể áp dụng backend. Vui lòng thử lại.', 'error');
+      }).finally(() => { if (!disposed) refreshStatus(); });
+    },
     notify: toast.notify,
   });
+
+  byId<HTMLButtonElement>('apply-backend').disabled = !options.reinitializeBackend;
 
   renderLabControls(config);
   try {

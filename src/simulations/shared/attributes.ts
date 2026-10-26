@@ -12,6 +12,8 @@ export interface SimulationConfig {
   readonly speed: number;
   readonly strength: number;
   readonly spawnRadius?: number;
+  /** Simulation seconds; when `age >= lifetime` the particle respawns. */
+  readonly lifetime?: number;
   readonly attractorRadius?: number;
   readonly attractorDamping?: number;
   /**
@@ -39,6 +41,40 @@ export const PARTICLE_ATTRIBUTES = Object.freeze({
 } as const);
 
 export const DEFAULT_SPAWN_RADIUS = 10;
+/** Simulation seconds before a particle respawns. Matches the v2 default. */
+export const DEFAULT_LIFETIME = 6;
+
+/**
+ * PCG hash used by `three/tsl`'s `hash()` node, reimplemented with exact
+ * uint32 arithmetic. CPU respawn must produce the same random sequence as the
+ * TSL kernels when both start from the same `seeds` value.
+ * @see node_modules/three/src/nodes/math/Hash.js
+ */
+export function pcgHash(seed: number): number {
+  const state = (Math.imul(seed >>> 0, 747796405) + 2891336453) >>> 0;
+  const word = Math.imul((state >>> ((state >>> 28) + 4)) ^ state, 277803737) >>> 0;
+  const result = ((word >>> 22) ^ word) >>> 0;
+  return result / 2 ** 32;
+}
+
+/**
+ * Deterministic respawn position from a particle seed. Uses the same uniform
+ * sphere sampling and hash indices as the TSL respawn branch, so CPU and GPU
+ * respawn agree up to float tolerance.
+ */
+export function spawnPositionFromSeed(
+  seed: number,
+  spawnRadius = DEFAULT_SPAWN_RADIUS,
+): readonly [number, number, number] {
+  const u = pcgHash(seed);
+  const v = pcgHash(seed + 1);
+  const w = pcgHash(seed + 2);
+  const z = u * 2 - 1;
+  const phi = v * Math.PI * 2;
+  const ring = Math.sqrt(1 - z * z);
+  const radial = spawnRadius * Math.cbrt(w);
+  return [Math.cos(phi) * ring * radial, z * radial, Math.sin(phi) * ring * radial];
+}
 
 function mulberry32(seed: number): () => number {
   let t = seed >>> 0;
@@ -62,6 +98,9 @@ function assertConfig(config: SimulationConfig): void {
   }
   if (config.spawnRadius !== undefined && (!Number.isFinite(config.spawnRadius) || config.spawnRadius < 0)) {
     throw new TypeError('spawnRadius must be a finite non-negative number');
+  }
+  if (config.lifetime !== undefined && (!Number.isFinite(config.lifetime) || config.lifetime <= 0)) {
+    throw new TypeError('lifetime must be a finite positive number');
   }
 }
 
