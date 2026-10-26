@@ -69,6 +69,16 @@ for (const [name, file] of [
     );
   });
 
+  test(`contract: ${name} kernel respawns only after a positive delta`, () => {
+    const age = file.indexOf('age.addAssign(uniforms.delta);');
+    const guard = file.indexOf('If(uniforms.delta.greaterThan(0)', age);
+    const respawn = file.indexOf('respawnExpiredParticles(system)', age);
+
+    assert.ok(age >= 0, `${name} kernel must age particles`);
+    assert.ok(guard > age, `${name} kernel must guard respawn with delta > 0`);
+    assert.ok(respawn > guard, `${name} kernel must respawn inside the delta guard`);
+  });
+
   test(`contract: ${name} kernel no-ops velocity when delta is zero`, () => {
     const deltaGuard = file.indexOf('If(uniforms.delta.greaterThan(0)');
     const originGuard = file.indexOf('If(distance.greaterThan(1e-6)');

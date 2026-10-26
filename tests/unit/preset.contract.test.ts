@@ -6,6 +6,7 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG, parsePreset, serializePreset } from '../../src/presets/preset.ts';
 import type { LabConfig } from '../../src/presets/preset.ts';
+import { DEFAULT_LIFETIME, DEFAULT_SPAWN_RADIUS } from '../../src/simulations/shared/attributes.ts';
 import { DEFAULT_VORTEX_DAMPING } from '../../src/simulations/simulation.ts';
 
 const presetOf = (config: LabConfig) => JSON.parse(serializePreset(config)) as Record<string, unknown>;
@@ -18,6 +19,24 @@ test('contract: exported JSON has exactly three top-level keys and the full conf
   assert.deepEqual(Object.keys(out.config as object).sort(), [
     'backendPreference', 'mode', 'particleColor', 'particleCount', 'particleSize', 'speed', 'strength',
   ]);
+});
+
+test('contract: spawnRadius and lifetime share the simulation defaults and v1 drops them (#48)', () => {
+  assert.equal(DEFAULT_CONFIG.spawnRadius, DEFAULT_SPAWN_RADIUS);
+  assert.equal(DEFAULT_CONFIG.lifetime, DEFAULT_LIFETIME);
+
+  const raw = presetOf({ ...DEFAULT_CONFIG });
+  const config = raw.config as Record<string, unknown>;
+  assert.equal('spawnRadius' in config, false);
+  assert.equal('lifetime' in config, false);
+
+  const imported = parsePreset(serializePreset({
+    ...DEFAULT_CONFIG,
+    spawnRadius: 20,
+    lifetime: 2,
+  }));
+  assert.equal(imported.spawnRadius, DEFAULT_SPAWN_RADIUS);
+  assert.equal(imported.lifetime, DEFAULT_LIFETIME);
 });
 
 test('contract: parse -> serialize -> parse is idempotent', () => {

@@ -50,6 +50,7 @@ seed      = uint(hash(i+3) * 0xffffffff)
 | Uniform | Mặc định | Adapter phải làm gì |
 |---|---|---|
 | `spawnRadius` | `DEFAULT_SPAWN_RADIUS` (10) | set theo preset |
+| `lifetime` | `DEFAULT_LIFETIME` (6) | set theo preset; đơn vị giây mô phỏng |
 | `strength` | 1 | `config.strength` |
 | `delta` | 0 | **`clampedDt * config.speed`** mỗi frame |
 | `radius` | `DEFAULT_ATTRACTOR_RADIUS` (6) | `config.attractorRadius` (attractor) |
@@ -88,9 +89,11 @@ nếu delta > 0:
     vortex:                    v *= vortexDamping
     p       += v * delta
 age     += delta
+nếu delta > 0 và age >= lifetime:
+  respawn: p = spawnPositionFromSeed(seed), v = 0, age = 0
 ```
 
-- Thứ tự cố định: cộng vận tốc → damping → tích phân vị trí → tăng age.
+- Thứ tự cố định: cộng vận tốc → damping → tích phân vị trí → tăng age → respawn.
 - **Guard delta**: reference trả sớm khi `dt * speed === 0`, nên cả hai kernel bọc toàn bộ
   phần cập nhật (kể cả damping) trong `If(uniforms.delta.greaterThan(0), ...)`. Khi
   `delta = 0`, velocity/position giữ nguyên; `age` chỉ cộng 0 ở ngoài guard.
@@ -99,7 +102,11 @@ age     += delta
   (`EPSILON = 1e-6`). `age` tăng **ngoài** guard để hạt ở tâm vẫn già đi.
 - Attractor: chỉ damping khi ra ngoài `radius`.
 - Vortex: damping mỗi bước, không có lực hướng tâm (xem §6).
-- Kernel không đọc `seeds`; buffer này dành cho respawn/nhiễu ở giai đoạn sau.
+- **Respawn (#48):** khi `delta > 0` và `age >= lifetime`, kernel đặt lại `position` theo
+  `spawnPositionFromSeed(seed)`, `velocity = 0`, `age = 0`. Seed **không** đổi, nên lần respawn sau vẫn
+  deterministic. Respawn nằm trong guard `delta > 0` để `delta = 0` là no-op tuyệt đối.
+- `seeds` được dùng từ #48: hash index `seed`, `seed+1`, `seed+2` cho hướng + bán kính. CPU dùng
+  `pcgHash()` (cùng thuật toán với `hash()` của TSL) nên hai bên respawn cùng vị trí (sai khác float).
 
 ## 5. Kiểm chứng và parity
 
@@ -115,6 +122,9 @@ Hiện có (unit, chạy trong Node):
   hash index trong tài liệu này cũng phải khớp code.
 - `tests/unit/simulation.test.ts` xác nhận reference `step()` với `dt = 0` không đổi cả
   velocity lẫn position, kể cả khi particle đang ở ngoài `radius` và damping sẽ áp dụng.
+- `tests/unit/simulation.test.ts` xác nhận respawn deterministic theo seed, tuổi reset về 0, vị trí nằm
+  trong `spawnRadius`, và `delta = 0` không respawn hạt đã hết tuổi. `tests/unit/kernel-contract.test.ts`
+  khoá vị trí respawn nằm sau `age` và bên trong guard `delta > 0`.
 
 **Chưa có numeric parity GPU** vì Vitest không chạy được WebGPU. Điều kiện để test thật:
 

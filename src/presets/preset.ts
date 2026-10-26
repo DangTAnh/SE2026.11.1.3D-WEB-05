@@ -11,6 +11,10 @@ export interface LabConfig {
   backendPreference: BackendPreference;
   particleCount: number;
   speed: number;
+  /** World-space spawn radius (v2 `simulation.spawnRadius`). */
+  spawnRadius: number;
+  /** Simulation seconds before respawn (v2 `simulation.lifetime`). */
+  lifetime: number;
   particleSize: number;
   particleColor: string;
   strength: number;
@@ -23,7 +27,7 @@ export interface LabConfig {
 }
 
 /** The frozen v1 payload shape; `LabConfig` may carry fields v1 cannot store. */
-export type LabPresetConfig = Omit<LabConfig, 'vortexDamping'>;
+export type LabPresetConfig = Omit<LabConfig, 'vortexDamping' | 'spawnRadius' | 'lifetime'>;
 
 export interface LabPreset {
   schemaVersion: 1;
@@ -36,6 +40,10 @@ export const DEFAULT_CONFIG: Readonly<LabConfig> = Object.freeze({
   backendPreference: 'auto',
   particleCount: 20000,
   speed: 1.2,
+  // Must stay equal to DEFAULT_SPAWN_RADIUS / DEFAULT_LIFETIME in
+  // src/simulations/shared/attributes.ts; the contract test pins them together.
+  spawnRadius: 10,
+  lifetime: 6,
   particleSize: 2.5,
   particleColor: '#6ce6ff',
   strength: 1.5,
@@ -92,6 +100,9 @@ export function parsePreset(text: string): LabConfig {
     backendPreference: value.config.backendPreference,
     particleCount: value.config.particleCount,
     speed: value.config.speed,
+    // v1 has no simulation group; the shared defaults apply until v2.
+    spawnRadius: DEFAULT_CONFIG.spawnRadius,
+    lifetime: DEFAULT_CONFIG.lifetime,
     particleSize: value.config.particleSize,
     particleColor: value.config.particleColor,
     strength: value.config.strength,

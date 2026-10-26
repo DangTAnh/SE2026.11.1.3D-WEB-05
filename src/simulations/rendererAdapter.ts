@@ -9,7 +9,8 @@ import { PointsNodeMaterial, WebGPURenderer } from 'three/webgpu';
 import type { ActualBackend } from '../core/types/backend.ts';
 import type { RendererPort, RendererStatus, RendererTarget } from '../core/renderer/RendererPort.ts';
 import type { LabConfig } from '../presets/preset.ts';
-import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, resolveVortexDamping } from './simulation.ts';
+import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, resolveLifetime, resolveVortexDamping } from './simulation.ts';
+import { DEFAULT_SPAWN_RADIUS } from './shared/attributes.ts';
 import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
@@ -401,6 +402,8 @@ export class ThreeRendererAdapter implements RendererPort {
   ): void {
     if (!buffers) return;
     const { uniforms } = buffers;
+    uniforms.spawnRadius.value = config.spawnRadius ?? DEFAULT_SPAWN_RADIUS;
+    uniforms.lifetime.value = resolveLifetime(config.lifetime);
     uniforms.strength.value = config.strength;
     uniforms.delta.value = 0;
     uniforms.radius.value = DEFAULT_ATTRACTOR_RADIUS;
