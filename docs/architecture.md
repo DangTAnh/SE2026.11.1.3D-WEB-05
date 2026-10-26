@@ -151,9 +151,10 @@ may be aggregated only when they agree on `(mode, configHash) × actual`; across
 a hash boundary they are different experiments.
 
 **Included fields** — the `LabConfig` values that change the work the GPU does:
-`mode`, `particleCount`, `speed`, `particleSize`, `strength`, plus
-`vortexDamping` while `mode` is `vortex` (#49). The inactive mode's parameters
-are excluded: they do not change the kernel that runs.
+`mode`, `particleCount`, `speed`, `particleSize`, `strength`, `spawnRadius`,
+`lifetime`, plus `vortexDamping` while `mode` is `vortex` (#48/#49). The
+inactive mode's parameters are excluded: they do not change the kernel that
+runs.
 
 **Excluded, with reasons:**
 
@@ -169,7 +170,7 @@ order, no whitespace, numbers rounded to 3 decimal places and written without
 trailing zeros (`1.2`, not `1.20`):
 
 ```json
-{"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}
+{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}
 ```
 
 For `mode: "vortex"` the object additionally carries `"vortexDamping":0.99`. The

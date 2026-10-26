@@ -2,11 +2,11 @@
  * Deterministic identity of a benchmark configuration (docs/architecture.md §5.1).
  *
  * Hashed fields are the `LabConfig` values that change the work the GPU does:
- * `mode`, `particleCount`, `particleSize`, `speed`, `strength`, plus
- * `vortexDamping` when `mode` is `vortex` (#49). Excluded, with reasons in
- * §5.1: `backendPreference` (a request — the backend that ran is stored as
- * `actual`), `particleColor` (a per-frame uniform), the inactive mode's
- * parameters, and the preset envelope (`schemaVersion`, `app`).
+ * `mode`, `particleCount`, `particleSize`, `speed`, `strength`, `spawnRadius`,
+ * `lifetime`, plus `vortexDamping` when `mode` is `vortex` (#48/#49). Excluded,
+ * with reasons in §5.1: `backendPreference` (a request — the backend that ran
+ * is stored as `actual`), `particleColor` (a per-frame uniform), the inactive
+ * mode's parameters, and the preset envelope (`schemaVersion`, `app`).
  *
  * Canonical form: one JSON object, keys in alphabetical order, no whitespace,
  * numbers rounded to 3 decimal places without trailing zeros. SHA-256 over the
@@ -35,9 +35,11 @@ export function canonicalConfig(config: Readonly<LabConfig>): string {
   }
   // Insertion order is the canonical order; all keys are non-numeric.
   return JSON.stringify({
+    lifetime: round(config.lifetime, 'lifetime'),
     mode: config.mode,
     particleCount: round(config.particleCount, 'particleCount'),
     particleSize: round(config.particleSize, 'particleSize'),
+    spawnRadius: round(config.spawnRadius, 'spawnRadius'),
     speed: round(config.speed, 'speed'),
     strength: round(config.strength, 'strength'),
     // The inactive mode's parameters do not change the work that runs.

@@ -1,5 +1,5 @@
 import { Fn, hash, instancedArray, instanceIndex, uniform, vec3 } from 'three/tsl';
-import { DEFAULT_SPAWN_RADIUS } from './attributes.ts';
+import { DEFAULT_LIFETIME, DEFAULT_SPAWN_RADIUS } from './attributes.ts';
 import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAMPING } from '../simulation.ts';
 
 /**
@@ -18,6 +18,7 @@ export function createParticleBuffers(count: number) {
   const seeds = instancedArray(count, 'uint');
   const uniforms = {
     spawnRadius: uniform(DEFAULT_SPAWN_RADIUS),
+    lifetime: uniform(DEFAULT_LIFETIME),
     strength: uniform(1),
     radius: uniform(DEFAULT_ATTRACTOR_RADIUS),
     damping: uniform(DEFAULT_ATTRACTOR_DAMPING),
