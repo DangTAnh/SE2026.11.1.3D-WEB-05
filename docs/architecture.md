@@ -122,12 +122,23 @@ would duplicate the same TSL material tree.
 
 Issue #54 adds an explicit next-init action through `RendererSession` in the
 composition layer. The session implements the unchanged `RendererPort` and
-replaces concrete adapters on request. `main.ts` supplies a fresh canvas per
-generation because a canvas cannot change its context type. UI remains mounted
+replaces concrete adapters transactionally. The shared composition canvas factory
+stages a deep-cloned canvas in an inert, hidden host because a canvas cannot change
+its context type. The live renderer remains available until the candidate is ready;
+failed initialization discards only the candidate. At commit the old simulation
+pauses before the replacement starts, then the old port/surface are disposed.
+Initialization may temporarily own two renderer resources; superseded candidates
+are disposed and cannot commit. The factory preserves fallback canvas content.
+UI remains mounted
 once (one poller, control binding and ResizeObserver of the stable host), and
 receives only a re-init callback and loading predicate. Generation checks prevent
 late init completion from publishing an obsolete backend. User config and running
-intent survive re-init; metrics come only from the current ready adapter. This
+intent survive re-init; initial unavailable cannot create running intent. The
+application callback returns applied/failed/superseded plus requested/actual and
+rollback information so UI can report failure even when initialization resolves.
+Metrics come only from the current ready adapter. No unapproved freshness contract
+from Draft #62 is included; its eventual empty-status fields require integration.
+This
 composition/lifecycle change requires TV1/TV3 review before merge.
 
 | Contract | Defined in | Producer | Consumers | Owner |

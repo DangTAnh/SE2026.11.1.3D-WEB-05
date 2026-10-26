@@ -81,8 +81,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 - Choose Auto/WebGPU/WebGL2, then click **Áp dụng backend** to initialize a new
   renderer without reloading. Configuration and pause state are preserved;
   particles restart from their initial state. A fresh canvas permits changing
-  context type. Rapid requests use the latest generation; failed init reports
-  unavailable and allows another attempt. Old FPS/GPU timing is not carried over.
+  context type. Candidates initialize in an inert, hidden staging surface; only
+  a ready backend replaces the live canvas. Failed switches keep the old renderer
+  and report rollback; initial failure reports unavailable and allows retry.
+  Rapid requests use the latest generation. Old FPS/GPU timing is not carried over.
   Only `RendererStatus.actual` identifies the backend that ran.
 - Unsupported/invalid GPU timing stays `null`, never a fabricated zero.
 - No server, login, database or network persistence is included.

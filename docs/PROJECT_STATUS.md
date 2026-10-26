@@ -1,5 +1,28 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 26/10/2026 — PR #63 TV1 review fixes
+
+- Merged latest `dev@a6e460d` into the existing feature branch via `89bb87c`;
+  merged #44/#60 source is preserved. No published history was rewritten.
+- All seven TV1 findings have code/regression changes: transactional staging and
+  rollback, explicit switch results/toasts, guarded initial start, capability-safe
+  E2E, generation-specific requested backend, preserved fallback content, and one
+  shared production/fixture canvas factory. Human re-review remains required.
+- Test mapping and integration boundaries are in the
+  [review-fix evidence](04-testing/backend-reinit-review-fixes-2026-10-26.md).
+  Final full verify PASS: 139 unit/contract/integration tests, 52 desktop/mobile
+  E2E PASS and two WebGPU-adapter skips, both typechecks and production build.
+  No retries in the final full run; an earlier timeout is recorded in the evidence.
+  The initial handoff below records historical evidence, not current verification.
+- #61 still needs TV3 canvas recovery/pause fixes and an agreed recovery ownership
+  API with TV1. #62 stays Draft pending freshness fixes and TV1/TV5 contract review;
+  #63 does not invent its fields. #64 is a separate benchmark-runner candidate.
+- #14 stays open pending acceptance wording for the negative `uiState` regression.
+  #16/#49 hash and Vortex decisions remain open; #55 waits #62; #56 waits #16/#49.
+  #43/#51 source is merged but their owners still need to confirm Issue closure.
+- Physical WebGPU, GPU readback parity (#50), lifetime/respawn (#48), fair measured
+  benchmark (#58), MVP acceptance and release remain separate unmet gates.
+
 ## 26/10/2026 — TV4 Issue #54 backend re-initialization candidate
 
 - Baseline: `dev@ac364912`; branch `feat/54-backend-reinit`, assigned to TV4
