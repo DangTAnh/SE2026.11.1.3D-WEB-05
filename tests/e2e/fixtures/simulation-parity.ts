@@ -8,6 +8,7 @@
  * Run from `tests/e2e/simulation-parity.spec.ts`; results are returned as JSON
  * and attached to the Playwright report.
  */
+import { Fn, instanceIndex, uniform, vec3 } from 'three/tsl';
 import { WebGPURenderer } from 'three/webgpu';
 import {
   DEFAULT_ATTRACTOR_DAMPING,
@@ -16,8 +17,15 @@ import {
 } from '../../../src/simulations/simulation.ts';
 import type { SimulationMode } from '../../../src/simulations/shared/attributes.ts';
 import { createAttractorKernel } from '../../../src/simulations/shared/attractorKernel.ts';
-import { createParticleBuffers } from '../../../src/simulations/shared/particleBuffers.ts';
+import { createParticleBuffers, type ParticleBuffers } from '../../../src/simulations/shared/particleBuffers.ts';
 import { createVortexKernel } from '../../../src/simulations/shared/vortexKernel.ts';
+import {
+  assertSeedsUnchanged,
+  expectedReadbackLength,
+  maxDelta,
+  ParityValidationError,
+  validateReadback,
+} from './parityValidation.ts';
 
 export type ParityBackend = 'webgl2' | 'webgpu';
 
@@ -33,6 +41,14 @@ export interface ParityOptions {
   vortexDamping?: number;
   /** Absolute tolerance per channel; defaults are tight enough for a pure step. */
   tolerance?: { position?: number; velocity?: number; age?: number };
+  /**
+   * Test-only initial state injected after the init kernel, used to make the
+   * zero-delta case non-vacuous. The harness re-reads and asserts the values
+   * reached the GPU before stepping.
+   */
+  prime?: { age?: number; velocity?: readonly [number, number, number] };
+  /** Test-only readback corruption, used to prove validation rejects it. */
+  fault?: 'empty' | 'truncated' | 'nan';
 }
 
 interface ResolvedParityOptions {
@@ -46,6 +62,19 @@ interface ResolvedParityOptions {
   strength: number;
   vortexDamping: number;
   tolerance: { position: number; velocity: number; age: number };
+  prime: { age?: number; velocity?: readonly [number, number, number] } | null;
+  fault: 'empty' | 'truncated' | 'nan' | null;
+}
+
+interface ReadbackState {
+  positions: Float32Array;
+  velocities: Float32Array;
+  ages: Float32Array;
+  seeds: Uint32Array;
+}
+
+interface CpuState extends ReadbackState {
+  count: number;
 }
 
 export interface ParityResult {
@@ -87,6 +116,8 @@ function resolveOptions(options: ParityOptions): ResolvedParityOptions {
       velocity: options.tolerance?.velocity ?? DEFAULT_TOLERANCE.velocity,
       age: options.tolerance?.age ?? DEFAULT_TOLERANCE.age,
     },
+    prime: options.prime ?? null,
+    fault: options.fault ?? null,
   };
 }
 
@@ -118,12 +149,152 @@ function result(
   };
 }
 
-function maxDelta(a: Float32Array, b: Float32Array): number {
-  let max = 0;
-  for (let i = 0; i < a.length; i += 1) {
-    max = Math.max(max, Math.abs(a[i]! - b[i]!));
+async function readState(
+  renderer: WebGPURenderer,
+  system: ParticleBuffers,
+  count: number,
+): Promise<ReadbackState> {
+  const positions = validateReadback(
+    'positions',
+    new Float32Array(await renderer.getArrayBufferAsync(system.positions.value)),
+    expectedReadbackLength('position', count),
+  );
+  const velocities = validateReadback(
+    'velocities',
+    new Float32Array(await renderer.getArrayBufferAsync(system.velocities.value)),
+    expectedReadbackLength('velocity', count),
+  );
+  const ages = validateReadback(
+    'ages',
+    new Float32Array(await renderer.getArrayBufferAsync(system.ages.value)),
+    expectedReadbackLength('age', count),
+  );
+  const seeds = validateReadback(
+    'seeds',
+    new Uint32Array(await renderer.getArrayBufferAsync(system.seeds.value)),
+    expectedReadbackLength('seed', count),
+  );
+  return { positions, velocities, ages, seeds };
+}
+
+/**
+ * Test-only readback corruption. The wrapper is installed on the renderer, so
+ * it exercises the same validation path as a real backend returning a bad
+ * buffer.
+ */
+function installFaultInjection(
+  renderer: WebGPURenderer,
+  fault: NonNullable<ResolvedParityOptions['fault']>,
+): void {
+  const original = renderer.getArrayBufferAsync.bind(renderer) as (
+    attribute: unknown,
+    target?: unknown,
+    offset?: number,
+    count?: number,
+  ) => Promise<ArrayBuffer>;
+
+  const faulted = async (
+    attribute: unknown,
+    target?: unknown,
+    offset?: number,
+    count?: number,
+  ): Promise<ArrayBuffer> => {
+    const buffer = await original(attribute, target, offset, count);
+    if (fault === 'empty') return new ArrayBuffer(0);
+    if (fault === 'truncated') return buffer.slice(0, Math.max(0, buffer.byteLength - 4));
+    const floats = new Float32Array(buffer.slice(0));
+    if (floats.length === 0) return new ArrayBuffer(0);
+    floats[0] = Number.NaN;
+    return floats.buffer;
+  };
+
+  (renderer as unknown as { getArrayBufferAsync: typeof faulted }).getArrayBufferAsync = faulted;
+}
+
+/**
+ * Test-only GPU kernel that writes the primed state. Uploading a storage
+ * buffer by mutating `.array` is backend-dependent; a compute kernel is the
+ * same path the simulation itself uses, so the harness cannot prime only the
+ * CPU copy by accident.
+ */
+function createPrimeKernel(
+  system: ParticleBuffers,
+  prime: NonNullable<ResolvedParityOptions['prime']>,
+) {
+  const { ages, velocities, count } = system;
+  const ageValue = uniform(prime.age ?? 0);
+  const vx = uniform(prime.velocity?.[0] ?? 0);
+  const vy = uniform(prime.velocity?.[1] ?? 0);
+  const vz = uniform(prime.velocity?.[2] ?? 0);
+
+  return Fn(() => {
+    if (prime.age !== undefined) {
+      ages.element(instanceIndex).assign(ageValue);
+    }
+    if (prime.velocity !== undefined) {
+      velocities.element(instanceIndex).assign(vec3(vx, vy, vz));
+    }
+  })().compute(count);
+}
+
+/** Apply the same prime values to the CPU reference state. */
+function primeCpuState(
+  cpuState: CpuState,
+  prime: NonNullable<ResolvedParityOptions['prime']>,
+): void {
+  const { count } = cpuState;
+  if (prime.age !== undefined) {
+    cpuState.ages.fill(prime.age, 0, count);
   }
-  return max;
+  if (prime.velocity !== undefined) {
+    for (let i = 0; i < count; i += 1) {
+      cpuState.velocities.set(prime.velocity, i * 3);
+    }
+  }
+}
+
+/** Reject a zero-delta case that cannot distinguish a guarded step from a no-op. */
+function assertNonVacuousZeroDelta(
+  mode: SimulationMode,
+  state: ReadbackState,
+  count: number,
+  lifetime: number,
+  radius: number,
+): void {
+  let nonzeroVelocity = false;
+  let expired = false;
+  let outside = false;
+
+  for (let i = 0; i < count; i += 1) {
+    const offset = i * 3;
+    if (
+      state.velocities[offset] !== 0
+      || state.velocities[offset + 1] !== 0
+      || state.velocities[offset + 2] !== 0
+    ) {
+      nonzeroVelocity = true;
+    }
+    if (state.ages[i]! >= lifetime) expired = true;
+    if (
+      Math.hypot(
+        state.positions[offset]!,
+        state.positions[offset + 1]!,
+        state.positions[offset + 2]!,
+      ) > radius
+    ) {
+      outside = true;
+    }
+  }
+
+  if (!nonzeroVelocity) {
+    throw new ParityValidationError('zero-delta case is vacuous: every velocity is zero');
+  }
+  if (!expired) {
+    throw new ParityValidationError('zero-delta case is vacuous: no particle is at or past lifetime');
+  }
+  if (mode === 'attractor' && !outside) {
+    throw new ParityValidationError('zero-delta attractor case is vacuous: no particle is outside radius');
+  }
 }
 
 function gpuUnavailableReason(backend: ParityBackend, error: unknown): string | null {
@@ -142,7 +313,10 @@ function gpuUnavailableReason(backend: ParityBackend, error: unknown): string | 
 
 async function run(rawOptions: ParityOptions): Promise<ParityResult> {
   const options = resolveOptions(rawOptions);
-  const { backend, mode, count, steps, dt, lifetime, spawnRadius, strength, vortexDamping, tolerance } = options;
+  const {
+    backend, mode, count, steps, dt, lifetime, spawnRadius, strength,
+    vortexDamping, tolerance, prime, fault,
+  } = options;
 
   if (backend === 'webgpu' && typeof navigator === 'undefined') {
     return skipped(options, 'WebGPU unavailable: no navigator');
@@ -190,6 +364,8 @@ async function run(rawOptions: ParityOptions): Promise<ParityResult> {
       return skipped(options, `requested ${backend} but the renderer initialized ${actual}`);
     }
 
+    if (fault !== null) installFaultInjection(renderer, fault);
+
     const system = createParticleBuffers(count);
     system.uniforms.spawnRadius.value = spawnRadius;
     system.uniforms.lifetime.value = lifetime;
@@ -201,20 +377,25 @@ async function run(rawOptions: ParityOptions): Promise<ParityResult> {
     await renderer.compute(system.initKernel);
     if (deviceLost) return skipped(options, `${backend} unavailable: device lost during init`);
 
-    const initialState = {
-      positions: new Float32Array(await renderer.getArrayBufferAsync(system.positions.value)),
-      velocities: new Float32Array(await renderer.getArrayBufferAsync(system.velocities.value)),
-      ages: new Float32Array(await renderer.getArrayBufferAsync(system.ages.value)),
-      seeds: new Uint32Array(await renderer.getArrayBufferAsync(system.seeds.value)),
-    };
+    const initialState = await readState(renderer, system, count);
 
-    const cpuState = {
+    const cpuState: CpuState = {
       count,
       positions: initialState.positions.slice(),
       velocities: initialState.velocities.slice(),
       ages: initialState.ages.slice(),
       seeds: initialState.seeds.slice(),
     };
+
+    if (prime !== null) {
+      primeCpuState(cpuState, prime);
+      await renderer.compute(createPrimeKernel(system, prime));
+      if (deviceLost) return skipped(options, `${backend} unavailable: device lost during prime`);
+    }
+    if (dt === 0) {
+      assertNonVacuousZeroDelta(mode, cpuState, count, lifetime, DEFAULT_ATTRACTOR_RADIUS);
+    }
+
     const config = {
       mode,
       particleCount: count,
@@ -235,15 +416,12 @@ async function run(rawOptions: ParityOptions): Promise<ParityResult> {
       step(cpuState, dt, config);
     }
 
-    const finalState = {
-      positions: new Float32Array(await renderer.getArrayBufferAsync(system.positions.value)),
-      velocities: new Float32Array(await renderer.getArrayBufferAsync(system.velocities.value)),
-      ages: new Float32Array(await renderer.getArrayBufferAsync(system.ages.value)),
-    };
+    const finalState = await readState(renderer, system, count);
+    assertSeedsUnchanged(initialState.seeds, finalState.seeds);
 
-    const positionDelta = maxDelta(finalState.positions, cpuState.positions);
-    const velocityDelta = maxDelta(finalState.velocities, cpuState.velocities);
-    const ageDelta = maxDelta(finalState.ages, cpuState.ages);
+    const positionDelta = maxDelta('positions', finalState.positions, cpuState.positions);
+    const velocityDelta = maxDelta('velocities', finalState.velocities, cpuState.velocities);
+    const ageDelta = maxDelta('ages', finalState.ages, cpuState.ages);
     const passed = positionDelta <= tolerance.position
       && velocityDelta <= tolerance.velocity
       && ageDelta <= tolerance.age;

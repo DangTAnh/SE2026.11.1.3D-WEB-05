@@ -127,9 +127,9 @@ Hiện có (unit, chạy trong Node):
   khoá vị trí respawn nằm sau `age` và bên trong guard `delta > 0`.
 
 **Numeric parity GPU (#50):** chạy thật bằng `tests/e2e/simulation-parity.spec.ts`
-(`WebGPURenderer` + readback), không dùng FakeRenderer. Kết quả WebGL2 ngày 2026-10-26: 5/5 case
-PASS (pure step ≤ 4.8e-7; respawn ≤ 7.1e-4 do trig của SwiftShader; zero-delta đúng 0). WebGPU
-SKIP vì môi trường không có adapter. Báo cáo đầy đủ:
+(`WebGPURenderer` + readback), không dùng FakeRenderer. Kết quả WebGL2 ngày 2026-10-26: 6/6 case
+PASS (pure step ≤ 4.8e-7; respawn ≤ 7.1e-4 do trig của SwiftShader; zero-delta có prime state đúng 0;
+seeds không đổi), 3/3 readback hỏng bị từ chối. WebGPU SKIP vì môi trường không có adapter. Báo cáo đầy đủ:
 [`docs/04-testing/gpu-kernel-parity-2026-10-26.md`](../04-testing/gpu-kernel-parity-2026-10-26.md).
 
 Điều kiện để chạy lại trên WebGPU thật:

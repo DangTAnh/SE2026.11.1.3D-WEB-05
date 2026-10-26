@@ -61,8 +61,9 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   capability-probe/resolver path; the duplicate module and tests were removed.
 - **Simulation reference and sampling:** deterministic CPU reference steps and
   the RendererPort performance collector are integrated. The renderer uses the
-  shared TSL simulation pipeline; WebGL2 readback parity (5/5 cases) is recorded
-  in `docs/04-testing/gpu-kernel-parity-2026-10-26.md`. WebGPU execution remains
+  shared TSL simulation pipeline; WebGL2 readback parity (6/6 cases, plus 3/3
+  corrupt-readback rejections) is recorded in
+  `docs/04-testing/gpu-kernel-parity-2026-10-26.md`. WebGPU execution remains
   pending because this environment exposes no adapter.
 - **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
   uses v1 until issue #16 and its shared config/hash decisions are implemented.

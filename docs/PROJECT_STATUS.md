@@ -8,9 +8,10 @@
 - #48 adds deterministic seed-based lifetime respawn to the CPU reference and
   both TSL kernels, with `spawnRadius`/`lifetime` uniform wiring. `delta = 0`
   remains a strict no-op, including for expired particles.
-- #50 adds a real GPU readback harness. WebGL2 (SwiftShader) passes 5/5 cases;
-  WebGPU is SKIPPED with an explicit missing-adapter reason. Evidence:
-  [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
+- #50 adds a real GPU readback harness. WebGL2 (SwiftShader) passes 6/6 cases,
+  including primed zero-delta and immutable-seed checks; 3/3 corrupt readbacks
+  fail validation. WebGPU is SKIPPED with an explicit missing-adapter reason.
+  Evidence: [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
 - These branches target `dev` and have not merged; no release or physical-GPU
   acceptance is implied.
 
