@@ -100,7 +100,7 @@ can start, except the ones marked *(after …)*.
 | Accessibility & responsive | keyboard, contrast, narrow viewport |
 | `LabConfig` freeze | final field names and ranges, validation at the boundary |
 | UI tests | one per control group |
-| Mock removal | delete the Canvas 2D mock once the port is injected |
+| Mock removal | Canvas 2D mock deleted; UI consumes the injected port (#32/#33) |
 
 **TV5 — proof**
 
@@ -166,11 +166,13 @@ Definition of done for the MVP: [`01-requirements/mvp-acceptance.md`](../01-requ
 The benchmark protocol values it leaves as TBD are TV5's to fix (aggregation
 shared with TV2/TV3).
 
-Nine of the ten controls exist against the mock. `UI-FR-04` does not meet its
-acceptance criterion: it must display the backend that actually ran
-(`docs/01-requirements/ui-requirements.md:27`), and `src/ui/app.ts:36`
-hardcodes `Canvas 2D (mockup)`. That gap is D-04 in
-[`docs/architecture.md`](../architecture.md) §6.
+All ten controls are implemented against `RendererPort`; the Canvas 2D mock is
+gone and the composition root injects the real adapter. `UI-FR-04` now displays
+the backend reported by `RendererStatus.actual` through
+`src/ui/state/runtimeState.ts`, so D-04 in
+[`docs/architecture.md`](../architecture.md) §6 is resolved. Issue #14 remains
+open only for the remaining acceptance evidence; it is no longer blocked by a
+hardcoded label.
 
 ## 5. Shared files
 
