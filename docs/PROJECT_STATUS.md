@@ -17,9 +17,9 @@
 - Docs-only reconciliation (#45): README, architecture and team ownership now
   describe this behavior. Earlier checkpoints below are preserved as history and
   do not describe current state.
-- Verification for this docs change: `git diff --check` clean; `npm run
-  typecheck`, `npm run build` and `npm test` PASS. E2E was not rerun for a
-  docs-only change.
+- Verification for this docs change: local `git diff --check` clean,
+  `npm run typecheck`, `npm run build` and `npm test` PASS (162 tests); E2E was
+  not rerun locally. CI `verify` at `62fedb8` PASS (it includes `test:e2e`).
 - NOT_RUN: physical WebGPU execution, physical-GPU numeric parity, live GPU
   timing, fair measured two-backend benchmark, MVP acceptance and release. #75's
   WebGL2 readback evidence is software-rendered (SwiftShader), not physical-GPU

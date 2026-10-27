@@ -14,8 +14,9 @@ The Canvas2D preview has been removed. The default entry point initializes the
 adapter before mounting the UI. On `dev` at `09723af` (27/10/2026), browser
 tests exercise a real WebGL2 path; the available Chromium environment has no
 WebGPU adapter, so its WebGPU smoke test is skipped. Preset import/export
-remains available. GPU parity and a two-backend benchmark run are still
-unverified.
+remains available. Physical-GPU/WebGPU parity and a fair two-backend benchmark
+run remain unverified; #50's WebGL2 readback parity is software-rendered
+(SwiftShader), not physical-GPU proof.
 
 ## Run and verify
 
