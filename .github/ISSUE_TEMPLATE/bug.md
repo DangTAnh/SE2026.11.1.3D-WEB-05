@@ -6,7 +6,7 @@ labels: bug
 assignees: ""
 ---
 
-> Security issues must follow SECURITY.md, not a public Issue.
+> Do not file security issues publicly; report them privately to the maintainers.
 
 ## Reproduction
 
