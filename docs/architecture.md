@@ -22,7 +22,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
 | UI shell | Consumes an injected RendererPort; no backend init in UI | [`src/ui/app.ts`](../src/ui/app.ts) |
 | Simulation preview | Production canvas bound to the real adapter by the composition root; Canvas2D mock removed | `src/main.ts` |
-| Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; WebGL2 Chromium exercised, physical WebGPU acceptance pending | `src/simulations/rendererAdapter.ts` |
+| Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; Issue #52 adds one runtime WebGPU-to-WebGL2 recovery attempt; real GPU loss acceptance remains pending | `src/simulations/rendererAdapter.ts` |
 | Composition root | Implemented; initializes the adapter before mounting the port-consuming UI | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
 | Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; WebGL2 readback parity passed (#50, SwiftShader), WebGPU adapter NOT_RUN | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
@@ -86,6 +86,23 @@ invalidates every comparison the project is built to produce.
 `RendererStatus` encodes this directly: `requested` exists only to explain a
 fallback, and `actual` is the only backend identity a benchmark row may store.
 
+**Runtime device/context loss policy (Issue #52).** If the active WebGPU device
+is lost after initialization, the adapter disposes it, replaces the canvas in
+the same stable host, and attempts WebGL2 once. A canvas cannot change its
+context mode after `getContext('webgpu')`, so recovery must use a fresh canvas.
+The adapter and `RendererSession` preserve the latest start/pause intent while
+asynchronous recovery runs, including a Play request received by the session
+while the active adapter reports unavailable. If WebGL2 is already active or
+the recovery renderer is lost, it reports `actual: unavailable` and stops; it
+does not loop or add a CPU path. The UI
+measures the stable host, so resize handling remains bound across canvas
+replacement. The shared canvas factory re-resolves the connected preview canvas
+before a later user-requested backend switch, so adapter-owned replacement does
+not leave composition pointing at a detached canvas. Adapter tests simulate
+context-mode locking and delayed recovery; Chromium tests cover WebGL2 context
+loss. Physical GPU device-loss behavior is not verified in the current
+environment.
+
 ## 4. Renderer contract
 
 `RendererPort` (see the file for full doc comments):
@@ -128,7 +145,9 @@ its context type. The live renderer remains available until the candidate is rea
 failed initialization discards only the candidate. At commit the old simulation
 pauses before the replacement starts, then the old port/surface are disposed.
 Initialization may temporarily own two renderer resources; superseded candidates
-are disposed and cannot commit. The factory preserves fallback canvas content.
+are disposed and cannot commit. The factory preserves fallback canvas content
+and resolves the connected preview canvas before staging, so a canvas replaced by
+Issue #52 runtime recovery remains the starting surface for the next Apply.
 UI remains mounted
 once (one poller, control binding and ResizeObserver of the stable host), and
 receives only a re-init callback and loading predicate. Generation checks prevent

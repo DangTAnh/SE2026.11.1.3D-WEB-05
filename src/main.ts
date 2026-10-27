@@ -17,7 +17,7 @@ const initialConfig = new URLSearchParams(window.location.search).get('webgl') =
   ? { ...DEFAULT_CONFIG, backendPreference: 'webgl2' as const }
   : DEFAULT_CONFIG;
 const factory = createCanvasRendererFactory(canvas, createRendererPort);
-const createTarget = () => measureRendererTarget(factory.canvas);
+const createTarget = () => measureRendererTarget(factory.canvas.parentElement ?? factory.canvas);
 const session = new RendererSession(initialConfig, factory.createCandidate);
 
 void composeLab({
