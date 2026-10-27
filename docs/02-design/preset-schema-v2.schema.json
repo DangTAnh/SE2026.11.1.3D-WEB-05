@@ -4,30 +4,60 @@
   "title": "3D-WEB-05 Particle Lab Preset v2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "app", "config"],
+  "required": [
+    "schemaVersion",
+    "app",
+    "config"
+  ],
   "properties": {
-    "schemaVersion": { "const": 2 },
-    "app": { "const": "3D-WEB-05" },
+    "schemaVersion": {
+      "const": 2
+    },
+    "app": {
+      "const": "3D-WEB-05"
+    },
     "name": {
       "type": "string",
       "minLength": 1,
       "maxLength": 80,
-      "description": "Optional metadata; not part of the round-trip identity."
+      "description": "Optional document metadata, preserved on round-trip; excluded from workload hash."
     },
     "config": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "backendPreference", "simulation", "modes", "rendering", "camera"],
+      "required": [
+        "mode",
+        "backendPreference",
+        "simulation",
+        "modes",
+        "rendering",
+        "camera"
+      ],
       "properties": {
         "mode": {
-          "enum": ["attractor", "vortex"],
+          "enum": [
+            "attractor",
+            "vortex"
+          ],
           "description": "MVP modes. Flow/curl-noise is a post-MVP extension and is intentionally absent from v2."
         },
-        "backendPreference": { "enum": ["auto", "webgpu", "webgl2"] },
+        "backendPreference": {
+          "enum": [
+            "auto",
+            "webgpu",
+            "webgl2"
+          ]
+        },
         "simulation": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["particleCount", "spawnRadius", "particleSize", "lifetime", "speed"],
+          "required": [
+            "particleCount",
+            "spawnRadius",
+            "particleSize",
+            "lifetime",
+            "speed"
+          ],
           "properties": {
             "particleCount": {
               "type": "integer",
@@ -39,54 +69,87 @@
               "type": "number",
               "minimum": 1,
               "maximum": 100,
-              "description": "World-space spawn radius."
+              "description": "World-space spawn radius.",
+              "multipleOf": 0.001
             },
             "particleSize": {
               "type": "number",
               "minimum": 1,
               "maximum": 8,
-              "description": "Adapter-defined size units; WebGPU/WebGL2 parity is measured in E-06."
+              "description": "Adapter-defined size units; WebGPU/WebGL2 parity is measured in E-06.",
+              "multipleOf": 0.001
             },
             "lifetime": {
               "type": "number",
               "minimum": 0.5,
               "maximum": 20,
-              "description": "Simulation seconds; age advances by delta * speed, so speed shortens effective lifetime."
+              "description": "Simulation seconds; age advances by delta * speed, so speed shortens effective lifetime.",
+              "multipleOf": 0.001
             },
             "speed": {
               "type": "number",
               "minimum": 0.1,
               "maximum": 3,
-              "description": "Global time multiplier applied to delta."
+              "description": "Global time multiplier applied to delta.",
+              "multipleOf": 0.001
             }
           }
         },
         "modes": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["attractor", "vortex"],
+          "required": [
+            "attractor",
+            "vortex"
+          ],
           "properties": {
-            "attractor": { "$ref": "#/$defs/attractor" },
-            "vortex": { "$ref": "#/$defs/vortex" }
+            "attractor": {
+              "$ref": "#/$defs/attractor"
+            },
+            "vortex": {
+              "$ref": "#/$defs/vortex"
+            }
           }
         },
         "rendering": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["backgroundColor", "particleColor", "opacity", "additiveBlend"],
+          "required": [
+            "backgroundColor",
+            "particleColor",
+            "opacity",
+            "additiveBlend"
+          ],
           "properties": {
-            "backgroundColor": { "$ref": "#/$defs/hexColor" },
-            "particleColor": { "$ref": "#/$defs/hexColor" },
-            "opacity": { "type": "number", "minimum": 0.05, "maximum": 1 },
-            "additiveBlend": { "type": "boolean" }
+            "backgroundColor": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "particleColor": {
+              "$ref": "#/$defs/hexColor"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0.05,
+              "maximum": 1,
+              "multipleOf": 0.001
+            },
+            "additiveBlend": {
+              "type": "boolean"
+            }
           }
         },
         "camera": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["enabled", "autoRotate", "distance"],
+          "required": [
+            "enabled",
+            "autoRotate",
+            "distance"
+          ],
           "properties": {
-            "enabled": { "type": "boolean" },
+            "enabled": {
+              "type": "boolean"
+            },
             "autoRotate": {
               "type": "boolean",
               "description": "Only effective when enabled is true."
@@ -95,7 +158,8 @@
               "type": "number",
               "minimum": 5,
               "maximum": 500,
-              "description": "World-space camera distance."
+              "description": "World-space camera distance.",
+              "multipleOf": 0.001
             }
           }
         }
@@ -111,24 +175,31 @@
       "description": "MVP attractor parameters. The current orbit kernel is one attractor implementation; TV2 confirms the final formula.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["attractorStrength", "attractorRadius", "attractorDamping"],
+      "required": [
+        "attractorStrength",
+        "attractorRadius",
+        "attractorDamping"
+      ],
       "properties": {
         "attractorStrength": {
           "type": "number",
-          "minimum": 0,
-          "maximum": 100,
-          "description": "Engine orbitStrength uniform range is 0-100."
+          "minimum": 0.2,
+          "maximum": 4,
+          "description": "Tangential strength; TV2 range 0.2-4, default 1.5.",
+          "multipleOf": 0.001
         },
         "attractorRadius": {
           "type": "number",
           "minimum": 0.5,
           "maximum": 50,
-          "description": "Damping threshold outside the orbit radius."
+          "description": "Damping threshold outside the orbit radius.",
+          "multipleOf": 0.001
         },
         "attractorDamping": {
           "type": "number",
           "minimum": 0.8,
-          "maximum": 1
+          "maximum": 1,
+          "multipleOf": 0.001
         }
       }
     },
@@ -136,19 +207,24 @@
       "description": "MVP vortex parameters. TV2 froze vortexStrength + vortexDamping in #49; the formula has no radial threshold, so there is no vortexRadius.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["vortexStrength", "vortexDamping"],
+      "required": [
+        "vortexStrength",
+        "vortexDamping"
+      ],
       "properties": {
         "vortexStrength": {
           "type": "number",
-          "minimum": 0,
-          "maximum": 100,
-          "description": "Engine strength uniform range is 0-100; TV4 updates the UI range."
+          "minimum": 0.2,
+          "maximum": 4,
+          "description": "Tangential strength; TV2 range 0.2-4, default 1.5.",
+          "multipleOf": 0.001
         },
         "vortexDamping": {
           "type": "number",
           "minimum": 0.8,
           "maximum": 1,
-          "description": "Per-step velocity multiplier applied every vortex step. Default 0.99."
+          "description": "Per-step velocity multiplier applied every vortex step. Default 0.99.",
+          "multipleOf": 0.001
         }
       }
     }

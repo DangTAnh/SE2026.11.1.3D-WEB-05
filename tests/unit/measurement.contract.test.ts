@@ -1,133 +1,76 @@
-/**
- * Contract tests for the benchmark identity: performance snapshot shape and
- * `configHash` (docs/architecture.md §3 INV-1 and §5.1).
- *
- * If one of these fails, samples stop being comparable across runs.
- */
-import { test } from 'vitest';
-import assert from 'node:assert/strict';
-import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
+import { expect, test } from 'vitest';
+import { createHash } from 'node:crypto';
+import { DEFAULT_CONFIG, cloneConfig, parsePresetDocument, serializePresetDocument } from '../../src/presets/preset.ts';
 import type { LabConfig } from '../../src/presets/preset.ts';
 import { canonicalConfig, configHash } from '../../src/core/measurement/configHash.ts';
 import type { PerformanceSnapshot } from '../../src/core/types/measurement.ts';
+const attractor = '{"attractorDamping":0.98,"attractorRadius":6,"attractorStrength":1.5,"lifetime":6,"mode":"attractor","particleCount":65536,"particleSize":2.5,"spawnRadius":10,"speed":1.2}';
+const vortex = '{"lifetime":6,"mode":"vortex","particleCount":65536,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"vortexDamping":0.99,"vortexStrength":1.5}';
 
-const withConfig = (patch: Partial<LabConfig>): LabConfig => ({ ...DEFAULT_CONFIG, ...patch });
-
-test('configHash: canonical string is the documented one', () => {
-  assert.equal(
-    canonicalConfig(DEFAULT_CONFIG),
-    '{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}',
-  );
+test.each(['attractor', 'vortex'] as const)('exact %s canonical and independent SHA256 vector', async mode => {
+  const c = cloneConfig(DEFAULT_CONFIG); c.mode = mode;
+  const expected = mode === 'attractor' ? attractor : vortex;
+  expect(canonicalConfig(c)).toBe(expected);
+  expect(await configHash(c)).toBe(mode === 'attractor'
+    ? '0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa'
+    : '1d178f4522821a47f7c165efa4cf95aeb3171bf943f9fa511f22db7140669033');
+  expect(await configHash(c)).toBe(createHash('sha256').update(expected, 'utf8').digest('hex'));
+  expect(await configHash(c)).toMatch(/^[0-9a-f]{64}$/);
 });
-
-test('configHash: canonical form ignores property insertion order and unrelated fields', () => {
-  const reordered: LabConfig = {
-    strength: 1.5,
-    speed: 1.2,
-    particleColor: '#000000',
-    particleSize: 2.5,
-    spawnRadius: 10,
-    particleCount: 20000,
-    lifetime: 6,
-    vortexDamping: 0.99,
-    backendPreference: 'webgl2',
-    mode: 'attractor',
-  };
-
-  assert.equal(canonicalConfig(reordered), canonicalConfig(DEFAULT_CONFIG));
-});
-
-test('configHash: vortexDamping is hashed only while the vortex mode is active (#49)', () => {
-  // Inactive mode parameters do not change the GPU work that runs.
-  assert.equal(
-    canonicalConfig(withConfig({ vortexDamping: 0.9 })),
-    canonicalConfig(DEFAULT_CONFIG),
-  );
-
-  const vortex = canonicalConfig(withConfig({ mode: 'vortex' }));
-  assert.match(vortex, /"vortexDamping":0.99/);
-  assert.notEqual(vortex, canonicalConfig(withConfig({ mode: 'vortex', vortexDamping: 0.9 })));
-  assert.equal(
-    canonicalConfig(withConfig({ mode: 'vortex', vortexDamping: 0.99004 })),
-    vortex,
-  );
-});
-
-test('configHash: deterministic, SHA-256 lowercase hex, 64 chars', async () => {
-  const first = await configHash(DEFAULT_CONFIG);
-  const second = await configHash({ ...DEFAULT_CONFIG });
-
-  assert.equal(first, second);
-  assert.match(first, /^[0-9a-f]{64}$/);
-  // Pinned value for DEFAULT_CONFIG; cross-checked against `node:crypto`.
-  assert.equal(first, '2a8003e259733173be6147385046b28a0a9d124bfe2a16ad63412e2348305a33');
-});
-
-test('configHash: numbers are rounded to 3 decimals, so equivalent configs agree', async () => {
-  const base = await configHash(withConfig({ speed: 1.2, particleSize: 2.5 }));
-  const noisy = await configHash(withConfig({ speed: 1.2001, particleSize: 2.5004 }));
-
-  assert.equal(noisy, base);
-  assert.equal(canonicalConfig(withConfig({ speed: 1.2000 })), canonicalConfig(withConfig({ speed: 1.2 })));
-});
-
-test('configHash: every benchmark-relevant field changes the hash', async () => {
-  const base = await configHash(DEFAULT_CONFIG);
-  const variants: LabConfig[] = [
-    withConfig({ mode: 'vortex' }),
-    withConfig({ particleCount: 21000 }),
-    withConfig({ particleSize: 3 }),
-    withConfig({ speed: 1.3 }),
-    withConfig({ strength: 1.6 }),
-    withConfig({ spawnRadius: 12 }),
-    withConfig({ lifetime: 8 }),
-  ];
-
-  const hashes = await Promise.all(variants.map((config) => configHash(config)));
-  assert.equal(new Set(hashes).size, variants.length);
-  for (const hash of hashes) assert.notEqual(hash, base);
-});
-
-test('configHash: excluded fields do not change the hash', async () => {
-  const base = await configHash(DEFAULT_CONFIG);
-  const backendOnly = await configHash(withConfig({ backendPreference: 'webgl2' }));
-  const colourOnly = await configHash(withConfig({ particleColor: '#ff0000' }));
-
-  assert.equal(backendOnly, base);
-  assert.equal(colourOnly, base);
-});
-
-test('configHash: missing or non-finite values throw instead of hashing a default', async () => {
-  const bad: Array<Partial<LabConfig>> = [
-    { particleCount: Number.NaN },
-    { speed: Number.POSITIVE_INFINITY },
-    { strength: Number.NEGATIVE_INFINITY },
-    { mode: 'gravity' as LabConfig['mode'] },
-  ];
-
-  for (const patch of bad) {
-    assert.throws(() => canonicalConfig(withConfig(patch)), TypeError);
-    await assert.rejects(configHash(withConfig(patch)), TypeError);
+const common = ['particleCount', 'spawnRadius', 'particleSize', 'lifetime', 'speed'] as const;
+test.each(['attractor', 'vortex'] as const)('every included %s field changes hash beyond rounding', async mode => {
+  const base = cloneConfig(DEFAULT_CONFIG); base.mode = mode; const hash = await configHash(base);
+  for (const key of common) {
+    const c = cloneConfig(base); c.simulation[key] += key === 'particleCount' ? 1 : 0.001;
+    expect(await configHash(c), key).not.toBe(hash);
   }
-
-  const missing = { ...DEFAULT_CONFIG } as Partial<LabConfig>;
-  delete missing.speed;
-  assert.throws(() => canonicalConfig(missing as LabConfig), TypeError);
+  for (const key of Object.keys(base.modes[mode])) {
+    const c = cloneConfig(base); const group = c.modes[mode] as unknown as Record<string, number>;
+    group[key]! += 0.001; expect(await configHash(c), key).not.toBe(hash);
+  }
+  const switched = cloneConfig(base); switched.mode = mode === 'attractor' ? 'vortex' : 'attractor';
+  expect(await configHash(switched)).not.toBe(hash);
 });
-
-test('performance snapshot: records the actual backend and honest unavailable timing', async () => {
-  const snapshot: PerformanceSnapshot = {
-    actual: 'webgl2',
-    configHash: await configHash(DEFAULT_CONFIG),
-    fps: 60,
-    gpuTimeMs: null,
-    gpuTimingAvailable: false,
-  };
-
-  assert.deepEqual(Object.keys(snapshot).sort(), [
-    'actual', 'configHash', 'fps', 'gpuTimeMs', 'gpuTimingAvailable',
-  ]);
-  assert.equal(snapshot.actual, 'webgl2');
-  assert.match(snapshot.configHash, /^[0-9a-f]{64}$/);
-  assert.equal(snapshot.gpuTimeMs, null);
+test.each(['attractor', 'vortex'] as const)('excluded fields and inactive %s group do not affect identity', async mode => {
+  const base = cloneConfig(DEFAULT_CONFIG); base.mode = mode;
+  const c = cloneConfig(base); c.backendPreference = 'webgl2';
+  c.rendering = { particleColor: '#ffffff', backgroundColor: '#abcdef', opacity: 0.05, additiveBlend: true };
+  c.camera = { enabled: false, autoRotate: true, distance: 500 };
+  if (mode === 'attractor') c.modes.vortex = { vortexStrength: 4, vortexDamping: 0.8 };
+  else c.modes.attractor = { attractorStrength: 4, attractorRadius: 50, attractorDamping: 0.8 };
+  const doc = parsePresetDocument(serializePresetDocument({ schemaVersion: 2, app: '3D-WEB-05', name: 'metadata', config: c }));
+  expect(await configHash(doc.config)).toBe(await configHash(base));
+});
+test('property order, rounding noise, threshold, trailing zeros and negative zero are stable', () => {
+  const c = cloneConfig(DEFAULT_CONFIG); c.simulation.speed = 1.2004;
+  expect(canonicalConfig(c)).toBe(attractor);
+  c.simulation.speed = 1.2006; expect(canonicalConfig(c)).toContain('"speed":1.201');
+  c.simulation.speed = -0; expect(canonicalConfig(c)).toContain('"speed":0');
+  const reversed = JSON.parse(JSON.stringify(DEFAULT_CONFIG), (_key, value: unknown) => {
+    return value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).reverse()) : value;
+  }) as LabConfig;
+  expect(canonicalConfig(reversed)).toBe(attractor);
+});
+test('nonfinite or missing included values rejected with no default/hash', async () => {
+  for (const value of [NaN, Infinity, -Infinity, undefined]) {
+    for (const mode of ['attractor', 'vortex'] as const) {
+      const c = cloneConfig(DEFAULT_CONFIG); c.mode = mode;
+      for (const group of [c.simulation, c.modes[mode]]) {
+        for (const key of Object.keys(group)) {
+          const bad = cloneConfig(c);
+          const target = group === c.simulation ? bad.simulation : bad.modes[mode];
+          (target as unknown as Record<string, unknown>)[key] = value;
+          expect(() => canonicalConfig(bad)).toThrow(TypeError);
+          await expect(configHash(bad)).rejects.toThrow(TypeError);
+        }
+      }
+    }
+  }
+  const invalid = cloneConfig(DEFAULT_CONFIG); invalid.mode = 'gravity' as LabConfig['mode'];
+  expect(() => canonicalConfig(invalid)).toThrow(TypeError);
+});
+test('performance snapshot still records actual backend and unavailable timing honestly', async () => {
+  const snapshot: PerformanceSnapshot = { actual: 'webgl2', configHash: await configHash(DEFAULT_CONFIG),
+    fps: 60, gpuTimeMs: null, gpuTimingAvailable: false };
+  expect(snapshot.actual).toBe('webgl2'); expect(snapshot.gpuTimeMs).toBeNull();
 });
