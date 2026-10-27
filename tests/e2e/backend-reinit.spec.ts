@@ -84,6 +84,9 @@ test('staging keeps the live canvas until readiness; overlapping requests publis
   await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
   await expect(page.locator('#toast')).toHaveText('Đã áp dụng backend: WebGL2.');
   expect(await page.evaluate(() => window.sessionTest.ports[1]!.disposed)).toBe(true);
+  expect(await page.evaluate(() => window.sessionTest.factoryCanvasIsLatestRendererCanvas())).toBe(true);
+  expect(await page.evaluate(() => window.sessionTest.latestRendererCanvasIsConnected())).toBe(true);
+  await expect(page.locator('#app canvas')).toHaveCount(1);
   await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
 });
 
@@ -111,6 +114,58 @@ test('backend apply follows a canvas replaced by runtime recovery', async ({ pag
   await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
   await expect(page.locator('#toast')).toHaveText('Đã áp dụng backend: WebGL2.');
   expect(await page.evaluate(() => window.sessionTest.factoryCanvasIsCurrent())).toBe(true);
+  await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
+});
+
+test('backend apply adopts a canvas replaced inside staging during initialization', async ({ page }) => {
+  await page.goto(fixture);
+  await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
+  await page.evaluate(() => { window.sessionTest.replaceDuringInitNext = true; });
+  await page.locator('#backend').selectOption('webgpu');
+  await page.evaluate(() => { window.sessionTest.fallbackNext = true; });
+  await page.locator('#apply-backend').click();
+  await expect(page.locator('#actual-backend')).toHaveText('WebGL2 fallback');
+  await expect(page.locator('#toast')).toHaveText('Đã áp dụng backend: WebGL2 fallback thay cho WebGPU.');
+  expect(await page.evaluate(() => ({
+    factoryUsesRenderer: window.sessionTest.factoryCanvasIsLatestRendererCanvas(),
+    rendererCanvasConnected: window.sessionTest.latestRendererCanvasIsConnected(),
+  }))).toEqual({ factoryUsesRenderer: true, rendererCanvasConnected: true });
+  await expect(page.locator('#preview-canvas')).toHaveCount(1);
+  await expect(page.locator('#app canvas')).toHaveCount(1);
+  await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
+});
+
+test('initial WebGPU fallback commits the replacement canvas from its staged candidate', async ({ page }) => {
+  await page.addInitScript(() => { window.sessionInitialFallback = true; });
+  await page.goto(fixture);
+  await expect(page.locator('#actual-backend')).toHaveText('WebGL2 fallback');
+  expect(await page.evaluate(() => ({
+    factoryUsesRenderer: window.sessionTest.factoryCanvasIsLatestRendererCanvas(),
+    rendererCanvasConnected: window.sessionTest.latestRendererCanvasIsConnected(),
+  }))).toEqual({ factoryUsesRenderer: true, rendererCanvasConnected: true });
+  await expect(page.locator('#preview-canvas')).toHaveCount(1);
+  await expect(page.locator('#app canvas')).toHaveCount(1);
+  await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
+});
+
+test('runtime replacement is disposed with its owner without removing a newer candidate surface', async ({ page }) => {
+  await page.goto(fixture);
+  await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
+  await page.evaluate(() => window.sessionTest.simulateRuntimeCanvasReplacement());
+  expect(await page.evaluate(() => window.sessionTest.factoryCanvasIsCurrent())).toBe(true);
+
+  await page.locator('#backend').selectOption('webgl2');
+  await page.locator('#apply-backend').click();
+  await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
+  expect(await page.evaluate(() => ({
+    factoryUsesRenderer: window.sessionTest.factoryCanvasIsLatestRendererCanvas(),
+    rendererCanvasConnected: window.sessionTest.latestRendererCanvasIsConnected(),
+  }))).toEqual({ factoryUsesRenderer: true, rendererCanvasConnected: true });
+  await expect(page.locator('#app canvas')).toHaveCount(1);
+  await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
+
+  await page.evaluate(() => window.dispatchEvent(new Event('beforeunload')));
+  await expect(page.locator('#app canvas')).toHaveCount(0);
   await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
 });
 
