@@ -2,7 +2,6 @@
 name: Decision
 about: A shared contract or architecture choice that needs owner agreement
 title: "[decision] "
-labels: decision
 assignees: ""
 ---
 

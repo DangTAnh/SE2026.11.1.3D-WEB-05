@@ -6,6 +6,8 @@ labels: bug
 assignees: ""
 ---
 
+> Security issues must follow SECURITY.md, not a public Issue.
+
 ## Reproduction
 
 <!-- Steps, command, preset/config and environment. -->

@@ -33,10 +33,11 @@ open new stacked PRs against another feature branch.
 ## Issue templates and review routing
 
 Open new work from **Issues → New issue** and pick `Task`, `Bug` or `Decision`.
-Each template asks for scope, acceptance criteria, dependencies and evidence;
-assign exactly one person. `.github/CODEOWNERS` routes the affected module owner
-for review, but the PR still needs at least one other person's approval before
-merge.
+`Task` and `Bug` ask for scope, acceptance criteria, dependencies and evidence;
+`Decision` asks for the question, context, options, owner, consequences and
+evidence. Assign exactly one person. `.github/CODEOWNERS` routes the affected
+module owner for review, but the PR still needs at least one other person's
+approval before merge.
 
 ## Local setup and G0
 
