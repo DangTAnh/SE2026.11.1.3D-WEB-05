@@ -1,9 +1,36 @@
 import type { ParticleState, SimulationConfig } from './shared/attributes.ts';
+import {
+  DEFAULT_LIFETIME,
+  DEFAULT_SPAWN_RADIUS,
+  spawnPositionFromSeed,
+} from './shared/attributes.ts';
 
 const EPSILON = 1e-6;
 export const DEFAULT_ATTRACTOR_RADIUS = 6;
 export const DEFAULT_ATTRACTOR_DAMPING = 0.98;
 export const DEFAULT_VORTEX_DAMPING = 0.99;
+
+/** Resolve and validate the shared lifetime default (#48). */
+export function resolveLifetime(value: number | undefined): number {
+  const lifetime = value ?? DEFAULT_LIFETIME;
+  if (!Number.isFinite(lifetime) || lifetime <= 0) {
+    throw new TypeError('lifetime must be a finite positive number');
+  }
+  return lifetime;
+}
+
+/**
+ * Resolve the public vortex damping shared by the CPU reference, the kernels
+ * and the adapter. Keeping the default here (rather than in the adapter) is
+ * what issue #49 freezes: one value, one validation rule, no hardcoded uniform.
+ */
+export function resolveVortexDamping(value: number | undefined): number {
+  const damping = value ?? DEFAULT_VORTEX_DAMPING;
+  if (!Number.isFinite(damping) || damping <= 0 || damping > 1) {
+    throw new TypeError('vortexDamping must be a finite number in (0, 1]');
+  }
+  return damping;
+}
 
 /**
  * CPU reference step for both modes. It is deterministic and mutates state in
@@ -23,8 +50,10 @@ export function step(state: ParticleState, dt: number, config: SimulationConfig)
 
   const radius = config.attractorRadius ?? DEFAULT_ATTRACTOR_RADIUS;
   const attractorDamping = config.attractorDamping ?? DEFAULT_ATTRACTOR_DAMPING;
-  const vortexDamping = config.vortexDamping ?? DEFAULT_VORTEX_DAMPING;
-  const { positions, velocities, ages, count } = state;
+  const vortexDamping = resolveVortexDamping(config.vortexDamping);
+  const lifetime = resolveLifetime(config.lifetime);
+  const spawnRadius = config.spawnRadius ?? DEFAULT_SPAWN_RADIUS;
+  const { positions, velocities, ages, seeds, count } = state;
   const isAttractor = config.mode === 'attractor';
 
   for (let i = 0; i < count; i += 1) {
@@ -68,6 +97,19 @@ export function step(state: ParticleState, dt: number, config: SimulationConfig)
     }
 
     ages[i] += scaled;
+
+    // Respawn after ageing, so `delta = 0` (early return above) never respawns.
+    // Same seed, same spawn position: deterministic and shared with the kernels.
+    if (ages[i] >= lifetime) {
+      const [x2, y2, z2] = spawnPositionFromSeed(seeds[i], spawnRadius);
+      positions[offset] = x2;
+      positions[offset + 1] = y2;
+      positions[offset + 2] = z2;
+      velocities[offset] = 0;
+      velocities[offset + 1] = 0;
+      velocities[offset + 2] = 0;
+      ages[i] = 0;
+    }
   }
 
   return state;

@@ -13,7 +13,8 @@ test('JSON không hợp lệ bị từ chối', () => {
 });
 
 test('preset sai schema bị từ chối', () => {
-  expect(() => parsePreset(JSON.stringify({ schemaVersion: 2, app: '3D-WEB-05', config: DEFAULT_CONFIG }))).toThrow(/định dạng/);
+  const preset = { schemaVersion: 2, app: '3D-WEB-05', config: makePreset().config };
+  expect(() => parsePreset(JSON.stringify(preset))).toThrow(/định dạng/);
 });
 
 test('không chấp nhận số particle vượt phạm vi', () => {
