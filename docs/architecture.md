@@ -164,7 +164,7 @@ composition/lifecycle change requires TV1/TV3 review before merge.
 |---|---|---|---|---|
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
 | `ActualBackend`, `BackendPreference` | `src/core/types/backend.ts` | TV1 | renderer, perf, UI | TV1 |
-| `LabConfig`, preset JSON v1 | `src/presets/preset.ts` | TV4 | UI, renderer, future server | TV4 |
+| `LabConfig`, preset JSON v2 | `src/presets/preset.ts` | TV4 | UI, renderer, future server | TV4 |
 | `PerformanceSnapshot`, `configHash` | `src/core/types/measurement.ts`, `src/core/measurement/configHash.ts` | TV1 | TV5, ingestion | TV1 |
 
 A contract changes only with its owner's review. Consumers adapt; the contract
@@ -177,7 +177,7 @@ this table is about contracts, not about people.
 
 | Data | Owner | Rule |
 |---|---|---|
-| Preset JSON (v1) | Preset module | `schemaVersion: 1`, unknown keys rejected on parse |
+| Preset JSON (v2) | Preset module | `schemaVersion: 2`, nested config, optional name; v1 and unknown keys rejected |
 | Backend identity | Renderer port | Only the engine may produce `ActualBackend` |
 | Performance samples | Perf collector | Must carry `actual`, never the requested backend; unavailable GPU timing is `null` |
 
@@ -186,56 +186,60 @@ data in the current codebase would be false.
 
 ### 5.1 Benchmark configuration identity (`configHash`)
 
-`configHash` names the configuration a sample was measured under. Two samples
-may be aggregated only when they agree on `(mode, configHash) × actual`; across
-a hash boundary they are different experiments.
+`configHash` is **active workload identity**, per [TV1 decision on Issue #16](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/16#issuecomment-6438150192).
+It is not full preset identity. A benchmark must retain the full validated
+nested `config` beside the hash (`BenchmarkResult.config`); compare rendering
+and camera settings before treating two runs as fair comparisons.
 
-**Included fields** — the `LabConfig` values that change the work the GPU does:
-`mode`, `particleCount`, `speed`, `particleSize`, `strength`, `spawnRadius`,
-`lifetime`, plus `vortexDamping` while `mode` is `vortex` (#48/#49). The
-inactive mode's parameters are excluded: they do not change the kernel that
-runs.
+| Canonical field | Source | Attractor | Vortex |
+|---|---|---|---|
+| mode | config.mode | included | included |
+| particleCount, spawnRadius, particleSize, lifetime, speed | simulation.* | included | included |
+| attractorStrength, attractorRadius, attractorDamping | modes.attractor.* | included | excluded |
+| vortexStrength, vortexDamping | modes.vortex.* | excluded | included |
+| backendPreference | config.backendPreference | excluded: request; actual recorded separately | excluded |
+| rendering.*, camera.* | appearance/view | excluded; full config required | excluded |
+| name, schemaVersion, app | preset envelope | excluded | excluded |
 
-**Excluded, with reasons:**
-
-- `backendPreference` — a request, not a measurement condition. The backend
-  that ran is stored separately as `actual` (INV-1).
-- `particleColor` — a per-frame uniform; it changes appearance, not step cost
-  or particle count. Excluding it lets runs that differ only in colour share
-  measurements.
-- `schemaVersion`, `app` — preset envelope, not measurement input.
-
-**Normalization.** The hash input is one JSON object, keys in alphabetical
-order, no whitespace, numbers rounded to 3 decimal places and written without
-trailing zeros (`1.2`, not `1.20`):
+Canonical JSON is **flat**, alphabetical keys, no whitespace, finite numbers
+rounded to 3 decimal places with no trailing zeros. SHA-256 over UTF-8 gives
+64 lowercase hexadecimal characters. Exact default vectors:
 
 ```json
-{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}
+{"attractorDamping":0.98,"attractorRadius":6,"attractorStrength":1.5,"lifetime":6,"mode":"attractor","particleCount":65536,"particleSize":2.5,"spawnRadius":10,"speed":1.2}
+{"lifetime":6,"mode":"vortex","particleCount":65536,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"vortexDamping":0.99,"vortexStrength":1.5}
 ```
 
-For `mode: "vortex"` the object additionally carries `"vortexDamping":0.99`. The
-inactive mode's fields never appear, so a change to them cannot invalidate a
-sample.
+Expected hashes, respectively:
+`0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa`
+and `1d178f4522821a47f7c165efa4cf95aeb3171bf943f9fa511f22db7140669033`.
+`canonicalConfig` rejects missing/nonfinite included values; range/precision and
+unknown-key validation belong to the preset boundary. Runtime imports use v2
+schema only, require all groups (including inactive mode), accept integer counts
+1000..500000 without a 1000-step constraint, and enforce numeric precision 0.001.
 
-Key order is fixed by this rule, not by object iteration order.
+### 5.2 Preset document and runtime consumers
 
-**Algorithm.** SHA-256 over the UTF-8 bytes of that string, lowercase hex,
-64 characters.
+`PresetDocument` retains optional name outside `LabConfig`. UI edits, mode switch,
+backend Apply and simulation reset retain name; restore defaults or importing an
+unnamed document clears it. Failed validation/apply retains prior config/name.
+If apply succeeds but simulation reset fails, the new config/name stay together.
+Serialization fixes ordering at every level, indent 2, final LF newline.
 
-**Invalid or missing values.** A hash is computed only for a config that has
-already passed `parsePreset` (`src/presets/preset.ts`): it rejects
-out-of-range values and unknown keys, requires `particleCount` to be an integer
-multiple of 1000 (v1), and rebuilds the object from the known fields, so
-unknown keys never reach the hash. Invalid input produces no sample at all —
-never a hash of a defaulted or partially filled config.
+All runtime groups are consumed by the shared adapter: simulation count rebuilds
+storage, size updates material, speed multiplies clamped delta once, spawn/lifetime
+feed init/respawn uniforms. Only the active mode parameters reach its kernel.
+Rendering updates color/background/opacity/blending; transparency/blending changes
+mark material for recompilation. OrbitControls owns camera enabled/autoRotate and
+distance around the existing target. Distance/zoom is bounded 5..500; far plane
+reserves the maximum orbit range plus twice the spawn/active radius extent.
+Controls update per frame and are disposed on teardown/recovery. Captured root
+keyboard listeners are additionally removed for Three r186.1 when session commit
+detaches the old canvas before disposal. No simulation formula, new #56 controls
+or #55 freshness semantics are introduced.
 
-**Status.** Defined and implemented by TV1 on 2026-10-22:
-`canonicalConfig()` and `configHash()` in
-`src/core/measurement/configHash.ts`, covered by
-`tests/unit/measurement.contract.test.ts`. `configHash()` is async because
-SHA-256 comes from Web Crypto (`crypto.subtle`), which also works in the
-browser with no dependency added. It rejects missing, non-finite or invalid
-`mode` values with a `TypeError`; range checks stay in `parsePreset`.
+These cross-owner implementation changes require TV1/TV2/TV3 review, with TV5
+reviewing benchmark reproducibility and tests; agent review is supplemental.
 
 ## 6. Known debt
 

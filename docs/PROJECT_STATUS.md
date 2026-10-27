@@ -1,5 +1,17 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 27/10/2026 — Issue #16 nested preset v2 implementation candidate
+
+- Branch `feat/16-preset-v2` starts from `dev@38a1d057`. Runtime schema, nested
+  config, full preset envelope/name, active-workload hash, all renderer fields
+  and existing UI bindings migrate together. No #55/#56 implementation.
+- Source/test typechecks, 210 unit/contract/integration tests and production build
+  pass locally. Browser and exact-head CI evidence are recorded on the PR before
+  readiness; this source checkpoint does not claim human acceptance.
+- [Implementation/verification handoff](04-testing/preset-v2-2026-10-27.md) records
+  API/reset/name policy, mapping, software-rendering test limits and owner gates.
+- TV1/TV2/TV3/TV5 review remains required. No merge/release/deploy/Issue closure.
+
 ## 27/10/2026 — Issue #52 recovery branch synchronized with latest dev
 
 - Branch `fix/52-runtime-device-loss` includes latest `dev@09723af`, which
