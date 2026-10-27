@@ -10,6 +10,10 @@ test('production WebGL2 shows live FPS and clears metrics when paused', async ({
   test.skip(!supported, 'This browser cannot initialize WebGL2 on the application canvas.');
   await expect(page.locator('#actual-backend')).toHaveText('WebGL2', { timeout: 20_000 });
   await expect(page.locator('#runtime-phase-label')).toHaveText('READY');
+  // Exercise status transitions on a small real GPU workload. The v2 default
+  // (65536) is validated by the production initialization smoke; software
+  // rendering it here makes screenshot/click latency dominate this status test.
+  await page.locator('#particle-count').fill('1000');
   await expect(page.locator('#runtime-fps')).toHaveText(/^\d+ FPS$/, { timeout: 20_000 });
   await expect(page.locator('#runtime-fps-detail')).toHaveText('Dữ liệu từ renderer');
   await page.screenshot({ path: testInfo.outputPath('live-webgl2.png') });

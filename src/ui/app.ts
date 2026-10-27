@@ -1,4 +1,4 @@
-import { DEFAULT_CONFIG } from '../presets/preset.ts';
+import { cloneConfig, DEFAULT_CONFIG } from '../presets/preset.ts';
 import type { LabConfig } from '../presets/preset.ts';
 import type { RendererPort } from '../core/renderer/RendererPort.ts';
 import type { BackendSwitchResult } from '../composition/backendSwitch.ts';
@@ -27,7 +27,10 @@ export function mountLabUI(
     reinitializeBackend?: () => Promise<BackendSwitchResult>;
   } = {},
 ): () => void {
-  let config: LabConfig = { ...(options.initialConfig ?? DEFAULT_CONFIG) };
+  let config: LabConfig = cloneConfig(options.initialConfig ?? DEFAULT_CONFIG);
+  // Metadata belongs to the preset document, never to RendererPort parameters.
+  // Ordinary edits and simulation reset retain it; restoring defaults clears it.
+  let presetName: string | undefined;
   let disposed = false;
   let configApplied = !port;
 
@@ -73,17 +76,18 @@ export function mountLabUI(
     catch { throw new Error('Không thể khởi tạo lại mô phỏng. Vui lòng thử lại.'); }
   };
 
-  const updateConfig = (next: LabConfig, shouldReset = false): void => {
+  const updateConfig = (next: LabConfig, shouldReset = false, metadata?: { name?: string }): void => {
     if (disposed) return;
-    const countChanged = next.particleCount !== config.particleCount;
+    const countChanged = next.simulation.particleCount !== config.simulation.particleCount;
     try {
-      rendererPort?.applyConfig(next);
+      rendererPort?.applyConfig(cloneConfig(next));
     } catch {
       renderLabControls(config);
       throw new Error('Không thể áp dụng cấu hình. Cấu hình trước vẫn được giữ trong UI.');
     }
     configApplied = true;
-    config = next;
+    config = cloneConfig(next);
+    if (metadata) presetName = metadata.name;
     renderLabControls(config);
     if (shouldReset && !countChanged) {
       try { resetSimulation(); }
@@ -98,6 +102,11 @@ export function mountLabUI(
   const disposeControls = bindLabControls({
     getConfig: () => config,
     updateConfig,
+    getPresetDocument: () => ({ schemaVersion: 2, app: '3D-WEB-05',
+      ...(presetName === undefined ? {} : { name: presetName }), config: cloneConfig(config) }),
+    importPresetDocument: document => updateConfig(document.config, true,
+      document.name === undefined ? {} : { name: document.name }),
+    restoreDefaults: () => updateConfig(cloneConfig(DEFAULT_CONFIG), true, {}),
     resetSimulation: () => { resetSimulation(); refreshStatus(); },
     toggleSimulation: () => {
       if (!rendererPort) return;
@@ -133,7 +142,7 @@ export function mountLabUI(
 
   renderLabControls(config);
   try {
-    rendererPort?.applyConfig(config);
+    rendererPort?.applyConfig(cloneConfig(config));
     if (port) configApplied = true;
     refreshStatus();
   } catch {
