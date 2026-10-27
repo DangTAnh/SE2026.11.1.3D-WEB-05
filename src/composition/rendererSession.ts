@@ -93,7 +93,7 @@ export class RendererSession implements RendererPort {
   }
 
   start(): void {
-    if (this.#disposed || !this.#active || this.#active.port.getStatus().actual === 'unavailable') return;
+    if (this.#disposed || !this.#active) return;
     this.#active.port.start();
     this.#runIntent = true;
   }

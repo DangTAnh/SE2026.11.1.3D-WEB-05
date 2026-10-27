@@ -43,6 +43,8 @@ function makeCanvas(): HTMLCanvasElement {
     height: 1,
     getContext: vi.fn(() => null),
     insertAdjacentElement: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
   } as unknown as HTMLCanvasElement;
 }
 

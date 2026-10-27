@@ -1,8 +1,8 @@
 import type { RendererTarget } from '../core/renderer/RendererPort.ts';
 
-/** Measures the same canvas host dimensions for initialization and resize. */
-export function measureRendererTarget(canvas: HTMLCanvasElement): RendererTarget {
-  const bounds = (canvas.parentElement ?? canvas).getBoundingClientRect();
+/** Measures a stable canvas host, even if the renderer replaces the canvas. */
+export function measureRendererTarget(host: Element): RendererTarget {
+  const bounds = host.getBoundingClientRect();
   return {
     width: Math.max(1, Math.round(bounds.width)),
     height: Math.max(1, Math.round(bounds.height)),
