@@ -1,5 +1,18 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 27/10/2026 — dev `7fc03c9`: #18 benchmark runner merged and first run recorded (#58)
+
+- PR #64 merged into dev at `7fc03c9`. It implements the TV5 two-backend
+  benchmark runner (`src/perf/benchmark.ts`), `BENCHMARK_PROTOCOL` (3000 ms warm-up,
+  100 ms cadence, 100 samples, 10 s, median), environment validation, same-origin
+  probe and the browser matrix.
+- First benchmark run (#58) executed on Chromium 156 / Windows 10 / NVIDIA GTX 1650
+  using the exact protocol and `DEFAULT_CONFIG` (`2a8003e2...`).
+  Artifact committed at `docs/06-benchmark/2026-10-27-nvidia-gtx-1650-chromium.md`.
+- 100 samples measured on production WebGL2 (median 4.29 FPS under software/windowed
+  conditions; GPU timing unavailable). Physical WebGPU execution was recorded as
+  BLOCKED because the Chromium environment exposes no WebGPU adapter (`requestAdapter()` returned null). No numbers were fabricated.
+
 ## 27/10/2026 — dev `38a1d05`: #61 merged after the `09723af` reconciliation
 
 - PR #61 (`885b812`) merged into `dev` at `38a1d05`. It guards runtime recovery
