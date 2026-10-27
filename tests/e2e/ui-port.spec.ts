@@ -4,6 +4,8 @@ import { cloneConfig, DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
 test('production ignores the removed UI state query and reports the initialized backend', async ({ page }) => {
+  // v2 initializes 65536 real particles; allow software-rendered startup.
+  test.setTimeout(90_000);
   await page.goto('/?uiState=ready-webgpu');
   const capabilities = await page.evaluate(async () => {
     const gpu = (navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown | null> } }).gpu;
@@ -25,6 +27,7 @@ test('production ignores the removed UI state query and reports the initialized 
 });
 
 test('webgl=1 forces the WebGL2 backend when available', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto('/?webgl=1');
   const webgl2Available = await page.evaluate(() =>
     document.createElement('canvas').getContext('webgl2') !== null,
