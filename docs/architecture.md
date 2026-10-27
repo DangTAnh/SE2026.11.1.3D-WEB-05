@@ -24,7 +24,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Simulation preview | Production canvas bound to the real adapter by the composition root; Canvas2D mock removed | `src/main.ts` |
 | Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; Issue #52 adds one runtime WebGPU-to-WebGL2 recovery attempt; real GPU loss acceptance remains pending | `src/simulations/rendererAdapter.ts` |
 | Composition root | Implemented; initializes the adapter before mounting the port-consuming UI | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
-| Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
+| Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; WebGL2 readback parity passed (#50, SwiftShader), WebGPU adapter NOT_RUN | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 
 There is **one** renderer, not one per backend. Backend choice and fallback are

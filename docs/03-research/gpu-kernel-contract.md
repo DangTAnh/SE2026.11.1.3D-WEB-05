@@ -126,7 +126,13 @@ Hiện có (unit, chạy trong Node):
   trong `spawnRadius`, và `delta = 0` không respawn hạt đã hết tuổi. `tests/unit/kernel-contract.test.ts`
   khoá vị trí respawn nằm sau `age` và bên trong guard `delta > 0`.
 
-**Chưa có numeric parity GPU** vì Vitest không chạy được WebGPU. Điều kiện để test thật:
+**Numeric parity GPU (#50):** chạy thật bằng `tests/e2e/simulation-parity.spec.ts`
+(`WebGPURenderer` + readback), không dùng FakeRenderer. Kết quả WebGL2 ngày 2026-10-26: 6/6 case
+PASS (pure step ≤ 4.8e-7; respawn ≤ 7.1e-4 do trig của SwiftShader; zero-delta có prime state đúng 0;
+seeds không đổi), 3/3 readback hỏng bị từ chối. WebGPU SKIP vì môi trường không có adapter. Báo cáo đầy đủ:
+[`docs/04-testing/gpu-kernel-parity-2026-10-26.md`](../04-testing/gpu-kernel-parity-2026-10-26.md).
+
+Điều kiện để chạy lại trên WebGPU thật:
 
 1. Adapter #12 dựng `WebGPURenderer` + chạy `initKernel`, rồi `step` N lần với state cố định.
 2. Readback `positions`/`velocities` vài hạt, so với golden values của reference step
