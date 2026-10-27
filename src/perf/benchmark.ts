@@ -42,7 +42,9 @@ export interface BenchmarkInput {
  * Turns a finished run into the artefact `docs/06-benchmark/README.md` requires.
  *
  * Throws instead of rendering blanks when the environment is incomplete, there
- * are no samples, or samples from another configuration were mixed in.
+ * are no samples, samples from another configuration were mixed in, or a
+ * backend group does not contain the fixed sample count. The last rule keeps a
+ * partial run from being labelled with the 100-sample protocol.
  */
 export async function buildBenchmarkResult(input: BenchmarkInput): Promise<BenchmarkResult> {
   for (const field of REQUIRED_ENVIRONMENT_FIELDS) {
@@ -62,6 +64,15 @@ export async function buildBenchmarkResult(input: BenchmarkInput): Promise<Bench
     }
   }
 
+  const groups = aggregateByBackend(input.samples);
+  const partial = groups.filter((group) => group.count !== BENCHMARK_PROTOCOL.sampleCount);
+  if (partial.length > 0) {
+    const detail = partial.map((group) => `${group.actual}=${group.count}`).join(', ');
+    throw new TypeError(
+      `buildBenchmarkResult: every backend group needs exactly ${BENCHMARK_PROTOCOL.sampleCount} samples (${detail})`,
+    );
+  }
+
   return {
     environment: input.environment,
     config: input.config,
@@ -71,7 +82,7 @@ export async function buildBenchmarkResult(input: BenchmarkInput): Promise<Bench
       sampleCount: BENCHMARK_PROTOCOL.sampleCount,
       durationSeconds: BENCHMARK_PROTOCOL.durationSeconds,
     },
-    groups: aggregateByBackend(input.samples),
+    groups,
     limitations: input.limitations ?? [],
   };
 }

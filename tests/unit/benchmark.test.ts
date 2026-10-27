@@ -66,7 +66,7 @@ test('build: a complete environment keeps browser version and driver', async () 
   const result = await buildBenchmarkResult({
     environment: ENVIRONMENT,
     config: DEFAULT_CONFIG,
-    samples: [snapshot(hash)],
+    samples: Array.from({ length: BENCHMARK_PROTOCOL.sampleCount }, () => snapshot(hash)),
   });
 
   assert.equal(result.environment.browserVersion, '141');
@@ -124,16 +124,28 @@ test('build: samples measured under another configuration are refused', async ()
   );
 });
 
+test('build: a partial group cannot claim the fixed protocol', async () => {
+  const hash = await configHash(DEFAULT_CONFIG);
+  await assert.rejects(
+    buildBenchmarkResult({
+      environment: ENVIRONMENT,
+      config: DEFAULT_CONFIG,
+      samples: [snapshot(hash)],
+    }),
+    /buildBenchmarkResult: every backend group needs exactly 100 samples \(webgpu=1\)/,
+  );
+});
+
 test('build: groups by (configHash, actual) and records the fixed protocol', async () => {
   const hash = await configHash(DEFAULT_CONFIG);
+  const count = BENCHMARK_PROTOCOL.sampleCount;
   const result = await buildBenchmarkResult({
     environment: ENVIRONMENT,
     config: DEFAULT_CONFIG,
     samples: [
-      snapshot(hash, { fps: 50 }),
-      snapshot(hash, { fps: 70 }),
-      snapshot(hash, { actual: 'webgl2', fps: 30 }),
-      snapshot(hash, { actual: 'unavailable', fps: null }),
+      ...Array.from({ length: count }, (_, index) => snapshot(hash, { fps: index % 2 === 0 ? 50 : 70 })),
+      ...Array.from({ length: count }, () => snapshot(hash, { actual: 'webgl2', fps: 30 })),
+      ...Array.from({ length: count }, () => snapshot(hash, { actual: 'unavailable', fps: null })),
     ],
   });
 
@@ -142,9 +154,9 @@ test('build: groups by (configHash, actual) and records the fixed protocol', asy
   assert.deepEqual(
     result.groups.map((group) => [group.actual, group.count, group.fps?.median ?? null]),
     [
-      ['unavailable', 1, null],
-      ['webgl2', 1, 30],
-      ['webgpu', 2, 60],
+      ['unavailable', 100, null],
+      ['webgl2', 100, 30],
+      ['webgpu', 100, 60],
     ],
   );
   assert.equal(result.groups[0]!.gpuTimeMs, null);
