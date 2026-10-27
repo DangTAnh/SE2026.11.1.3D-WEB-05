@@ -1,5 +1,6 @@
 import { Fn, If, instanceIndex, vec3 } from 'three/tsl';
 import type { ParticleBuffers } from './particleBuffers.ts';
+import { respawnExpiredParticles } from './respawn.ts';
 
 /**
  * Vortex compute kernel. The CPU reference for the same formula is `step()`
@@ -29,6 +30,9 @@ export function createVortexKernel(system: ParticleBuffers) {
       });
     });
     age.addAssign(uniforms.delta);
+    If(uniforms.delta.greaterThan(0), () => {
+      respawnExpiredParticles(system);
+    });
   })()
     .compute(count)
     .setName('Vortex');

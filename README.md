@@ -61,7 +61,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   capability-probe/resolver path; the duplicate module and tests were removed.
 - **Simulation reference and sampling:** deterministic CPU reference steps and
   the RendererPort performance collector are integrated. The renderer uses the
-  shared TSL simulation pipeline; measured GPU parity remains pending.
+  shared TSL simulation pipeline; WebGL2 readback parity (6/6 cases, plus 3/3
+  corrupt-readback rejections) is recorded in
+  `docs/04-testing/gpu-kernel-parity-2026-10-26.md`. WebGPU execution remains
+  pending because this environment exposes no adapter.
 - **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
   uses v1 until issue #16 and its shared config/hash decisions are implemented.
 - **Verification:** UI interaction tests use an explicit
@@ -78,7 +81,14 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
   lifetime/respawn, perf collection and the two-backend benchmark separately.
-- A requested backend preference takes effect at the next renderer init.
+  WebGL2 kernel readback parity is recorded for #50.
+- Choose Auto/WebGPU/WebGL2, then click **Áp dụng backend** to initialize a new
+  renderer without reloading. Configuration and pause state are preserved;
+  particles restart from their initial state. A fresh canvas permits changing
+  context type. Candidates initialize in an inert, hidden staging surface; only
+  a ready backend replaces the live canvas. Failed switches keep the old renderer
+  and report rollback; initial failure reports unavailable and allows retry.
+  Rapid requests use the latest generation. Old FPS/GPU timing is not carried over.
   Only `RendererStatus.actual` identifies the backend that ran.
 - Unsupported/invalid GPU timing stays `null`, never a fabricated zero.
 - No server, login, database or network persistence is included.

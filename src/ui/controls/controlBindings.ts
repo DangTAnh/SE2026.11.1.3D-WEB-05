@@ -15,6 +15,7 @@ interface ControlCallbacks {
   updateConfig: (next: LabConfig, resetSimulation?: boolean) => void;
   resetSimulation: () => void;
   toggleSimulation: () => void;
+  applyBackend: () => void;
   notify: (message: string, tone?: ToastTone) => void;
 }
 
@@ -97,7 +98,11 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
       ...callbacks.getConfig(),
       backendPreference: (event.target as HTMLSelectElement).value as LabConfig['backendPreference'],
     });
-    callbacks.notify('Lựa chọn backend sẽ có hiệu lực ở lần khởi tạo renderer tiếp theo.', 'info');
+    callbacks.notify('Lựa chọn backend sẽ có hiệu lực ở lần khởi tạo renderer tiếp theo. Nhấn Áp dụng backend để khởi tạo ngay.', 'info');
+  });
+
+  listen(byId<HTMLButtonElement>('apply-backend'), 'click', () => {
+    callbacks.applyBackend();
   });
 
   (['attractor', 'vortex'] as const).forEach((mode) => {
