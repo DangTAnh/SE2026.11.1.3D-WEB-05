@@ -11,10 +11,12 @@ measurements on both backends.
 
 **Current implementation: the real renderer adapter is wired through RendererPort.**
 The Canvas2D preview has been removed. The default entry point initializes the
-adapter before mounting the UI. On this branch, browser tests exercise a real
-WebGL2 path; the available Chromium environment has no WebGPU adapter, so its
-WebGPU smoke test is skipped. Preset import/export remains available. GPU
-parity and a two-backend benchmark are still unverified.
+adapter before mounting the UI. On `dev` at `09723af` (27/10/2026), browser
+tests exercise a real WebGL2 path; the available Chromium environment has no
+WebGPU adapter, so its WebGPU smoke test is skipped. Preset import/export
+remains available. Physical-GPU/WebGPU parity and a fair two-backend benchmark
+run remain unverified; #50's WebGL2 readback parity is software-rendered
+(SwiftShader), not physical-GPU proof.
 
 ## Run and verify
 
@@ -30,7 +32,7 @@ npm run dev                     # Vite development server
 npm run typecheck               # source TypeScript
 npm run typecheck:tests         # test TypeScript
 npm test                        # Vitest unit/contract tests
-npm run test:e2e                # desktop/mobile Chromium; excludes screenshots
+npm run test:e2e                # desktop/mobile Chromium (1 worker for GPU stability); excludes screenshots
 npm run build                   # production build
 npm run preview                 # serve the production build
 npm run verify                  # source/tests typecheck, unit, E2E, build
@@ -75,8 +77,12 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## Integration and remaining evidence
 
-- PR #40 / #13 is merged into dev at `04f1522` and included in this UI branch.
-  The #12 adapter stays bound to the production canvas through the composition root.
+- The #12 adapter (#39/#40 at `04f1522`), live RendererStatus UI (#33 at
+  `ac36491`), collector-test fix (#42 at `dc7bb3a`), capability-probe removal
+  (#60 at `a6e460d`), backend Apply/re-init (#63 at `93fd267`), lifetime respawn
+  (#48 at `5802055`), frozen vortex parameters (#49 at `e226697`) and GPU
+  readback parity harness (#50 at #75/`09723af`) are merged into `dev`. The
+  adapter stays bound to the production canvas through the composition root.
 - The prepared UI shows INITIALIZING without backend or metric claims until the
   initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
@@ -114,6 +120,8 @@ Default branch: `main`. Integration branch: `dev`.
 Work starts from a tracked issue on a separate branch from current `dev`
 (pattern `type/<issue-number>-slug`, e.g. `feat/9-ui-renderer-port`), then a PR into `dev`, passing CI and at
 least one independent approval before merge. Do not push directly to `main`.
+Use the issue templates and `.github/CODEOWNERS` described in
+[CONTRIBUTING](CONTRIBUTING.md).
 
 Request TV1 (`minhhhduc`) review for the UI port/composition boundary and README.
 The GitHub Pages workflow from PR #27 is integrated into dev. Publish a live

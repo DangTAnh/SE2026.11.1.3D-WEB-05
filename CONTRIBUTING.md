@@ -30,6 +30,16 @@ If `dev` moves during the work, fetch it and merge `origin/dev` into the feature
 branch, resolve conflicts and rerun checks. New work starts from `dev`; do not
 open new stacked PRs against another feature branch.
 
+## Issue templates and review routing
+
+Open new work from **Issues → New issue** and pick `Task`, `Bug` or `Decision`.
+`Task` asks for scope, acceptance criteria, dependencies and evidence; `Bug`
+asks for reproduction, expected/actual results, acceptance criteria,
+dependencies and evidence; `Decision` asks for the question, context, options,
+owner, consequences and evidence. Assign exactly one person. `.github/CODEOWNERS` routes the affected
+module owner for review, but the PR still needs at least one other person's
+approval before merge.
+
 ## Local setup and G0
 
 Use Node >= 22.16 and the committed npm lockfile:
@@ -48,7 +58,8 @@ npm run build
 ```
 
 Run tests appropriate to the change. `npm run verify` additionally runs source
-and test typechecks, unit/contract tests, Chromium desktop/mobile E2E and build.
+and test typechecks, unit/contract tests, Chromium desktop/mobile E2E (pinned
+to 1 worker for deterministic GPU context lifecycle) and build.
 Record failures, retries and limitations; do not describe an unrun check as
 passed. `?webgl=1` must be checked after a real adapter/composition root exists;
 the current no-port UI and test harness do not prove GPU fallback.

@@ -7,6 +7,17 @@ Acceptance criteria for a run: `docs/01-requirements/mvp-acceptance.md` §2.
 Aggregation key: `(mode, configHash) × actual` — never merge across a hash
 boundary (`docs/architecture.md` §5.1).
 
+## Runner
+
+`src/perf/benchmark.ts` owns `BENCHMARK_PROTOCOL` — warm-up 3000 ms, cadence
+100 ms, 100 samples, 10 s, median — and `buildBenchmarkResult`, which refuses a
+run missing an environment field, samples, or a single `configHash`.
+`tests/e2e/backend.spec.ts` is the browser matrix.
+
+A recorded comparison still requires a machine where both backends run. When
+WebGPU is unavailable, write `n/a` for that row and say so under Limitations;
+never turn a request into an `actual` backend.
+
 ## Result file template
 
 ```
