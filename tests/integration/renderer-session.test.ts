@@ -20,6 +20,13 @@ class DeferredRenderer extends FakeRenderer {
   }
 }
 
+class RecoveringRenderer extends FakeRenderer {
+  override start(): void {
+    this.calls.push({ type: 'start' });
+    if (this.getStatus().actual !== 'unavailable') this.setStatus({ running: true });
+  }
+}
+
 function makeHarness(ports: FakeRenderer[]) {
   const resources = ports.map(resource);
   const configs: LabConfig[] = [];
@@ -182,6 +189,28 @@ test('initial unavailable followed by retry stays paused until an explicit start
   expect(ready.calls.filter(c => c.type === 'start')).toHaveLength(0);
   session.start();
   expect(session.getStatus().running).toBe(true);
+  session.dispose();
+});
+
+test('a Play request during runtime recovery is retained by the session for the recovered or next renderer', async () => {
+  const recovering = new RecoveringRenderer({ actual: 'webgpu', running: true });
+  const next = new FakeRenderer({ actual: 'webgl2' });
+  const { session } = makeHarness([recovering, next]);
+  await session.init(target);
+  session.pause();
+  recovering.setStatus({ actual: 'unavailable', running: false });
+
+  session.start();
+
+  expect(session.getStatus()).toMatchObject({ actual: 'unavailable', running: false });
+  expect(recovering.calls.filter(call => call.type === 'start')).toHaveLength(1);
+  recovering.setStatus({ actual: 'webgpu', running: true });
+  expect(session.getStatus()).toMatchObject({ actual: 'webgpu', running: true });
+
+  session.applyConfig({ ...DEFAULT_CONFIG, backendPreference: 'webgl2' });
+  expect(await session.reinitialize()).toMatchObject({ outcome: 'applied', actual: 'webgl2' });
+  expect(session.getStatus()).toMatchObject({ actual: 'webgl2', running: true });
+  expect(next.calls.filter(call => call.type === 'start')).toHaveLength(1);
   session.dispose();
 });
 

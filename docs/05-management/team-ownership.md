@@ -84,9 +84,14 @@ can start, except the ones marked *(after …)*.
 | GPU timing | `trackTimestamp` on WebGPU, `EXT_disjoint_timer_query_webgl2` on WebGL2, `gpuTimingAvailable` telling the truth |
 | Parameter application | size/count changes, rebuilds, no leaks |
 | Frame loop | `start` / `pause` / `reset` / status snapshot |
-| Failures | context lost, init failure, neither backend available |
+| Failures | context lost, init failure, neither backend available; after WebGPU runtime loss attempt WebGL2 once, then report unavailable if recovery fails or WebGL2 is lost |
 | Contract tests | adapter against `RendererPort` |
 | Handoff | browser notes for TV5 |
+
+PR #62 integration at `dev@38a1d05` (27/10/2026) retains #52 recovery and
+owner-scoped canvas adoption/disposal alongside the #53 proposal below. TV1
+reviews the shared contract, TV3 recovery lifecycle and TV5 collector behavior.
+Hardware WebGPU recovery/timestamp freshness remains **NOT_RUN**.
 
 GPU timing in `RendererStatus` carries a monotonic `measurementAgeMs` proposal
 in Issue #53. Age starts at compute submission (including query-readback delay),
@@ -126,10 +131,11 @@ reports the measured age or null when no fresh GPU timing is available.
 | Fairness report | same host, same config, limitations written down |
 | Regression triage | failing measurements become tests, not anecdotes |
 
-The #53 collector change skips paused snapshots and GPU measurements older than
-the shared `MAX_GPU_MEASUREMENT_AGE_MS` contract threshold. Missing timing still
-allows a sample with `gpuTimeMs: null` so unsupported timing remains distinct
-from stale timing.
+The #53 collector skips paused snapshots. When GPU age exceeds the shared
+`MAX_GPU_MEASUREMENT_AGE_MS` threshold, it preserves valid FPS and records
+`gpuTimingAvailable: false` with `gpuTimeMs: null`, even if the producer marks
+the stale GPU timing available. Missing timing also permits a sample with null
+GPU timing. Independent FPS freshness remains #55.
 
 ### 3.1.1 Handoffs
 
@@ -157,6 +163,11 @@ so the same compute source can run on both backends. A CPU step is not an
 acceptable fallback — the simulation is meant to run on the GPU. Evidence and
 remaining constraints: [`03-research/webgl2-simulation-options.md`](../03-research/webgl2-simulation-options.md).
 Do not write a second stepping path before that decision.
+
+Runtime recovery after initialization follows Issue #52: one WebGPU-to-WebGL2
+attempt; no retry loop and no CPU fallback. A lost WebGL2 context is terminal
+for that adapter instance and is reported as unavailable. Browser context-loss
+tests exercise this policy; physical GPU loss remains unverified.
 
 ## 4. Coverage
 

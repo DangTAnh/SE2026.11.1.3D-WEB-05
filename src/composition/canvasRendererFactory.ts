@@ -8,12 +8,24 @@ export function createCanvasRendererFactory(
   createPort: (canvas: HTMLCanvasElement, config: Readonly<LabConfig>) => RendererPort,
 ) {
   let canvas = initialCanvas;
+  let activeOwner: symbol | null = null;
+  const host = initialCanvas.parentElement;
+  const resolveCanvas = (): HTMLCanvasElement => {
+    if (host && canvas.parentElement !== host) {
+      const activeCanvases = Array.from(host.querySelectorAll('canvas'))
+        .filter(candidate => !candidate.closest('[data-renderer-staging]'));
+      if (activeCanvases.length === 1) canvas = activeCanvases[0]!;
+      else if (activeCanvases.length > 1) throw new Error('Renderer host has multiple active canvases.');
+    }
+    return canvas;
+  };
   return {
-    get canvas(): HTMLCanvasElement { return canvas; },
+    get canvas(): HTMLCanvasElement { return resolveCanvas(); },
     createCandidate(config: Readonly<LabConfig>): RendererCandidate {
-      const previous = canvas;
+      const previous = resolveCanvas();
       const host = previous.parentElement;
       if (!host) throw new Error('Renderer canvas has no host.');
+      const owner = Symbol('renderer-candidate');
       const next = previous.cloneNode(true) as HTMLCanvasElement;
       next.removeAttribute('id');
       const staging = document.createElement('div');
@@ -34,18 +46,28 @@ export function createCanvasRendererFactory(
         return {
           port,
           commit(): void {
-            if (discarded || committed || canvas !== previous) throw new Error('Obsolete canvas candidate.');
-            next.id = previous.id;
-            previous.replaceWith(next);
-            canvas = next;
+            if (discarded || committed || resolveCanvas() !== previous) throw new Error('Obsolete canvas candidate.');
+            const stagedCanvases = staging.querySelectorAll('canvas');
+            if (stagedCanvases.length !== 1) throw new Error('Renderer candidate must own exactly one staged canvas.');
+            const adopted = stagedCanvases[0]!;
+            adopted.id = previous.id;
+            previous.replaceWith(adopted);
+            canvas = adopted;
+            activeOwner = owner;
             committed = true;
             staging.remove();
           },
           discard(): void {
             if (discarded) return;
             discarded = true;
-            staging.remove();
-            if (committed) next.remove();
+            if (committed) {
+              if (activeOwner === owner) {
+                resolveCanvas().remove();
+                activeOwner = null;
+              }
+            } else {
+              staging.remove();
+            }
           },
         };
       } catch (error) {

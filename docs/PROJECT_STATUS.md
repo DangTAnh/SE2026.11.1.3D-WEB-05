@@ -1,6 +1,33 @@
 # PROJECT STATUS — 3D-WEB-05
 
-## 27/10/2026 — Issue #53 PR #62 review follow-up
+## 27/10/2026 — PR #62 integrates runtime recovery from dev@38a1d05
+
+- Branch `fix/53-measurement-age` merges
+  `dev@38a1d05740f20d886b177196b3a1852b1c2ae5fd` normally into the
+  previous `88d4bb1` head. PR #61 / Issue #52 recovery is now merged in dev.
+  All earlier checkpoints, including the superseded #54 candidate, are retained
+  below as historical reports; their counts are not current-head evidence.
+- Keep WebGPU runtime-loss recovery with one WebGL2 attempt, fresh canvas
+  replacement, owner-scoped surface adoption/disposal and generation guards.
+  Session start/pause intent survives recovery and a later backend Apply.
+- Keep Issue #53 GPU-only age from compute submission (including readback),
+  2,000 ms threshold, 10-frame cadence and lifecycle timing invalidation.
+  Pending session age is null; the collector skips paused samples but retains
+  valid FPS with unavailable/null GPU timing when only GPU age is stale.
+  Independent FPS freshness remains #55.
+- Both regression sets are retained. An integration regression also checks that
+  a timestamp resolving from the lost renderer cannot publish into or unlock
+  the recovered renderer's pending query.
+- Current-head verification commands/results are recorded with full base/head
+  SHAs in [PR #62](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/62).
+  The earlier default-parallel E2E run's 12 timeout/polling failures remain
+  separate from serial verification; they are not claimed fixed without a rerun.
+- Hardware WebGPU recovery and physical GPU timestamp freshness: **NOT_RUN**.
+  Software WebGL2, synthetic context loss and fake ports do not prove hardware
+  acceptance. Keep Draft pending TV1's measurementAgeMs contract decision,
+  TV5's collector confirmation and independent human approval. No PR merge.
+
+## Historical checkpoint — 27/10/2026 — Issue #53 PR #62 review follow-up
 
 - Latest fetched base: `dev@09723af8055df0a76d983959e7d0818cf6091450`.
   Reviewed head `b9bf795f42cf05df4e869c1a9ee65bfa6bf02a82` already
@@ -72,7 +99,25 @@
   This records the state before #63 merged into `dev` on 27/10; retain as
   historical evidence only.
 
-## Historical checkpoint — 26/10/2026 — PR #63 TV1 review fixes
+## Historical checkpoint — 27/10/2026 — Issue #52 recovery branch synchronized with latest dev
+
+- Branch `fix/52-runtime-device-loss` includes latest `dev@09723af`, which
+  includes the composition-owned backend re-initialization flow (#63), the
+  Vortex parameter contract (#49), lifetime/respawn work (#48), and the GPU
+  readback parity harness (#50).
+- Runtime adapter recovery still replaces its canvas after WebGPU loss. The
+  shared canvas factory now resolves the currently connected preview canvas,
+  so a later user-requested backend switch stages from the replacement rather
+  than a detached canvas. UI resize observation remains on the stable host.
+- Re-review verification: source and test typechecks pass; `npm test` passes
+  172 unit/contract/integration tests, the production build passes (205
+  modules), and the focused desktop/mobile backend-reinit and runtime-context-
+  loss E2E set passes 26/26 without retries. This focused set includes id-less
+  canvas replacement. The existing Vite >500 kB chunk warning remains.
+- Physical WebGPU loss remains **NOT_RUN**; browser E2E uses synthetic WebGL2
+  context loss and test-double canvas replacement, not hardware recovery proof.
+
+## 26/10/2026 — PR #63 TV1 review fixes
 
 - Merged latest `dev@a6e460d` into the existing feature branch via `89bb87c`;
   merged #44/#60 source is preserved. No published history was rewritten.

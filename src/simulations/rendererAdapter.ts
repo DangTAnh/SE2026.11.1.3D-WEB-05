@@ -47,7 +47,14 @@ export class ThreeRendererAdapter implements RendererPort {
   #actual: ActualBackend = 'unavailable';
   #requested: LabConfig['backendPreference'] = 'auto';
   #initGeneration = 0;
+  #runtimeFallbackAttempted = false;
+  #runtimeRecoveryInFlight = false;
+  #runtimeRecoveryTask: Promise<void> | null = null;
+  #deviceLossRenderer: WebGPURenderer | null = null;
+  #initializingRenderer: WebGPURenderer | null = null;
+  #readyRenderer: WebGPURenderer | null = null;
   #running = false;
+  #runningIntent = false;
   #disposed = false;
   #fps = 0;
   #fpsFrames = 0;
@@ -63,11 +70,21 @@ export class ThreeRendererAdapter implements RendererPort {
   #gpuTimingRequestId = 0;
   #computeFrames = 0;
   #unavailableNotice: HTMLElement | null = null;
+  #onWebGLContextLost = (event: Event): void => {
+    event.preventDefault();
+    const renderer = this.#renderer ?? this.#initializingRenderer;
+    if (!renderer) return;
+    this.#deviceLossRenderer = renderer;
+    if (this.#readyRenderer === renderer) {
+      this.#scheduleRuntimeDeviceLoss(renderer, this.#initGeneration);
+    }
+  };
 
   constructor(canvas: HTMLCanvasElement, initialConfig: Readonly<LabConfig>) {
     this.#canvas = canvas;
     this.#config = { ...initialConfig };
     this.#requested = initialConfig.backendPreference;
+    this.#canvas.addEventListener('webglcontextlost', this.#onWebGLContextLost);
   }
 
   async init(target: RendererTarget): Promise<ActualBackend> {
@@ -79,20 +96,39 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#actual = 'unavailable';
     this.#running = false;
     this.#clearGpuTiming();
+    this.#runningIntent = false;
+    this.#runtimeFallbackAttempted = false;
+    this.#runtimeRecoveryInFlight = false;
+    this.#runtimeRecoveryTask = null;
+    this.#deviceLossRenderer = null;
+    this.#initializingRenderer = null;
+    this.#readyRenderer = null;
     this.#requested = this.#config.backendPreference;
     this.#target = target;
 
     const started = await startBackend<WebGPURenderer>(
       this.#requested,
       {
-        webgpu: () => this.#initializeRenderer(false, generation),
+        webgpu: async () => {
+          try {
+            return await this.#initializeRenderer(false, generation);
+          } catch (error) {
+            if (error instanceof BackendUnavailableError && this.#isInitActive(generation)) {
+              this.#replaceCanvasForRecovery();
+            }
+            throw error;
+          }
+        },
         webgl2: () => this.#initializeRenderer(true, generation),
       },
     );
     if (!this.#isInitActive(generation)) return 'unavailable';
-    this.#renderer = started.instance;
-    this.#actual = started.actual;
-    if (!this.#renderer) this.#showUnavailableNotice();
+    if (this.#runtimeRecoveryTask) await this.#runtimeRecoveryTask;
+    if (!this.#isInitActive(generation)) return 'unavailable';
+    if (started.instance === null && this.#renderer === null) {
+      this.#actual = 'unavailable';
+      this.#showUnavailableNotice();
+    }
 
     return this.#isInitActive(generation) ? this.#actual : 'unavailable';
   }
@@ -125,12 +161,18 @@ export class ThreeRendererAdapter implements RendererPort {
     }
 
     const renderer = new WebGPURenderer(options);
+    this.#initializingRenderer = renderer;
     let rendererInitialized = false;
     let deviceLost = false;
+    let rendererReady = false;
     const onDeviceLost = renderer.onDeviceLost;
     renderer.onDeviceLost = (info) => {
       deviceLost = true;
       onDeviceLost.call(renderer, info);
+      if (rendererReady) {
+        this.#deviceLossRenderer = renderer;
+        this.#scheduleRuntimeDeviceLoss(renderer, generation);
+      }
     };
 
     // WebGPURenderer otherwise catches every WebGPU init error and silently
@@ -148,6 +190,9 @@ export class ThreeRendererAdapter implements RendererPort {
           throw new BackendUnavailableError('Renderer backend/device is unavailable.', { cause: error });
         }
         throw error;
+      }
+      if (this.#deviceLossRenderer === renderer) {
+        throw new BackendUnavailableError('Renderer context was lost while initializing the backend.');
       }
       if (!this.#isInitActive(generation)) {
         throw new BackendUnavailableError('Renderer initialization was cancelled.');
@@ -171,6 +216,9 @@ export class ThreeRendererAdapter implements RendererPort {
           throw error;
         }
       }
+      if (this.#deviceLossRenderer === renderer) {
+        throw new BackendUnavailableError('Renderer context was lost while initializing the particle pipeline.');
+      }
       if (!this.#isInitActive(generation)) {
         throw new BackendUnavailableError('Renderer initialization was cancelled.');
       }
@@ -184,13 +232,25 @@ export class ThreeRendererAdapter implements RendererPort {
         }
         throw error;
       }
+      if (this.#deviceLossRenderer === renderer) {
+        throw new BackendUnavailableError('Renderer context was lost while starting its animation loop.');
+      }
       if (!this.#isInitActive(generation)) {
         throw new BackendUnavailableError('Renderer initialization was cancelled.');
       }
+      if (deviceLost) {
+        throw new BackendUnavailableError('Renderer device was lost before initialization completed.');
+      }
+      rendererReady = true;
+      this.#readyRenderer = renderer;
+      this.#initializingRenderer = null;
+      this.#deviceLossRenderer = null;
       return { actual, instance: renderer };
     } catch (error) {
-      if (this.#renderer === renderer) this.#releaseRenderer();
-      else await this.#disposeRenderer(renderer, rendererInitialized);
+      if (this.#initializingRenderer === renderer) this.#initializingRenderer = null;
+      if (this.#readyRenderer === renderer) this.#readyRenderer = null;
+      if (this.#renderer === renderer) this.#clearRendererState();
+      await this.#disposeRenderer(renderer, rendererInitialized);
       if (!(error instanceof BackendUnavailableError)) {
         console.error('Unexpected renderer initialization error.', error);
       }
@@ -303,12 +363,85 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   #handleComputeFailure(renderer: WebGPURenderer): void {
-    if (this.#disposed || this.#renderer !== renderer) return;
+    if (this.#disposed || this.#renderer !== renderer || this.#deviceLossRenderer === renderer) return;
     this.#running = false;
     this.#actual = 'unavailable';
     this.#releaseRenderer();
     this.#showUnavailableNotice();
   }
+
+  #scheduleRuntimeDeviceLoss(renderer: WebGPURenderer, generation: number): void {
+    if (this.#runtimeRecoveryInFlight) return;
+    this.#runtimeRecoveryTask = this.#handleRuntimeDeviceLoss(renderer, generation).catch((error: unknown) => {
+      if (!this.#isInitActive(generation) || (this.#renderer && this.#renderer !== renderer && this.#readyRenderer === this.#renderer)) return;
+      this.#runtimeRecoveryInFlight = false;
+      this.#actual = 'unavailable';
+      this.#running = false;
+      if (this.#renderer) this.#releaseRenderer();
+      this.#showUnavailableNotice('The renderer device or context was lost and recovery failed.');
+      console.error('Runtime renderer recovery failed.', error);
+    });
+  }
+
+  async #handleRuntimeDeviceLoss(renderer: WebGPURenderer, generation: number): Promise<void> {
+    if (this.#disposed || !this.#isInitActive(generation) || this.#renderer !== renderer || this.#runtimeRecoveryInFlight) return;
+    this.#runtimeRecoveryInFlight = true;
+    const canFallback = this.#actual === 'webgpu' && !this.#runtimeFallbackAttempted;
+    if (canFallback) this.#runtimeFallbackAttempted = true;
+
+    this.#running = false;
+    this.#actual = 'unavailable';
+    this.#clearRendererState();
+    await this.#disposeRenderer(renderer);
+
+    if (!this.#isInitActive(generation)) {
+      return;
+    }
+
+    if (!canFallback) {
+      this.#showUnavailableNotice('The renderer device or context was lost. No further backend recovery is available.');
+      this.#runtimeRecoveryInFlight = false;
+      return;
+    }
+
+    try {
+      this.#replaceCanvasForRecovery();
+      await this.#initializeRenderer(true, generation);
+      if (!this.#isInitActive(generation) || this.getStatus().actual !== 'webgl2' || !this.#renderer) return;
+      this.#running = this.#runningIntent;
+      if (this.#running) {
+        this.#lastFrameAt = 0;
+        this.#fpsFrames = 0;
+        this.#fpsStartedAt = performance.now();
+      }
+      this.#unavailableNotice?.remove();
+      this.#unavailableNotice = null;
+    } catch (error) {
+      if (!this.#isInitActive(generation) || (this.#renderer && this.#renderer !== renderer && this.#readyRenderer === this.#renderer)) return;
+      this.#actual = 'unavailable';
+      this.#running = false;
+      if (this.#renderer) this.#releaseRenderer();
+      this.#showUnavailableNotice('The WebGPU device was lost and WebGL2 recovery failed.');
+      console.error('WebGL2 recovery after runtime device loss failed.', error);
+    } finally {
+      if (this.#isInitActive(generation)) this.#runtimeRecoveryInFlight = false;
+    }
+  }
+
+  #replaceCanvasForRecovery(): void {
+    const previousCanvas = this.#canvas;
+    const parent = previousCanvas.parentElement;
+    if (!parent) {
+      throw new BackendUnavailableError('Cannot recover the renderer without an attached canvas host.');
+    }
+
+    const replacement = previousCanvas.cloneNode(true) as HTMLCanvasElement;
+    previousCanvas.removeEventListener('webglcontextlost', this.#onWebGLContextLost);
+    previousCanvas.replaceWith(replacement);
+    this.#canvas = replacement;
+    replacement.addEventListener('webglcontextlost', this.#onWebGLContextLost);
+  }
+
   applyConfig(config: Readonly<LabConfig>): void {
     const countChanged = config.particleCount !== this.#config.particleCount;
     const modeChanged = config.mode !== this.#config.mode;
@@ -329,7 +462,13 @@ export class ThreeRendererAdapter implements RendererPort {
     }
   }
   start(): void {
-    if (this.#disposed || this.#actual === 'unavailable') return;
+    if (this.#disposed) return;
+    if (this.#runtimeRecoveryInFlight) {
+      this.#runningIntent = true;
+      return;
+    }
+    if (this.#actual === 'unavailable') return;
+    this.#runningIntent = true;
     this.#running = true;
     this.#lastFrameAt = 0;
     this.#fpsFrames = 0;
@@ -337,6 +476,7 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   pause(): void {
+    this.#runningIntent = false;
     this.#running = false;
     this.#clearGpuTiming();
   }
@@ -377,6 +517,8 @@ export class ThreeRendererAdapter implements RendererPort {
     if (this.#disposed) return;
     this.#disposed = true;
     this.#running = false;
+    this.#runningIntent = false;
+    this.#canvas.removeEventListener('webglcontextlost', this.#onWebGLContextLost);
     this.#releaseRenderer();
     this.#unavailableNotice?.remove();
     this.#unavailableNotice = null;
@@ -520,8 +662,15 @@ export class ThreeRendererAdapter implements RendererPort {
   #releaseRenderer(): void {
     const renderer = this.#renderer;
     if (renderer) void this.#disposeRenderer(renderer);
+    this.#clearRendererState();
+  }
+
+  #clearRendererState(): void {
     this.#geometryAndMaterialDispose();
     this.#renderer = null;
+    this.#readyRenderer = null;
+    this.#initializingRenderer = null;
+    this.#deviceLossRenderer = null;
     this.#scene = null;
     this.#camera = null;
     this.#buffers = null;
@@ -529,6 +678,10 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#gpuTimingSupported = false;
     this.#clearGpuTiming();
     this.#computeFrames = 0;
+    this.#fps = 0;
+    this.#fpsFrames = 0;
+    this.#fpsStartedAt = 0;
+    this.#lastFrameAt = 0;
   }
 
   #clearGpuTiming(): void {
@@ -540,11 +693,11 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#gpuTimeSampledAt = null;
   }
 
-  #showUnavailableNotice(): void {
+  #showUnavailableNotice(message = 'No supported renderer could be initialized in this browser.'): void {
     const notice = document.createElement('div');
     notice.className = 'renderer-unavailable';
     notice.setAttribute('role', 'status');
-    notice.textContent = 'No supported renderer could be initialized in this browser.';
+    notice.textContent = message;
     this.#canvas.insertAdjacentElement('afterend', notice);
     this.#unavailableNotice = notice;
   }
