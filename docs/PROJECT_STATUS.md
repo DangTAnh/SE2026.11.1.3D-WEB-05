@@ -1,6 +1,23 @@
 # PROJECT STATUS — 3D-WEB-05
 
-## 27/10/2026 — Issue #16 nested preset v2 implementation candidate
+## 27/10/2026 — PR #76 synchronized with dev@fd3f1de
+
+- Normally merge `dev@fd3f1defd648d5cad8fb464be053f64391a83e47`
+  into candidate `feat/16-preset-v2` from `70ba103`. Preserve both the nested
+  schema/preset/hash/session implementation and the merged #71/#61 documentation.
+  Earlier checkpoints, including #54, remain historical reports.
+- Runtime source/schema/tests are unchanged by this synchronization. The README
+  now identifies preset v2 as this branch's candidate rather than describing the
+  dev v1 parser as its current runtime. No #62/#55/#56 source is imported.
+- Final-head commands, counts, retries and CI are recorded in
+  [PR #76](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/76).
+  Earlier 210-test/browser reports below are prior-run evidence.
+- Hardware WebGPU and physical-GPU parity/timestamp freshness remain **NOT_RUN**.
+  Three consumer tests, synthetic loss and SwiftShader do not prove hardware
+  acceptance. TV3 review is scoped to its mapping/lifecycle boundary; TV1, TV2,
+  TV5 and independent human approval are separate gates. Keep Draft until met.
+
+## Historical checkpoint — 27/10/2026 — Issue #16 nested preset v2 implementation candidate
 
 - Branch `feat/16-preset-v2` starts from `dev@38a1d057`. Runtime schema, nested
   config, full preset envelope/name, active-workload hash, all renderer fields
@@ -11,6 +28,43 @@
 - [Implementation/verification handoff](04-testing/preset-v2-2026-10-27.md) records
   API/reset/name policy, mapping, software-rendering test limits and owner gates.
 - TV1/TV2/TV3/TV5 review remains required. No merge/release/deploy/Issue closure.
+
+## 27/10/2026 — dev `38a1d05`: #61 merged after the `09723af` reconciliation
+
+- PR #61 (`885b812`) merged into `dev` at `38a1d05`. It guards runtime recovery
+  against late init/dispose races, adopts a recovered canvas without an id
+  precondition, keeps start intent during recovery, and resets FPS and INV-1
+  timing state on failed recovery. The #52 checkpoint below records the
+  branch-level evidence; physical WebGPU device-loss recovery remains NOT_RUN.
+
+## 27/10/2026 — dev reconciliation at `09723af`
+
+- The reconciliation baseline was `dev@09723af` (27/10/2026). It includes the
+  transactional backend Apply/re-init (#63 at `93fd267`), deterministic lifetime
+  respawn (#48 at
+  `5802055`), frozen vortex parameters (#49 at `e226697`) and the GPU readback
+  parity harness (#50 at #75/`09723af`). The earlier #40/#33/#42/#44/#60 merges
+  remain in `dev`.
+- #63 replaced the next-init-only model: Apply replaces the adapter and canvas
+  without a reload, preserves configuration and pause intent, clears measurements
+  while initialization is pending, and rolls back a failed switch. The
+  `RendererSession` stages candidates transactionally and owns generation and
+  disposal; only `RendererStatus.actual` identifies the backend that ran.
+- #48/#49: config identity includes `spawnRadius`, `lifetime` and (vortex-only)
+  `vortexDamping`; `vortexRadius` is not a public field.
+- Docs-only reconciliation (#45): README, architecture and team ownership now
+  describe this behavior. Earlier checkpoints below are preserved as history and
+  do not describe current state.
+- Verification before the dev merge: local `git diff --check` clean,
+  `npm run typecheck`, `npm run build` and `npm test` PASS (162 tests); E2E was
+  not rerun locally. CI `verify` at `62fedb8` PASS (it includes `test:e2e`).
+- Verification after merging `dev@38a1d05`: local `git diff --check` clean,
+  `npm run typecheck` and `npm run build` PASS (205 modules); unit/E2E were not
+  rerun locally for this docs branch. CI at the pushed head is the current gate.
+- NOT_RUN: physical WebGPU execution, physical-GPU numeric parity, live GPU
+  timing, fair measured two-backend benchmark, MVP acceptance and release. #75's
+  WebGL2 readback evidence is software-rendered (SwiftShader), not physical-GPU
+  proof.
 
 ## 27/10/2026 — Issue #52 recovery branch synchronized with latest dev
 
@@ -93,6 +147,25 @@
   Evidence: [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
 - #50 is in PR #75 and has not merged. No release, physical-WebGPU execution or
   physical-GPU acceptance is implied by the software-rendered WebGL2 evidence.
+
+## 26/10/2026 — dev reconciliation at `a6e460d`
+
+- Current `dev` is `a6e460d` (26/10/2026). It includes adapter/fallback #40 at
+  `04f1522`, live RendererStatus UI #33 at `ac36491`, collector-test fix #42 at
+  `dc7bb3a`, zero-delta kernel #44 at `94a4c22` and capability-probe removal
+  #60 at `a6e460d`.
+- #13 and #42 are merged and closed; the adapter, WebGL2 fallback/timing,
+  RendererStatus UI and capability-probe removal are in `dev`. This checkpoint
+  corrects the stale "under review"/"pending #42" statements in README,
+  architecture, ownership and this file (#45). Earlier checkpoints below are
+  preserved as history and do not describe current state.
+- Docs-only change: `git diff --check` clean; `npm run typecheck` and
+  `npm run build` PASS. Source/test suites were not rerun for this docs change.
+- NOT_RUN: physical WebGPU execution, GPU numeric parity, live GPU-timing
+  evidence and the two-backend benchmark run. Benchmark-runner source is
+  proposed in PR #64, not merged. #14 and #51 remain open for their own
+  acceptance reconciliation; #16 remains blocked on shared hash/Vortex
+  decisions.
 
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 

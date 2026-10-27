@@ -11,10 +11,12 @@ measurements on both backends.
 
 **Current implementation: the real renderer adapter is wired through RendererPort.**
 The Canvas2D preview has been removed. The default entry point initializes the
-adapter before mounting the UI. On this branch, browser tests exercise a real
-WebGL2 path; the available Chromium environment has no WebGPU adapter, so its
-WebGPU smoke test is skipped. Preset import/export remains available. GPU
-parity and a two-backend benchmark are still unverified.
+adapter before mounting the UI. On `dev` at `09723af` (27/10/2026), browser
+tests exercise a real WebGL2 path; the available Chromium environment has no
+WebGPU adapter, so its WebGPU smoke test is skipped. Preset import/export
+remains available. Physical-GPU/WebGPU parity and a fair two-backend benchmark
+run remain unverified; #50's WebGL2 readback parity is software-rendered
+(SwiftShader), not physical-GPU proof.
 
 ## Run and verify
 
@@ -41,7 +43,7 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## What exists
 
-- **UI / presets:** controls, preset v1 JSON validation and round-trip,
+- **UI / presets:** controls, nested preset v2 JSON validation and document/name round-trip,
   pause/resume/reset through an injected `RendererPort`, responsive layout,
   accessibility checks, unavailable/error presentation and cleanup.
 - **Port consumer:** `mountLabUI(root, port)` applies defaults once, sends one
@@ -65,8 +67,11 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   corrupt-readback rejections) is recorded in
   `docs/04-testing/gpu-kernel-parity-2026-10-26.md`. WebGPU execution remains
   pending because this environment exposes no adapter.
-- **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
-  uses v1 until issue #16 and its shared config/hash decisions are implemented.
+- **Schema v2 candidate (#76 / #16):** this branch uses nested v2 at runtime,
+  preserves both mode groups and optional document name, and rejects v1, unknown
+  and missing keys. Rendering/camera fields reach adapter consumers; workload
+  hash follows TV1's active-mode projection. Owner review remains required;
+  the v1 schema is retained only as history.
 - **Verification:** UI interaction tests use an explicit
   `tests/e2e/fixtures/renderer-port.html` harness with `FakeRenderer`.
   The harness starts no GPU and its backend labels are test inputs, not runtime
@@ -75,8 +80,12 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## Integration and remaining evidence
 
-- PR #40 / #13 is merged into dev at `04f1522` and included in this UI branch.
-  The #12 adapter stays bound to the production canvas through the composition root.
+- The #12 adapter (#39/#40 at `04f1522`), live RendererStatus UI (#33 at
+  `ac36491`), collector-test fix (#42 at `dc7bb3a`), capability-probe removal
+  (#60 at `a6e460d`), backend Apply/re-init (#63 at `93fd267`), lifetime respawn
+  (#48 at `5802055`), frozen vortex parameters (#49 at `e226697`) and GPU
+  readback parity harness (#50 at #75/`09723af`) are merged into `dev`. The
+  adapter stays bound to the production canvas through the composition root.
 - The prepared UI shows INITIALIZING without backend or metric claims until the
   initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
