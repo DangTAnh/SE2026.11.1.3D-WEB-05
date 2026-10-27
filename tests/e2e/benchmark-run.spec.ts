@@ -1,11 +1,13 @@
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
 import type { FullBenchmarkExecutionResult } from './fixtures/benchmark-runner.ts';
 
 const FIXTURE_URL = '/tests/e2e/fixtures/benchmark-runner.html';
 
-test('record fair two-backend benchmark run @evidence', async ({ page, browserName, isMobile }) => {
+test('record fair two-backend benchmark run @evidence', async ({ page, browser, browserName, isMobile }) => {
   test.skip(isMobile, 'Benchmark runs once on desktop Chromium');
   test.setTimeout(180_000);
 
@@ -15,13 +17,44 @@ test('record fair two-backend benchmark run @evidence', async ({ page, browserNa
   await page.goto(FIXTURE_URL);
   await expect(page.locator('#host')).toBeVisible();
 
+  // Dynamic environment probing
+  const probed = await page.evaluate(() => {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl2');
+    if (!gl) return { supported: false, renderer: '', vendor: '' };
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    const renderer = ext ? (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) as string) : '';
+    const vendor = ext ? (gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) as string) : '';
+    return { supported: true, renderer, vendor };
+  });
+
+  expect(probed.supported).toBe(true);
+  if (!probed.renderer || probed.renderer.trim() === '') {
+    throw new Error('benchmark: WEBGL_debug_renderer_info did not return a renderer string; refusing unmeasured environment.');
+  }
+
+  const browserVersion = browser.version();
+  if (!browserVersion || browserVersion.trim() === '') {
+    throw new Error('benchmark: browser.version() is required; refusing unmeasured environment.');
+  }
+
+  const commit = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+  if (!commit || commit.trim() === '') {
+    throw new Error('benchmark: git commit hash is required; refusing unmeasured environment.');
+  }
+
+  const osString = `${os.type()} ${os.release()}`;
+  const isSoftwareRenderer = probed.renderer.includes('SwiftShader') || probed.renderer.includes('Subzero');
+  const gpuName = isSoftwareRenderer ? `${probed.renderer} [Software Renderer]` : probed.renderer;
+  const driverName = isSoftwareRenderer ? 'SwiftShader' : (probed.vendor || 'Unknown Driver');
+
   const env = {
     browser: browserName === 'chromium' ? 'Chromium' : browserName,
-    browserVersion: '156.0.8078.4',
-    os: 'Windows 10 Home (NT 10.0.26300)',
-    gpu: 'NVIDIA GeForce GTX 1650',
-    driver: '32.0.16.1088',
-    commit: '7fc03c9',
+    browserVersion,
+    os: osString,
+    gpu: gpuName,
+    driver: driverName,
+    commit,
     sameHost: true,
   };
 
@@ -32,10 +65,17 @@ test('record fair two-backend benchmark run @evidence', async ({ page, browserNa
   expect(result.webgl2Count).toBe(100);
   expect(result.markdown).toContain('# Benchmark result');
   expect(result.markdown).toContain('## Environment');
+  expect(result.markdown).toContain('## Configuration');
+  expect(result.markdown).toContain('Mode / particleCount');
   expect(result.markdown).toContain('## Runs');
   expect(result.markdown).toContain('webgl2');
 
-  const outputPath = path.resolve('docs/06-benchmark/2026-10-27-nvidia-gtx-1650-chromium.md');
+  // Write to test-results/ (or explicit env var), never overwrite committed documents
+  const outputPath = process.env.BENCHMARK_OUTPUT_PATH
+    ? path.resolve(process.env.BENCHMARK_OUTPUT_PATH)
+    : path.resolve('test-results/benchmark-result.md');
+
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, result.markdown, 'utf8');
 
   expect(fs.existsSync(outputPath)).toBe(true);

@@ -35,10 +35,10 @@ Mode / particleCount:
 Warm-up / sample count / duration (as fixed by TV5):
 
 ## Runs
-| actual backend | statistic | fps | gpuTimeMs | gpuTimingAvailable | min / max |
-|---|---|---|---|---|---|
-| webgpu |  |  |  |  |  |
-| webgl2 |  |  |  |  |  |
+| actual backend | samples | fps median (min–max) | gpuTimeMs median (min–max) |
+|---|---|---|---|
+| webgpu | ... | ... | ... |
+| webgl2 | ... | ... | ... |
 
 ## Limitations
 - Which protocol value was not yet fixed, or which timing path was unavailable.

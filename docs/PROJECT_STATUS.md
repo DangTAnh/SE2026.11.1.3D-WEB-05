@@ -6,12 +6,13 @@
   benchmark runner (`src/perf/benchmark.ts`), `BENCHMARK_PROTOCOL` (3000 ms warm-up,
   100 ms cadence, 100 samples, 10 s, median), environment validation, same-origin
   probe and the browser matrix.
-- First benchmark run (#58) executed on Chromium 156 / Windows 10 / NVIDIA GTX 1650
+- First benchmark run (#58) executed on Chromium 156 / Windows 10 / SwiftShader (software WebGL2 path)
   using the exact protocol and `DEFAULT_CONFIG` (`2a8003e2...`).
-  Artifact committed at `docs/06-benchmark/2026-10-27-nvidia-gtx-1650-chromium.md`.
-- 100 samples measured on production WebGL2 (median 4.29 FPS under software/windowed
-  conditions; GPU timing unavailable). Physical WebGPU execution was recorded as
-  BLOCKED because the Chromium environment exposes no WebGPU adapter (`requestAdapter()` returned null). No numbers were fabricated.
+  Artifact committed at `docs/06-benchmark/2026-10-27-swiftshader-chromium.md`.
+- 100 samples measured on production WebGL2 through SwiftShader CPU software emulation (median 3.58 FPS;
+  GPU timing unavailable). Physical WebGPU execution was recorded as BLOCKED because the Chromium
+  environment exposes no WebGPU adapter (`requestAdapter()` returned null). Physical GPU execution
+  remains NOT_RUN/BLOCKED. No numbers were fabricated.
 
 ## 27/10/2026 — dev `38a1d05`: #61 merged after the `09723af` reconciliation
 

@@ -2,6 +2,7 @@ import { ThreeRendererAdapter } from '../../../src/simulations/rendererAdapter.t
 import { BENCHMARK_PROTOCOL, collectBenchmarkSamples, buildBenchmarkResult } from '../../../src/perf/benchmark.ts';
 import { DEFAULT_CONFIG, type LabConfig } from '../../../src/presets/preset.ts';
 import { toMarkdown, type BenchmarkEnvironment } from '../../../src/core/measurement/result.ts';
+import type { PerformanceSnapshot } from '../../../src/core/types/measurement.ts';
 
 export interface FullBenchmarkExecutionResult {
   readonly webgl2Count: number;
@@ -31,7 +32,7 @@ window.executeFullBenchmark = async (env: BenchmarkEnvironment): Promise<FullBen
   const webglConfig: LabConfig = { ...DEFAULT_CONFIG, backendPreference: 'webgl2' };
   const webglAdapter = new ThreeRendererAdapter(webglCanvas, webglConfig);
 
-  let webglSamples: any[] = [];
+  let webglSamples: PerformanceSnapshot[] = [];
   try {
     const actual = await webglAdapter.init({ width: 800, height: 600, pixelRatio: 1 });
     if (actual !== 'webgl2') {
@@ -56,7 +57,7 @@ window.executeFullBenchmark = async (env: BenchmarkEnvironment): Promise<FullBen
   const webgpuConfig: LabConfig = { ...DEFAULT_CONFIG, backendPreference: 'webgpu' };
   const webgpuAdapter = new ThreeRendererAdapter(webgpuCanvas, webgpuConfig);
 
-  let webgpuSamples: any[] = [];
+  let webgpuSamples: PerformanceSnapshot[] = [];
   try {
     const actual = await webgpuAdapter.init({ width: 800, height: 600, pixelRatio: 1 });
     if (actual === 'webgpu') {
