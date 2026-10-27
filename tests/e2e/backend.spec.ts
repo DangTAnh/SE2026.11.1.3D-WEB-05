@@ -11,12 +11,32 @@ test.describe.configure({ mode: 'serial', timeout: 60_000 });
  * every environment is that the reported backend is the actual one, never the
  * request, and that the preview canvas is never blank.
  */
+
+/** Same-origin page with no renderer, so probing cannot start the lab. */
+const PROBE_PAGE = '/tests/e2e/fixtures/capability-probe.html';
+
+/**
+ * Probes the application origin, not `about:blank`: WebGPU is origin-gated and
+ * a secure localhost fixture can expose an adapter that `about:blank` does not.
+ * `navigator.gpu` alone is not proof — an adapter must actually resolve.
+ */
 async function capabilities(page: import('@playwright/test').Page) {
-  return page.evaluate(() => {
+  await page.goto(PROBE_PAGE);
+  return page.evaluate(async () => {
     const canvas = document.createElement('canvas');
     const webgl2 = canvas.getContext('webgl2') !== null;
-    const gpu = (navigator as Navigator & { gpu?: unknown }).gpu;
-    return { webgl2, webgpu: typeof gpu !== 'undefined' };
+    const gpu = (
+      navigator as Navigator & { gpu?: { requestAdapter(): Promise<unknown | null> } }
+    ).gpu;
+    let webgpu = false;
+    if (gpu) {
+      try {
+        webgpu = (await gpu.requestAdapter()) !== null;
+      } catch {
+        webgpu = false;
+      }
+    }
+    return { webgl2, webgpu };
   });
 }
 
@@ -24,6 +44,24 @@ async function capabilities(page: import('@playwright/test').Page) {
 async function releaseRenderer(page: import('@playwright/test').Page) {
   await page.evaluate(() => window.dispatchEvent(new Event('beforeunload'))).catch(() => {});
 }
+
+test('probe treats an exposed API without an adapter as unsupported', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'gpu', {
+      configurable: true,
+      value: { requestAdapter: () => Promise.resolve(null) },
+    });
+  });
+  const caps = await capabilities(page);
+  expect(
+    await page.evaluate(
+      () =>
+        typeof (navigator as Navigator & { gpu?: { requestAdapter?: unknown } }).gpu
+          ?.requestAdapter,
+    ),
+  ).toBe('function');
+  expect(caps.webgpu).toBe(false);
+});
 
 test('forced WebGL2 runs the real adapter and keeps a sized canvas', async ({ page }) => {
   const caps = await capabilities(page);
