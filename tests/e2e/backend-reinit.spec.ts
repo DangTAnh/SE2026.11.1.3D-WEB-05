@@ -117,6 +117,23 @@ test('backend apply follows a canvas replaced by runtime recovery', async ({ pag
   await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
 });
 
+test('canvas factory follows an id-less canvas replaced by runtime recovery', async ({ page }) => {
+  await page.goto(fixture);
+  await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
+  await page.locator('#preview-canvas').evaluate(canvas => canvas.removeAttribute('id'));
+  await page.evaluate(() => window.sessionTest.simulateRuntimeCanvasReplacement());
+  expect(await page.evaluate(() => window.sessionTest.factoryCanvasIsLatestRendererCanvas())).toBe(true);
+
+  await page.locator('#backend').selectOption('webgl2');
+  await page.locator('#apply-backend').click();
+
+  await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
+  expect(await page.evaluate(() => window.sessionTest.factoryCanvasIsLatestRendererCanvas())).toBe(true);
+  expect(await page.evaluate(() => window.sessionTest.latestRendererCanvasIsConnected())).toBe(true);
+  await expect(page.locator('#app canvas')).toHaveCount(1);
+  await expect(page.locator('[data-renderer-staging]')).toHaveCount(0);
+});
+
 test('backend apply adopts a canvas replaced inside staging during initialization', async ({ page }) => {
   await page.goto(fixture);
   await expect(page.locator('#actual-backend')).toHaveText('WebGPU');

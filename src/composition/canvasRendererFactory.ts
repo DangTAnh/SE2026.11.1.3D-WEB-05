@@ -11,10 +11,11 @@ export function createCanvasRendererFactory(
   let activeOwner: symbol | null = null;
   const host = initialCanvas.parentElement;
   const resolveCanvas = (): HTMLCanvasElement => {
-    if (host && initialCanvas.id) {
-      const activeCanvas = Array.from(host.querySelectorAll('canvas'))
-        .find(candidate => candidate.id === initialCanvas.id);
-      if (activeCanvas) canvas = activeCanvas;
+    if (host && canvas.parentElement !== host) {
+      const activeCanvases = Array.from(host.querySelectorAll('canvas'))
+        .filter(candidate => !candidate.closest('[data-renderer-staging]'));
+      if (activeCanvases.length === 1) canvas = activeCanvases[0]!;
+      else if (activeCanvases.length > 1) throw new Error('Renderer host has multiple active canvases.');
     }
     return canvas;
   };

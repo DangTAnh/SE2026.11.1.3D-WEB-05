@@ -342,6 +342,7 @@ export class ThreeRendererAdapter implements RendererPort {
   #scheduleRuntimeDeviceLoss(renderer: WebGPURenderer, generation: number): void {
     if (this.#runtimeRecoveryInFlight) return;
     this.#runtimeRecoveryTask = this.#handleRuntimeDeviceLoss(renderer, generation).catch((error: unknown) => {
+      if (!this.#isInitActive(generation) || (this.#renderer && this.#renderer !== renderer && this.#readyRenderer === this.#renderer)) return;
       this.#runtimeRecoveryInFlight = false;
       this.#actual = 'unavailable';
       this.#running = false;
@@ -363,7 +364,6 @@ export class ThreeRendererAdapter implements RendererPort {
     await this.#disposeRenderer(renderer);
 
     if (!this.#isInitActive(generation)) {
-      this.#runtimeRecoveryInFlight = false;
       return;
     }
 
@@ -386,13 +386,14 @@ export class ThreeRendererAdapter implements RendererPort {
       this.#unavailableNotice?.remove();
       this.#unavailableNotice = null;
     } catch (error) {
+      if (!this.#isInitActive(generation) || (this.#renderer && this.#renderer !== renderer && this.#readyRenderer === this.#renderer)) return;
       this.#actual = 'unavailable';
       this.#running = false;
       if (this.#renderer) this.#releaseRenderer();
       this.#showUnavailableNotice('The WebGPU device was lost and WebGL2 recovery failed.');
       console.error('WebGL2 recovery after runtime device loss failed.', error);
     } finally {
-      this.#runtimeRecoveryInFlight = false;
+      if (this.#isInitActive(generation)) this.#runtimeRecoveryInFlight = false;
     }
   }
 
@@ -637,6 +638,10 @@ export class ThreeRendererAdapter implements RendererPort {
     this.#gpuTimingInFlight = false;
     this.#gpuTimeMs = null;
     this.#computeFrames = 0;
+    this.#fps = 0;
+    this.#fpsFrames = 0;
+    this.#fpsStartedAt = 0;
+    this.#lastFrameAt = 0;
   }
 
   #showUnavailableNotice(message = 'No supported renderer could be initialized in this browser.'): void {

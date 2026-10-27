@@ -8,6 +8,10 @@ const harness = vi.hoisted(() => ({
   deferWebGLInit: false,
   webGLInitStarted: false,
   resolveWebGLInit: null as (() => void) | null,
+  rejectWebGLInit: null as ((error: Error) => void) | null,
+  timestampSupported: false,
+  timestampValue: 4,
+  noticeInsertions: 0,
   instances: [] as Array<{
     forceWebGL: boolean;
     canvas: HTMLCanvasElement | undefined;
@@ -54,7 +58,11 @@ vi.mock('three/webgpu', async () => {
       if (this.record.forceWebGL) {
         if (harness.deferWebGLInit) {
           harness.webGLInitStarted = true;
-          await new Promise<void>((resolve) => { harness.resolveWebGLInit = resolve; });
+          harness.deferWebGLInit = false;
+          await new Promise<void>((resolve, reject) => {
+            harness.resolveWebGLInit = resolve;
+            harness.rejectWebGLInit = reject;
+          });
         }
         return;
       }
@@ -94,7 +102,8 @@ vi.mock('three/webgpu', async () => {
 
     setPixelRatio(): void {}
     setSize(): void {}
-    hasFeature(): boolean { return false; }
+    hasFeature(): boolean { return harness.timestampSupported; }
+    async resolveTimestampsAsync(): Promise<number> { return harness.timestampValue; }
     render(): void {}
     dispose(): void { this.record.disposed = true; }
   }
@@ -119,7 +128,7 @@ function makeCanvas(context: WebGL2RenderingContext | null = {} as WebGL2Renderi
       }),
       cloneNode: vi.fn(() => create()),
       replaceWith: vi.fn((replacement: HTMLCanvasElement) => { host.current = replacement; }),
-      insertAdjacentElement: vi.fn(),
+      insertAdjacentElement: vi.fn(() => { harness.noticeInsertions += 1; return null; }),
     });
     return canvas;
   };
@@ -146,6 +155,10 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     harness.deferWebGLInit = false;
     harness.webGLInitStarted = false;
     harness.resolveWebGLInit = null;
+    harness.rejectWebGLInit = null;
+    harness.timestampSupported = false;
+    harness.timestampValue = 4;
+    harness.noticeInsertions = 0;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
     vi.stubGlobal('document', {
@@ -317,6 +330,75 @@ describe('ThreeRendererAdapter initialization error classification', () => {
 
     await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: true }));
     expect(harness.instances).toHaveLength(2);
+    adapter.dispose();
+  });
+
+  it.each(['disposed', 'new initialization generation'] as const)(
+    'ignores a late recovery failure after the adapter is %s', async (state) => {
+      const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+      await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+      harness.deferWebGLInit = true;
+      harness.instances[0]!.triggerDeviceLost();
+      await vi.waitFor(() => expect(harness.webGLInitStarted).toBe(true));
+
+      let replacementIndex: number | null = null;
+      if (state === 'disposed') {
+        adapter.dispose();
+      } else {
+        adapter.applyConfig({ ...DEFAULT_CONFIG, backendPreference: 'webgl2' });
+        await expect(adapter.init({ width: 640, height: 480, pixelRatio: 1 })).resolves.toBe('webgl2');
+        replacementIndex = harness.instances.length - 1;
+        expect(adapter.getStatus().actual).toBe('webgl2');
+      }
+
+      const insertionsBeforeLateFailure = harness.noticeInsertions;
+      harness.rejectWebGLInit?.(new Error('late recovery failure'));
+      await vi.waitFor(() => expect(harness.instances[1]?.backendDisposed).toBe(true));
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+
+      expect(harness.noticeInsertions).toBe(insertionsBeforeLateFailure);
+      if (state === 'disposed') {
+        expect(adapter.getStatus()).toMatchObject({ actual: 'unavailable', running: false });
+      } else {
+        expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: false });
+        expect(harness.instances[replacementIndex!]?.disposed).toBe(false);
+      }
+      adapter.dispose();
+    },
+  );
+
+  it('clears stale FPS and keeps GPU timing unavailable during and after failed recovery', async () => {
+    harness.timestampSupported = true;
+    harness.deferWebGLInit = true;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopValues.at(-1);
+    expect(typeof frame).toBe('function');
+    const startedAt = performance.now();
+    for (let index = 0; index <= 32; index += 1) (frame as (time: number) => void)(startedAt + index * 20);
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({
+      gpuTimingAvailable: true,
+      gpuTimeMs: 4,
+      fps: expect.any(Number),
+    }));
+
+    harness.instances[0]!.triggerDeviceLost();
+    await vi.waitFor(() => expect(harness.webGLInitStarted).toBe(true));
+    expect(adapter.getStatus()).toMatchObject({
+      actual: 'unavailable',
+      gpuTimingAvailable: false,
+      gpuTimeMs: null,
+      fps: null,
+    });
+
+    harness.rejectWebGLInit?.(new Error('WebGL2 recovery failed'));
+    await vi.waitFor(() => expect(adapter.getStatus().actual).toBe('unavailable'));
+    expect(adapter.getStatus()).toMatchObject({
+      gpuTimingAvailable: false,
+      gpuTimeMs: null,
+      fps: null,
+    });
     adapter.dispose();
   });
 

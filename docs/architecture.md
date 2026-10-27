@@ -90,9 +90,11 @@ fallback, and `actual` is the only backend identity a benchmark row may store.
 is lost after initialization, the adapter disposes it, replaces the canvas in
 the same stable host, and attempts WebGL2 once. A canvas cannot change its
 context mode after `getContext('webgpu')`, so recovery must use a fresh canvas.
-The adapter preserves the latest start/pause intent while asynchronous recovery
-runs. If WebGL2 is already active or the recovery renderer is lost, it reports
-`actual: unavailable` and stops; it does not loop or add a CPU path. The UI
+The adapter and `RendererSession` preserve the latest start/pause intent while
+asynchronous recovery runs, including a Play request received by the session
+while the active adapter reports unavailable. If WebGL2 is already active or
+the recovery renderer is lost, it reports `actual: unavailable` and stops; it
+does not loop or add a CPU path. The UI
 measures the stable host, so resize handling remains bound across canvas
 replacement. The shared canvas factory re-resolves the connected preview canvas
 before a later user-requested backend switch, so adapter-owned replacement does

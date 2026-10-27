@@ -2,19 +2,21 @@
 
 ## 27/10/2026 — Issue #52 recovery branch synchronized with latest dev
 
-- Branch `fix/52-runtime-device-loss` is integrating `dev@93fd267`, which
+- Branch `fix/52-runtime-device-loss` includes latest `dev@09723af`, which
   includes the composition-owned backend re-initialization flow (#63), the
-  Vortex parameter contract (#49), and lifetime/respawn work (#48).
+  Vortex parameter contract (#49), lifetime/respawn work (#48), and the GPU
+  readback parity harness (#50).
 - Runtime adapter recovery still replaces its canvas after WebGPU loss. The
   shared canvas factory now resolves the currently connected preview canvas,
   so a later user-requested backend switch stages from the replacement rather
   than a detached canvas. UI resize observation remains on the stable host.
-- A desktop/mobile E2E regression simulates runtime canvas replacement and
-  verifies that a subsequent backend Apply uses the current canvas. `CI=1 npm
-  run verify` passes on the merge candidate: both typechecks, 157 unit/contract/
-  integration tests, 56 desktop/mobile Chromium E2E tests, two WebGPU-adapter
-  skips, and production build. No E2E retries were needed. The existing Vite
-  >500 kB chunk warning remains. Physical WebGPU loss remains **NOT_RUN**.
+- Re-review verification: source and test typechecks pass; `npm test` passes
+  172 unit/contract/integration tests, the production build passes (205
+  modules), and the focused desktop/mobile backend-reinit and runtime-context-
+  loss E2E set passes 26/26 without retries. This focused set includes id-less
+  canvas replacement. The existing Vite >500 kB chunk warning remains.
+- Physical WebGPU loss remains **NOT_RUN**; browser E2E uses synthetic WebGL2
+  context loss and test-double canvas replacement, not hardware recovery proof.
 
 ## 26/10/2026 — PR #63 TV1 review fixes
 
