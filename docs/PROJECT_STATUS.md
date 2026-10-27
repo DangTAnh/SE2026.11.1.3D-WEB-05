@@ -1,9 +1,18 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 27/10/2026 — dev `38a1d05`: #61 merged after the `09723af` reconciliation
+
+- PR #61 (`885b812`) merged into `dev` at `38a1d05`. It guards runtime recovery
+  against late init/dispose races, adopts a recovered canvas without an id
+  precondition, keeps start intent during recovery, and resets FPS and INV-1
+  timing state on failed recovery. The #52 checkpoint below records the
+  branch-level evidence; physical WebGPU device-loss recovery remains NOT_RUN.
+
 ## 27/10/2026 — dev reconciliation at `09723af`
 
-- Current `dev` is `09723af` (27/10/2026). It includes the transactional backend
-  Apply/re-init (#63 at `93fd267`), deterministic lifetime respawn (#48 at
+- The reconciliation baseline was `dev@09723af` (27/10/2026). It includes the
+  transactional backend Apply/re-init (#63 at `93fd267`), deterministic lifetime
+  respawn (#48 at
   `5802055`), frozen vortex parameters (#49 at `e226697`) and the GPU readback
   parity harness (#50 at #75/`09723af`). The earlier #40/#33/#42/#44/#60 merges
   remain in `dev`.
@@ -17,13 +26,34 @@
 - Docs-only reconciliation (#45): README, architecture and team ownership now
   describe this behavior. Earlier checkpoints below are preserved as history and
   do not describe current state.
-- Verification for this docs change: local `git diff --check` clean,
+- Verification before the dev merge: local `git diff --check` clean,
   `npm run typecheck`, `npm run build` and `npm test` PASS (162 tests); E2E was
   not rerun locally. CI `verify` at `62fedb8` PASS (it includes `test:e2e`).
+- Verification after merging `dev@38a1d05`: local `git diff --check` clean,
+  `npm run typecheck` and `npm run build` PASS (205 modules); unit/E2E were not
+  rerun locally for this docs branch. CI at the pushed head is the current gate.
 - NOT_RUN: physical WebGPU execution, physical-GPU numeric parity, live GPU
   timing, fair measured two-backend benchmark, MVP acceptance and release. #75's
   WebGL2 readback evidence is software-rendered (SwiftShader), not physical-GPU
   proof.
+
+## 27/10/2026 — Issue #52 recovery branch synchronized with latest dev
+
+- Branch `fix/52-runtime-device-loss` includes latest `dev@09723af`, which
+  includes the composition-owned backend re-initialization flow (#63), the
+  Vortex parameter contract (#49), lifetime/respawn work (#48), and the GPU
+  readback parity harness (#50).
+- Runtime adapter recovery still replaces its canvas after WebGPU loss. The
+  shared canvas factory now resolves the currently connected preview canvas,
+  so a later user-requested backend switch stages from the replacement rather
+  than a detached canvas. UI resize observation remains on the stable host.
+- Re-review verification: source and test typechecks pass; `npm test` passes
+  172 unit/contract/integration tests, the production build passes (205
+  modules), and the focused desktop/mobile backend-reinit and runtime-context-
+  loss E2E set passes 26/26 without retries. This focused set includes id-less
+  canvas replacement. The existing Vite >500 kB chunk warning remains.
+- Physical WebGPU loss remains **NOT_RUN**; browser E2E uses synthetic WebGL2
+  context loss and test-double canvas replacement, not hardware recovery proof.
 
 ## 26/10/2026 — PR #63 TV1 review fixes
 

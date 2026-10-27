@@ -36,13 +36,12 @@ export function mountLabUI(
   const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
   if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
   const rendererPort = port;
-  const getRendererTarget = () => measureRendererTarget(
-    root.querySelector<HTMLCanvasElement>('#preview-canvas') ?? canvas,
-  );
+  const canvasHost = canvas.parentElement ?? canvas;
+  const getRendererTarget = () => measureRendererTarget(canvasHost);
   const resizeObserver = rendererPort?.resize
     ? new ResizeObserver(() => rendererPort.resize?.(getRendererTarget()))
     : null;
-  if (resizeObserver && canvas.parentElement) resizeObserver.observe(canvas.parentElement);
+  if (resizeObserver) resizeObserver.observe(canvasHost);
 
   const toast = createToastController();
   let backendRequest = 0;
