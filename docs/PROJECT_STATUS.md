@@ -58,6 +58,23 @@
 - Next: human TV1/TV3 review → address findings → owner merge; TV2/TV1 settle
   #49/hash; TV1/TV5 settle #62 before TV4 continues #16/#55/#56. No self-approval,
   merge, release or direct push to dev/main is part of this candidate.
+## 26/10/2026 — #49/#48 merged; #50 GPU readback checkpoint
+
+- #49 froze the public vortex parameters to `vortexStrength` + `vortexDamping`
+  (no `vortexRadius`); schema v2, `LabConfig`, `SimulationConfig` and the adapter
+  share one default and validation rule. No hardcoded damping uniform.
+- #48 added deterministic seed-based lifetime respawn to the CPU reference and
+  both TSL kernels, with `spawnRadius`/`lifetime` uniform wiring. `delta = 0`
+  remains a strict no-op, including for expired particles.
+- #49 merged in #73 and #48 in #74. #50 adds a real GPU readback harness:
+  WebGL2 (SwiftShader) passes 6/6 cases, including primed zero-delta and
+  immutable-seed checks; 3/3 corrupt readbacks fail validation. The validator
+  unpacks vec3 readback by the backend stride (3 packed WebGL2, 4 padded WebGPU),
+  so the same harness accepts both layouts. WebGPU is SKIPPED with an explicit
+  missing-adapter reason.
+  Evidence: [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
+- #50 is in PR #75 and has not merged. No release, physical-WebGPU execution or
+  physical-GPU acceptance is implied by the software-rendered WebGL2 evidence.
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
