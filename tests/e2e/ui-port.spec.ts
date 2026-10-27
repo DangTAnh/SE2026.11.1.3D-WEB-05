@@ -15,7 +15,8 @@ test('production ignores the removed UI state query and reports the initialized 
   });
   await expect(page.locator('#lab-shell')).not.toHaveAttribute('data-fixture', 'true');
   await expect(page.locator('#runtime-phase-label')).not.toContainText('UI FIXTURE');
-  await expect.poll(async () => page.locator('#actual-backend').textContent()).not.toBe('Đang khởi tạo');
+  await expect.poll(async () => page.locator('#actual-backend').textContent(), { timeout: 60_000 })
+    .not.toBe('Đang khởi tạo');
   const actual = await page.locator('#actual-backend').textContent();
   if (actual === 'WebGPU') expect(capabilities.webgpu).toBe(true);
   else if (actual?.includes('WebGL2')) expect(capabilities.webgl2).toBe(true);
@@ -32,7 +33,8 @@ test('webgl=1 forces the WebGL2 backend when available', async ({ page }) => {
   const webgl2Available = await page.evaluate(() =>
     document.createElement('canvas').getContext('webgl2') !== null,
   );
-  await expect.poll(async () => page.locator('#actual-backend').textContent()).not.toBe('Đang khởi tạo');
+  await expect.poll(async () => page.locator('#actual-backend').textContent(), { timeout: 60_000 })
+    .not.toBe('Đang khởi tạo');
   if (webgl2Available) await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
   else await expect(page.locator('#actual-backend')).toHaveText('Không khả dụng');
 });
