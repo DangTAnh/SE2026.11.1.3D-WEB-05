@@ -48,7 +48,8 @@ npm run build
 ```
 
 Run tests appropriate to the change. `npm run verify` additionally runs source
-and test typechecks, unit/contract tests, Chromium desktop/mobile E2E and build.
+and test typechecks, unit/contract tests, Chromium desktop/mobile E2E (pinned
+to 1 worker for deterministic GPU context lifecycle) and build.
 Record failures, retries and limitations; do not describe an unrun check as
 passed. `?webgl=1` must be checked after a real adapter/composition root exists;
 the current no-port UI and test harness do not prove GPU fallback.
