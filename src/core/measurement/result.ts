@@ -37,10 +37,17 @@ export interface BenchmarkResult {
 }
 
 const CONFIG_HASH_PATTERN = /^[0-9a-f]{64}$/;
-const REQUIRED_ENVIRONMENT_FIELDS = ['browser', 'os', 'gpu', 'commit'] as const;
+const REQUIRED_ENVIRONMENT_FIELDS = [
+  'browser',
+  'browserVersion',
+  'os',
+  'gpu',
+  'driver',
+  'commit',
+] as const;
 
 function requiredText(value: string, field: string): string {
-  if (value.trim() === '') {
+  if (typeof value !== 'string' || value.trim() === '') {
     throw new TypeError(`toMarkdown: environment.${field} is required`);
   }
   return value;

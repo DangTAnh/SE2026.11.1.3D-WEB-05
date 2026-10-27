@@ -27,6 +27,15 @@ const ENVIRONMENT: BenchmarkEnvironment = {
   sameHost: true,
 };
 
+const REQUIRED_ENVIRONMENT_FIELDS = [
+  'browser',
+  'browserVersion',
+  'os',
+  'gpu',
+  'driver',
+  'commit',
+] as const;
+
 function snapshot(hash: string, patch: Partial<PerformanceSnapshot> = {}): PerformanceSnapshot {
   return {
     actual: 'webgpu',
@@ -52,18 +61,48 @@ test('protocol: one constant fixes the run for both backends', () => {
   );
 });
 
+test('build: a complete environment keeps browser version and driver', async () => {
+  const hash = await configHash(DEFAULT_CONFIG);
+  const result = await buildBenchmarkResult({
+    environment: ENVIRONMENT,
+    config: DEFAULT_CONFIG,
+    samples: [snapshot(hash)],
+  });
+
+  assert.equal(result.environment.browserVersion, '141');
+  assert.equal(result.environment.driver, '1.0');
+});
+
 test('build: an incomplete environment is refused', async () => {
   const hash = await configHash(DEFAULT_CONFIG);
-  for (const field of ['browser', 'os', 'gpu', 'commit'] as const) {
-    await assert.rejects(
-      buildBenchmarkResult({
-        environment: { ...ENVIRONMENT, [field]: '' },
-        config: DEFAULT_CONFIG,
-        samples: [snapshot(hash)],
-      }),
-      TypeError,
-    );
+  for (const field of REQUIRED_ENVIRONMENT_FIELDS) {
+    for (const value of ['', '   ']) {
+      await assert.rejects(
+        buildBenchmarkResult({
+          environment: { ...ENVIRONMENT, [field]: value },
+          config: DEFAULT_CONFIG,
+          samples: [snapshot(hash)],
+        }),
+        new RegExp(`buildBenchmarkResult: environment\\.${field} is required`),
+      );
+    }
   }
+});
+
+test('build: an environment missing a required field at runtime is refused', async () => {
+  const hash = await configHash(DEFAULT_CONFIG);
+  const environment: Record<string, unknown> = { ...ENVIRONMENT };
+  delete environment.browserVersion;
+  delete environment.driver;
+
+  await assert.rejects(
+    buildBenchmarkResult({
+      environment: environment as unknown as BenchmarkEnvironment,
+      config: DEFAULT_CONFIG,
+      samples: [snapshot(hash)],
+    }),
+    /buildBenchmarkResult: environment\.browserVersion is required/,
+  );
 });
 
 test('build: a run without samples is refused', async () => {

@@ -9,7 +9,7 @@ import { test } from 'vitest';
 import assert from 'node:assert/strict';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 import { toMarkdown } from '../../src/core/measurement/result.ts';
-import type { BenchmarkResult } from '../../src/core/measurement/result.ts';
+import type { BenchmarkEnvironment, BenchmarkResult } from '../../src/core/measurement/result.ts';
 
 const HASH = 'a'.repeat(64);
 
@@ -51,6 +51,7 @@ test('result: markdown carries environment, configuration and one row per backen
 
   assert.match(text, /## Environment/);
   assert.match(text, /Chrome 141/);
+  assert.match(text, /driver 581\.15/);
   assert.match(text, /Windows 11/);
   assert.match(text, /## Configuration/);
   assert.ok(text.includes(HASH));
@@ -76,10 +77,23 @@ test('result: unfixed protocol values stay unset instead of being guessed', () =
 });
 
 test('result: an incomplete environment is rejected', () => {
-  for (const field of ['browser', 'os', 'gpu', 'commit'] as const) {
+  for (const field of ['browser', 'browserVersion', 'os', 'gpu', 'driver', 'commit'] as const) {
+    for (const value of ['', '   ']) {
+      assert.throws(
+        () => toMarkdown(result({ environment: { ...result().environment, [field]: value } })),
+        new RegExp(`toMarkdown: environment\\.${field} is required`),
+      );
+    }
+  }
+});
+
+test('result: an environment missing a required field at runtime is rejected', () => {
+  for (const field of ['browserVersion', 'driver'] as const) {
+    const environment: Record<string, unknown> = { ...result().environment };
+    delete environment[field];
     assert.throws(
-      () => toMarkdown(result({ environment: { ...result().environment, [field]: '' } })),
-      TypeError,
+      () => toMarkdown(result({ environment: environment as unknown as BenchmarkEnvironment })),
+      new RegExp(`toMarkdown: environment\\.${field} is required`),
     );
   }
 });

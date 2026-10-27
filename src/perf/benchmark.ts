@@ -22,7 +22,14 @@ export const BENCHMARK_PROTOCOL = {
   statistic: 'median',
 } as const;
 
-const REQUIRED_ENVIRONMENT_FIELDS = ['browser', 'os', 'gpu', 'commit'] as const;
+const REQUIRED_ENVIRONMENT_FIELDS = [
+  'browser',
+  'browserVersion',
+  'os',
+  'gpu',
+  'driver',
+  'commit',
+] as const;
 
 export interface BenchmarkInput {
   readonly environment: BenchmarkEnvironment;
@@ -39,7 +46,8 @@ export interface BenchmarkInput {
  */
 export async function buildBenchmarkResult(input: BenchmarkInput): Promise<BenchmarkResult> {
   for (const field of REQUIRED_ENVIRONMENT_FIELDS) {
-    if (input.environment[field].trim() === '') {
+    const value = input.environment[field];
+    if (typeof value !== 'string' || value.trim() === '') {
       throw new TypeError(`buildBenchmarkResult: environment.${field} is required`);
     }
   }
