@@ -124,6 +124,35 @@ test('does not emit a sample while the renderer is paused', async () => {
   collector.dispose();
 });
 
+test('rejects producer-available stale GPU timing while preserving valid FPS', async () => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({
+    actual: 'webgpu', running: true, gpuTimingAvailable: true,
+    measurementAgeMs: MAX_GPU_MEASUREMENT_AGE_MS + 1, fps: 60, gpuTimeMs: 3,
+  });
+  const recorder = createSampleRecorder();
+  const collector = new PerformanceCollector(port, {
+    warmUpMs: 0,
+    cadenceMs: 100,
+    getConfig: () => DEFAULT_CONFIG,
+    onSample: recorder.onSample,
+  });
+
+  try {
+    const firstSample = recorder.nextSample();
+    collector.start();
+    await vi.advanceTimersByTimeAsync(0);
+    const sample = await firstSample;
+
+    assert.equal(recorder.samples.length, 1);
+    assert.equal(sample.fps, 60);
+    assert.equal(sample.gpuTimingAvailable, false);
+    assert.equal(sample.gpuTimeMs, null);
+  } finally {
+    collector.dispose();
+  }
+});
+
 test('keeps valid FPS when GPU timing is stale, then resumes GPU timing when fresh', async () => {
   vi.useFakeTimers();
   const port = new FakeRenderer({
