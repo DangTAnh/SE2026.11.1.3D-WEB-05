@@ -1,7 +1,7 @@
 import { expect, test, vi } from 'vitest';
 import { RendererSession } from '../../src/composition/rendererSession.ts';
 import type { RendererCandidate } from '../../src/composition/backendSwitch.ts';
-import { DEFAULT_CONFIG, type LabConfig } from '../../src/presets/preset.ts';
+import { cloneConfig, DEFAULT_CONFIG, type LabConfig } from '../../src/presets/preset.ts';
 import { FakeRenderer } from '../support/fakeRenderer.ts';
 import type { ActualBackend } from '../../src/core/types/backend.ts';
 import type { RendererTarget } from '../../src/core/renderer/RendererPort.ts';
@@ -46,8 +46,9 @@ test('successful switch commits a fresh candidate and preserves the full config 
   await session.init(target);
   session.start();
   old.setStatus({ fps: 60, gpuTimingAvailable: true, gpuTimeMs: 3 });
-  const config = { ...DEFAULT_CONFIG, mode: 'vortex' as const, particleCount: 32000,
-    speed: 2.4, particleSize: 4.1, strength: 2.3, particleColor: '#ff8800', backendPreference: 'webgl2' as const };
+  const config = { ...DEFAULT_CONFIG, mode: 'vortex' as const, simulation: { ...DEFAULT_CONFIG.simulation, particleCount: 32000, speed: 2.4, particleSize: 4.1 },
+    modes: { ...DEFAULT_CONFIG.modes, vortex: { ...DEFAULT_CONFIG.modes.vortex, vortexStrength: 2.3 } },
+    rendering: { ...DEFAULT_CONFIG.rendering, particleColor: '#ff8800' }, backendPreference: 'webgl2' as const };
   session.applyConfig(config);
   const result = await session.reinitialize();
   expect(result).toEqual({ outcome: 'applied', actual: 'webgl2', requested: 'webgl2', retainedPrevious: false });
@@ -66,7 +67,7 @@ for (const failure of ['reject', 'unavailable', 'inconsistent-status'] as const)
     const { session, resources } = makeHarness([old, next]);
     await session.init(target);
     session.start();
-    const config = { ...DEFAULT_CONFIG, speed: 2.4, backendPreference: 'webgl2' as const };
+    const config = { ...DEFAULT_CONFIG, simulation: { ...DEFAULT_CONFIG.simulation, speed: 2.4 }, backendPreference: 'webgl2' as const };
     session.applyConfig(config);
     const task = session.reinitialize();
     expect(old.disposed).toBe(false);
@@ -134,14 +135,14 @@ test('requested is snapshotted per generation; only the latest candidate commits
   expect(session.getStatus().requested).toBe('webgpu');
   const lastTask = session.reinitialize();
   expect(first.disposed).toBe(true);
-  session.applyConfig({ ...DEFAULT_CONFIG, backendPreference: 'auto', speed: 2.4 });
+  session.applyConfig({ ...DEFAULT_CONFIG, backendPreference: 'auto', simulation: { ...DEFAULT_CONFIG.simulation, speed: 2.4 } });
   expect(session.getStatus().requested).toBe('webgl2');
   last.finish();
   expect(await lastTask).toMatchObject({ outcome: 'applied', actual: 'webgl2', requested: 'webgl2' });
   first.finish();
   expect(await firstTask).toMatchObject({ outcome: 'superseded' });
   expect(session.getStatus().requested).toBe('webgl2');
-  expect(last.lastConfig).toMatchObject({ speed: 2.4, backendPreference: 'webgl2' });
+  expect(last.lastConfig).toMatchObject({ simulation: { speed: 2.4 }, backendPreference: 'webgl2' });
   expect(configs.map(c => c.backendPreference)).toEqual(['auto', 'webgpu', 'webgl2']);
   expect(resources[1]!.commit).not.toHaveBeenCalled();
   expect(first.calls.filter(c => c.type === 'dispose')).toHaveLength(1);
@@ -208,11 +209,11 @@ for (const running of [false, true]) {
     const task = session.reinitialize();
     session.pause();
     if (running) session.start();
-    session.applyConfig({ ...DEFAULT_CONFIG, speed: 2.4 });
+    session.applyConfig({ ...DEFAULT_CONFIG, simulation: { ...DEFAULT_CONFIG.simulation, speed: 2.4 } });
     session.resize({ ...target, width: 400 });
     next.finish(); await task;
     expect(session.getStatus().running).toBe(running);
-    expect(next.lastConfig?.speed).toBe(2.4);
+    expect(next.lastConfig?.simulation.speed).toBe(2.4);
     expect(next.resized).toEqual({ ...target, width: 400 });
     session.dispose();
   });
@@ -263,5 +264,24 @@ test('failure does not claim a retained backend if the old backend became unavai
   old.setStatus({ actual: 'unavailable', running: false });
   next.finish();
   expect(await task).toMatchObject({ outcome: 'failed', actual: 'unavailable', retainedPrevious: false });
+  session.dispose();
+});
+
+
+test('session snapshots nested constructor and apply inputs across reinitialization', async () => {
+  const input = cloneConfig(DEFAULT_CONFIG);
+  const ports = [new FakeRenderer({ actual: 'webgl2' }), new FakeRenderer({ actual: 'webgl2' })];
+  let index = 0;
+  const session = new RendererSession(input, () => resource(ports[index++]!));
+  input.simulation.speed = 3; input.modes.vortex.vortexStrength = 4;
+  await session.init(target);
+  expect(ports[0]!.lastConfig).toEqual(DEFAULT_CONFIG);
+  const next = cloneConfig(DEFAULT_CONFIG); next.camera.distance = 500; next.modes.attractor.attractorRadius = 8;
+  session.applyConfig(next);
+  next.camera.distance = 5; next.modes.attractor.attractorRadius = 1;
+  await session.reinitialize();
+  expect(ports[1]!.lastConfig?.camera.distance).toBe(500);
+  expect(ports[1]!.lastConfig?.modes.attractor.attractorRadius).toBe(8);
+  expect(ports[0]!.calls.find(c => c.type === 'applyConfig')?.config).toEqual(DEFAULT_CONFIG);
   session.dispose();
 });

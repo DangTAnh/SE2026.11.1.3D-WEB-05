@@ -41,8 +41,8 @@ test('port contract: applyConfig accepts the preset config unchanged and does no
   const port: RendererPort = fake;
   await port.init(TARGET);
 
-  port.applyConfig({ ...DEFAULT_CONFIG, particleCount: 50000 });
-  assert.equal(fake.lastConfig?.particleCount, 50000);
+  port.applyConfig({ ...DEFAULT_CONFIG, simulation: { ...DEFAULT_CONFIG.simulation, particleCount: 50000 } });
+  assert.equal(fake.lastConfig?.simulation.particleCount, 50000);
 
   port.reset();
   assert.equal(fake.lastConfig, null);

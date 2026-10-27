@@ -1,4 +1,6 @@
 import {
+  AdditiveBlending,
+  NormalBlending,
   Color,
   PerspectiveCamera,
   Sprite,
@@ -8,9 +10,8 @@ import {
 import { PointsNodeMaterial, WebGPURenderer } from 'three/webgpu';
 import type { ActualBackend } from '../core/types/backend.ts';
 import type { RendererPort, RendererStatus, RendererTarget } from '../core/renderer/RendererPort.ts';
-import type { LabConfig } from '../presets/preset.ts';
-import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, resolveLifetime, resolveVortexDamping } from './simulation.ts';
-import { DEFAULT_SPAWN_RADIUS } from './shared/attributes.ts';
+import { cloneConfig, type LabConfig } from '../presets/preset.ts';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
@@ -37,6 +38,8 @@ export class ThreeRendererAdapter implements RendererPort {
   #renderer: WebGPURenderer | null = null;
   #scene: Scene | null = null;
   #camera: PerspectiveCamera | null = null;
+  #controls: OrbitControls | null = null;
+  #controlsRoot: EventTarget | null = null;
   #material: PointsNodeMaterial | null = null;
   #points: Sprite | null = null;
   #buffers: ParticleBuffers | null = null;
@@ -77,7 +80,7 @@ export class ThreeRendererAdapter implements RendererPort {
 
   constructor(canvas: HTMLCanvasElement, initialConfig: Readonly<LabConfig>) {
     this.#canvas = canvas;
-    this.#config = { ...initialConfig };
+    this.#config = cloneConfig(initialConfig);
     this.#requested = initialConfig.backendPreference;
     this.#canvas.addEventListener('webglcontextlost', this.#onWebGLContextLost);
   }
@@ -199,7 +202,7 @@ export class ThreeRendererAdapter implements RendererPort {
       this.#renderer = renderer;
       this.#actual = actual;
       this.#createScene();
-      this.#createPipeline(this.#config.particleCount, this.#config);
+      this.#createPipeline(this.#config.simulation.particleCount, this.#config);
       if (this.#buffers) {
         try {
           await renderer.compute(this.#buffers.initKernel);
@@ -412,17 +415,15 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   applyConfig(config: Readonly<LabConfig>): void {
-    const countChanged = config.particleCount !== this.#config.particleCount;
+    const countChanged = config.simulation.particleCount !== this.#config.simulation.particleCount;
     const modeChanged = config.mode !== this.#config.mode;
     const renderer = this.#renderer;
 
-    if (countChanged && renderer) this.#createPipeline(config.particleCount, config);
-    this.#config = { ...config };
+    if (countChanged && renderer) this.#createPipeline(config.simulation.particleCount, config);
+    const distanceChanged = config.camera.distance !== this.#config.camera.distance;
+    this.#config = cloneConfig(config);
     this.#updateUniforms();
-    if (this.#material) {
-      this.#material.color = new Color(config.particleColor);
-      this.#material.size = config.particleSize;
-    }
+    this.#updateAppearance(config, distanceChanged);
 
     if (renderer && countChanged && this.#buffers) {
       this.#watchCompute(() => renderer.compute(this.#buffers!.initKernel), renderer);
@@ -487,12 +488,16 @@ export class ThreeRendererAdapter implements RendererPort {
     if (!renderer) return;
 
     const scene = new Scene();
-    scene.background = new Color('#071018');
     const camera = new PerspectiveCamera(55, this.#target.width / this.#target.height, 0.1, 200);
-    camera.position.set(0, 0, 30);
+    camera.position.set(0, 0, this.#config.camera.distance);
     camera.lookAt(new Vector3(0, 0, 0));
     this.#scene = scene;
     this.#camera = camera;
+    this.#controlsRoot = this.#canvas.getRootNode();
+    this.#controls = new OrbitControls(camera, this.#canvas);
+    this.#controls.minDistance = 5;
+    this.#controls.maxDistance = 500;
+    this.#updateAppearance(this.#config, true);
     renderer.setPixelRatio(this.#target.pixelRatio);
     renderer.setSize(this.#target.width, this.#target.height, false);
   }
@@ -509,8 +514,11 @@ export class ThreeRendererAdapter implements RendererPort {
     try {
       buffers = createParticleBuffers(count);
       material = new PointsNodeMaterial({
-        color: config.particleColor,
-        size: config.particleSize,
+        color: config.rendering.particleColor,
+        size: config.simulation.particleSize,
+        opacity: config.rendering.opacity,
+        transparent: config.rendering.opacity < 1 || config.rendering.additiveBlend,
+        blending: config.rendering.additiveBlend ? AdditiveBlending : NormalBlending,
         positionNode: buffers.positions.toAttribute(),
       });
       points = new Sprite(material);
@@ -544,13 +552,19 @@ export class ThreeRendererAdapter implements RendererPort {
   ): void {
     if (!buffers) return;
     const { uniforms } = buffers;
-    uniforms.spawnRadius.value = config.spawnRadius ?? DEFAULT_SPAWN_RADIUS;
-    uniforms.lifetime.value = resolveLifetime(config.lifetime);
-    uniforms.strength.value = config.strength;
+    uniforms.spawnRadius.value = config.simulation.spawnRadius;
+    uniforms.lifetime.value = config.simulation.lifetime;
     uniforms.delta.value = 0;
-    uniforms.radius.value = DEFAULT_ATTRACTOR_RADIUS;
-    uniforms.damping.value = DEFAULT_ATTRACTOR_DAMPING;
-    uniforms.vortexDamping.value = resolveVortexDamping(config.vortexDamping);
+    // Only the active group's values reach the running kernel. Inactive groups
+    // remain in the config snapshot for the next mode switch and preset export.
+    if (config.mode === 'attractor') {
+      uniforms.strength.value = config.modes.attractor.attractorStrength;
+      uniforms.radius.value = config.modes.attractor.attractorRadius;
+      uniforms.damping.value = config.modes.attractor.attractorDamping;
+    } else {
+      uniforms.strength.value = config.modes.vortex.vortexStrength;
+      uniforms.vortexDamping.value = config.modes.vortex.vortexDamping;
+    }
   }
 
   #selectComputeKernel(buffers: ParticleBuffers | null = this.#buffers, config: Readonly<LabConfig> = this.#config): void {
@@ -571,7 +585,7 @@ export class ThreeRendererAdapter implements RendererPort {
       const rawDelta = this.#lastFrameAt === 0 ? 0 : (time - this.#lastFrameAt) / 1000;
       const delta = Math.min(MAX_FRAME_DELTA, Math.max(0, rawDelta));
       if (buffers) {
-        buffers.uniforms.delta.value = delta * this.#config.speed;
+        buffers.uniforms.delta.value = delta * this.#config.simulation.speed;
         if (this.#computeKernel) {
           this.#computeFrames += 1;
           const sampleGpuTime = this.#computeFrames % GPU_TIMING_SAMPLE_INTERVAL_FRAMES === 0;
@@ -587,9 +601,44 @@ export class ThreeRendererAdapter implements RendererPort {
       }
     }
 
+    const controlsDelta = this.#lastFrameAt === 0 ? 0 : Math.min(MAX_FRAME_DELTA, Math.max(0, (time - this.#lastFrameAt) / 1000));
+    this.#controls?.update(controlsDelta);
     this.#lastFrameAt = time;
     renderer.render(scene, camera);
   };
+
+  #updateAppearance(config: Readonly<LabConfig>, distanceChanged: boolean): void {
+    const { rendering, camera, simulation } = config;
+    if (this.#scene) this.#scene.background = new Color(rendering.backgroundColor);
+    const material = this.#material;
+    if (material) {
+      material.color.set(rendering.particleColor);
+      material.size = simulation.particleSize;
+      material.opacity = rendering.opacity;
+      const transparent = rendering.opacity < 1 || rendering.additiveBlend;
+      const blending = rendering.additiveBlend ? AdditiveBlending : NormalBlending;
+      if (material.transparent !== transparent || material.blending !== blending) {
+        material.transparent = transparent;
+        material.blending = blending;
+        material.needsUpdate = true;
+      }
+    }
+    const controls = this.#controls;
+    const view = this.#camera;
+    if (!controls || !view) return;
+    controls.enabled = camera.enabled;
+    controls.autoRotate = camera.enabled && camera.autoRotate;
+    if (distanceChanged) {
+      const direction = view.position.clone().sub(controls.target);
+      if (direction.lengthSq() === 0) direction.set(0, 0, 1);
+      view.position.copy(controls.target).add(direction.normalize().multiplyScalar(camera.distance));
+    }
+    // Reserve clipping space for the entire allowed orbit/zoom range, not just
+    // the imported distance, so wheel zoom cannot move the camera past far.
+    view.far = 500 + 2 * Math.max(simulation.spawnRadius, config.mode === 'attractor' ? config.modes.attractor.attractorRadius : 0);
+    view.updateProjectionMatrix();
+    controls.update(0);
+  }
 
   #resize(): void {
     this.#renderer?.setPixelRatio(this.#target.pixelRatio);
@@ -624,6 +673,22 @@ export class ThreeRendererAdapter implements RendererPort {
   }
 
   #clearRendererState(): void {
+    const controls = this.#controls;
+    controls?.dispose();
+    if (controls && this.#controlsRoot) {
+      // Three r186.1 disconnect() recomputes canvas.getRootNode(). A session
+      // commit detaches the previous canvas before disposing its adapter, so
+      // that root is no longer the Document used by connect(). Remove both
+      // bound interceptors from the captured registration root as well.
+      const interceptors = controls as OrbitControls & {
+        _interceptControlDown: EventListener;
+        _interceptControlUp: EventListener;
+      };
+      this.#controlsRoot.removeEventListener('keydown', interceptors._interceptControlDown, { capture: true });
+      this.#controlsRoot.removeEventListener('keyup', interceptors._interceptControlUp, { capture: true });
+    }
+    this.#controls = null;
+    this.#controlsRoot = null;
     this.#geometryAndMaterialDispose();
     this.#renderer = null;
     this.#readyRenderer = null;

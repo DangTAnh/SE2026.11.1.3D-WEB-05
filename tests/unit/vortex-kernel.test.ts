@@ -7,7 +7,7 @@ import { DEFAULT_VORTEX_DAMPING } from '../../src/simulations/simulation.ts';
 
 test('adapter takes vortex damping from config instead of hardcoding it (#49)', () => {
   const source = readFileSync(new URL('../../src/simulations/rendererAdapter.ts', import.meta.url), 'utf8');
-  expect(source).toMatch(/uniforms\.vortexDamping\.value = resolveVortexDamping\(config\.vortexDamping\)/);
+  expect(source).toMatch(/uniforms\.vortexDamping\.value = config\.modes\.vortex\.vortexDamping/);
   expect(source).not.toMatch(/uniforms\.vortexDamping\.value = DEFAULT_VORTEX_DAMPING/);
 });
 
