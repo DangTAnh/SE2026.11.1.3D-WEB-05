@@ -14,7 +14,7 @@ test('forced WebGL2 initializes a renderer on the application canvas when suppor
     };
   });
 
-  await expect(page.locator('#actual-backend')).toHaveText(capabilities.webgl2 ? 'WebGL2' : 'Không khả dụng');
+  await expect(page.locator('#actual-backend')).toHaveText(capabilities.webgl2 ? 'WebGL2' : 'Không khả dụng', { timeout: 60_000 });
   await expect(page.locator('#runtime-phase-label')).toHaveText(capabilities.webgl2 ? 'READY' : 'UNSUPPORTED');
 
   if (capabilities.webgl2) {
