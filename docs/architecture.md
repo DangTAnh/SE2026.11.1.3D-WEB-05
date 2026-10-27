@@ -24,7 +24,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Simulation preview | Production canvas bound to the real adapter by the composition root; Canvas2D mock removed | `src/main.ts` |
 | Renderer adapter (one, backend-flagged) | #12 and #13 source merged through #39/#40; WebGL2 Chromium exercised, physical WebGPU acceptance pending | `src/simulations/rendererAdapter.ts` |
 | Composition root | Implemented; initializes the adapter before mounting the port-consuming UI | [`src/main.ts`](../src/main.ts), [`src/composition.ts`](../src/composition.ts) |
-| Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; GPU execution/readback not yet verified | `src/simulations/simulation.ts`, `src/simulations/shared/` |
+| Simulation: CPU reference + shared TSL buffers/kernels | Source merged in #21/#35; WebGL2 readback parity passed (#50, SwiftShader), WebGPU adapter NOT_RUN | `src/simulations/simulation.ts`, `src/simulations/shared/` |
 | Perf collector | RendererPort frame sampler implemented; warm-up and cadence are configured by caller | [`src/perf/collector.ts`](../src/perf/collector.ts) |
 | Server, auth, persistence | **Out of scope for this repo** | — |
 
@@ -120,6 +120,27 @@ would duplicate the same TSL material tree.
 
 ### 4.1 Who owns each contract
 
+Issue #54 adds an explicit next-init action through `RendererSession` in the
+composition layer. The session implements the unchanged `RendererPort` and
+replaces concrete adapters transactionally. The shared composition canvas factory
+stages a deep-cloned canvas in an inert, hidden host because a canvas cannot change
+its context type. The live renderer remains available until the candidate is ready;
+failed initialization discards only the candidate. At commit the old simulation
+pauses before the replacement starts, then the old port/surface are disposed.
+Initialization may temporarily own two renderer resources; superseded candidates
+are disposed and cannot commit. The factory preserves fallback canvas content.
+UI remains mounted
+once (one poller, control binding and ResizeObserver of the stable host), and
+receives only a re-init callback and loading predicate. Generation checks prevent
+late init completion from publishing an obsolete backend. User config and running
+intent survive re-init; initial unavailable cannot create running intent. The
+application callback returns applied/failed/superseded plus requested/actual and
+rollback information so UI can report failure even when initialization resolves.
+Metrics come only from the current ready adapter. No unapproved freshness contract
+from Draft #62 is included; its eventual empty-status fields require integration.
+This
+composition/lifecycle change requires TV1/TV3 review before merge.
+
 | Contract | Defined in | Producer | Consumers | Owner |
 |---|---|---|---|---|
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
@@ -151,7 +172,10 @@ may be aggregated only when they agree on `(mode, configHash) × actual`; across
 a hash boundary they are different experiments.
 
 **Included fields** — the `LabConfig` values that change the work the GPU does:
-`mode`, `particleCount`, `speed`, `particleSize`, `strength`.
+`mode`, `particleCount`, `speed`, `particleSize`, `strength`, `spawnRadius`,
+`lifetime`, plus `vortexDamping` while `mode` is `vortex` (#48/#49). The
+inactive mode's parameters are excluded: they do not change the kernel that
+runs.
 
 **Excluded, with reasons:**
 
@@ -167,8 +191,12 @@ order, no whitespace, numbers rounded to 3 decimal places and written without
 trailing zeros (`1.2`, not `1.20`):
 
 ```json
-{"mode":"attractor","particleCount":20000,"particleSize":2.5,"speed":1.2,"strength":1.5}
+{"lifetime":6,"mode":"attractor","particleCount":20000,"particleSize":2.5,"spawnRadius":10,"speed":1.2,"strength":1.5}
 ```
+
+For `mode: "vortex"` the object additionally carries `"vortexDamping":0.99`. The
+inactive mode's fields never appear, so a change to them cannot invalidate a
+sample.
 
 Key order is fixed by this rule, not by object iteration order.
 
@@ -178,7 +206,7 @@ Key order is fixed by this rule, not by object iteration order.
 **Invalid or missing values.** A hash is computed only for a config that has
 already passed `parsePreset` (`src/presets/preset.ts`): it rejects
 out-of-range values and unknown keys, requires `particleCount` to be an integer
-multiple of 1000 (v1), and rebuilds the object from the seven known fields, so
+multiple of 1000 (v1), and rebuilds the object from the known fields, so
 unknown keys never reach the hash. Invalid input produces no sample at all —
 never a hash of a defaulted or partially filled config.
 

@@ -46,8 +46,10 @@ trên PR trước khi merge.
 | 10 | `mode` trong `config` | **giữ** trong `config` | `applyConfig(config)` một object; tính "structural" do adapter xử lý |
 | 11 | serialize tự do | thứ tự key theo schema, `JSON.stringify(…, null, 2)` + `\n`, bỏ `name` khi rỗng | round-trip byte-stable |
 
-**Vortex trong MVP:** v1 và mock UI chỉ có `strength` cho vortex. v2 giữ đúng một trường
-`vortexStrength`; TV2 bổ sung trường khác nếu công thức vortex cần, trước khi preset mẫu được chốt.
+**Vortex trong MVP:** v1 và mock UI chỉ có `strength` cho vortex. Sau #49, bộ tham số public của vortex là
+`vortexStrength` + `vortexDamping` (mặc định `0.99`); `vortexRadius` không tồn tại vì công thức vortex hiện
+tại chỉ có damping mỗi bước, không có ngưỡng bán kính. Mapping kernel ↔ config ↔ schema nằm ở
+[`gpu-kernel-contract.md`](../03-research/gpu-kernel-contract.md) §3.1.
 **Flow/curl-noise:** các key `flowStrength`, `noiseScale`, `flowDamping` của engine tham chiếu **không**
 nằm trong v2; chúng sẽ trở lại trong một schema version sau khi TV2 triển khai flow như phần mở rộng.
 
@@ -68,7 +70,7 @@ nằm trong v2; chúng sẽ trở lại trong một schema version sau khi TV2 t
     "simulation": { "particleCount": 65536, "spawnRadius": 12, "particleSize": 2.5, "lifetime": 6, "speed": 1.2 },
     "modes": {
       "attractor": { "attractorStrength": 12, "attractorRadius": 6, "attractorDamping": 0.98 },
-      "vortex": { "vortexStrength": 12 }
+      "vortex": { "vortexStrength": 12, "vortexDamping": 0.99 }
     },
     "rendering": { "backgroundColor": "#0b0e14", "particleColor": "#ffffff", "opacity": 0.6, "additiveBlend": true },
     "camera": { "enabled": true, "autoRotate": true, "distance": 42 }
@@ -105,6 +107,7 @@ nằm trong v2; chúng sẽ trở lại trong một schema version sau khi TV2 t
 | — | `config.backendPreference` | Từ v1 của TV4; `RendererPort.init()` |
 | — | `config.simulation.speed` | Từ v1 của TV4; nhân vào `delta` |
 | v1 `strength` | `config.modes.vortex.vortexStrength` | Tách khỏi attractor; TV2 xác nhận thêm trường nếu cần |
+| — | `config.modes.vortex.vortexDamping` | Tham số public thứ hai của vortex (#49), default `0.99`; áp dụng mỗi bước |
 
 **Quan hệ `orbit` ↔ `attractor`:** kernel hiện tại tính `tangent = normalize(-position) × (0, 1, 0)`,
 cộng `tangent * orbitStrength * delta` vào velocity, nhân `damping` khi `|position| > orbitRadius`, rồi
@@ -121,7 +124,7 @@ Ajv 2020-12 với `{ allErrors: true, strict: true }` — đúng cách `src/pres
 **17/17 case PASS**.
 
 - Hợp lệ: preset attractor đầy đủ ✓ · bỏ `name` ✓ · `particleCount` 65.536 ✓ · `particleCount` 500.000 ✓ ·
-  preset vortex chỉ có `vortexStrength` ✓ · `camera.enabled = false` + `autoRotate = true` ✓
+  preset vortex với `vortexStrength` + `vortexDamping` ✓ · `camera.enabled = false` + `autoRotate = true` ✓
 - Không hợp lệ: thiếu `lifetime` ✗ · key thừa trong `simulation` ✗ · `particleCount` < 1.000 ✗ ·
   `particleCount` 500.001 ✗ · không phải integer ✗ · màu sai định dạng ✗ · `mode: "flow"` ✗ ·
   thiếu `attractorDamping` ✗ · thiếu `vortexStrength` ✗ · `name` rỗng ✗ · key thừa ở root ✗
@@ -147,9 +150,10 @@ Ajv 2020-12 với `{ allErrors: true, strict: true }` — đúng cách `src/pres
    group mode còn lại, `rendering`, `camera`, `name`, `backendPreference`. Lý do: hash mô tả công việc GPU
    thực tế, còn preset file đã lưu đầy đủ trạng thái. Nếu nhóm muốn hash định danh toàn bộ preset, phải đổi
    tên khái niệm trong `docs/architecture.md` §5.1 và chấp nhận hash đổi khi sửa mode không bật.
-2. **Tham số vortex:** v2 chỉ có `vortexStrength` theo v1/mock. TV2 xác nhận có cần thêm trường (ví dụ
+2. ~~**Tham số vortex:** v2 chỉ có `vortexStrength` theo v1/mock. TV2 xác nhận có cần thêm trường (ví dụ
    radius/damping) khi chốt công thức; nếu có, cập nhật schema trong PR port engine trước khi phát hành
-   preset mẫu.
+   preset mẫu.~~ **Đã chốt ở #49:** `vortexStrength` + `vortexDamping` (default `0.99`); không có
+   `vortexRadius` vì công thức không dùng ngưỡng bán kính. Schema v2 đã cập nhật.
 3. **Thứ tự merge:** PR này chỉ có docs nhưng tham chiếu `preset-schema-v1.schema.json`, `src/presets`,
    `src/core/measurement` và tests đang nằm ở PR #1 / nhánh TV1. Merge PR #1 trước, hoặc rebase PR này sau
    PR #1, để các đường dẫn trong §8 không bị treo.

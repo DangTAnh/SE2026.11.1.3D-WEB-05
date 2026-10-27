@@ -11,7 +11,7 @@ measurements on both backends.
 
 **Current implementation: the real renderer adapter is wired through RendererPort.**
 The Canvas2D preview has been removed. The default entry point initializes the
-adapter before mounting the UI. On `dev` at `a6e460d` (26/10/2026), browser
+adapter before mounting the UI. On `dev` at `09723af` (27/10/2026), browser
 tests exercise a real WebGL2 path; the available Chromium environment has no
 WebGPU adapter, so its WebGPU smoke test is skipped. Preset import/export
 remains available. GPU parity and a two-backend benchmark run are still
@@ -62,7 +62,10 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   capability-probe/resolver path; the duplicate module and tests were removed.
 - **Simulation reference and sampling:** deterministic CPU reference steps and
   the RendererPort performance collector are integrated. The renderer uses the
-  shared TSL simulation pipeline; measured GPU parity remains pending.
+  shared TSL simulation pipeline; WebGL2 readback parity (6/6 cases, plus 3/3
+  corrupt-readback rejections) is recorded in
+  `docs/04-testing/gpu-kernel-parity-2026-10-26.md`. WebGPU execution remains
+  pending because this environment exposes no adapter.
 - **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
   uses v1 until issue #16 and its shared config/hash decisions are implemented.
 - **Verification:** UI interaction tests use an explicit
@@ -74,14 +77,23 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 ## Integration and remaining evidence
 
 - The #12 adapter (#39/#40 at `04f1522`), live RendererStatus UI (#33 at
-  `ac36491`), collector-test fix (#42 at `dc7bb3a`) and capability-probe removal
-  (#60 at `a6e460d`) are merged into `dev`. The adapter stays bound to the
-  production canvas through the composition root.
+  `ac36491`), collector-test fix (#42 at `dc7bb3a`), capability-probe removal
+  (#60 at `a6e460d`), backend Apply/re-init (#63 at `93fd267`), lifetime respawn
+  (#48 at `5802055`), frozen vortex parameters (#49 at `e226697`) and GPU
+  readback parity harness (#50 at #75/`09723af`) are merged into `dev`. The
+  adapter stays bound to the production canvas through the composition root.
 - The prepared UI shows INITIALIZING without backend or metric claims until the
   initialized port is mounted; missing/failed ports then show unavailable/error.
 - Obtain WebGPU browser evidence and verify GPU numeric parity, live timing,
   lifetime/respawn, perf collection and the two-backend benchmark separately.
-- A requested backend preference takes effect at the next renderer init.
+  WebGL2 kernel readback parity is recorded for #50.
+- Choose Auto/WebGPU/WebGL2, then click **Áp dụng backend** to initialize a new
+  renderer without reloading. Configuration and pause state are preserved;
+  particles restart from their initial state. A fresh canvas permits changing
+  context type. Candidates initialize in an inert, hidden staging surface; only
+  a ready backend replaces the live canvas. Failed switches keep the old renderer
+  and report rollback; initial failure reports unavailable and allows retry.
+  Rapid requests use the latest generation. Old FPS/GPU timing is not carried over.
   Only `RendererStatus.actual` identifies the backend that ran.
 - Unsupported/invalid GPU timing stays `null`, never a fabricated zero.
 - No server, login, database or network persistence is included.

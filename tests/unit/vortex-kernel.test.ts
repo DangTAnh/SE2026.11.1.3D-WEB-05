@@ -1,8 +1,15 @@
 import { expect, test } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { createParticleBuffers } from '../../src/simulations/shared/particleBuffers.ts';
 import { createAttractorKernel } from '../../src/simulations/shared/attractorKernel.ts';
 import { createVortexKernel } from '../../src/simulations/shared/vortexKernel.ts';
 import { DEFAULT_VORTEX_DAMPING } from '../../src/simulations/simulation.ts';
+
+test('adapter takes vortex damping from config instead of hardcoding it (#49)', () => {
+  const source = readFileSync(new URL('../../src/simulations/rendererAdapter.ts', import.meta.url), 'utf8');
+  expect(source).toMatch(/uniforms\.vortexDamping\.value = resolveVortexDamping\(config\.vortexDamping\)/);
+  expect(source).not.toMatch(/uniforms\.vortexDamping\.value = DEFAULT_VORTEX_DAMPING/);
+});
 
 test('vortex kernel is a named compute node over the shared buffers', () => {
   const system = createParticleBuffers(8);

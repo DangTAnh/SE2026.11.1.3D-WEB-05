@@ -1,5 +1,94 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 27/10/2026 — dev reconciliation at `09723af`
+
+- Current `dev` is `09723af` (27/10/2026). It includes the transactional backend
+  Apply/re-init (#63 at `93fd267`), deterministic lifetime respawn (#48 at
+  `5802055`), frozen vortex parameters (#49 at `e226697`) and the GPU readback
+  parity harness (#50 at #75/`09723af`). The earlier #40/#33/#42/#44/#60 merges
+  remain in `dev`.
+- #63 replaced the next-init-only model: Apply replaces the adapter and canvas
+  without a reload, preserves configuration and pause intent, clears measurements
+  while initialization is pending, and rolls back a failed switch. The
+  `RendererSession` stages candidates transactionally and owns generation and
+  disposal; only `RendererStatus.actual` identifies the backend that ran.
+- #48/#49: config identity includes `spawnRadius`, `lifetime` and (vortex-only)
+  `vortexDamping`; `vortexRadius` is not a public field.
+- Docs-only reconciliation (#45): README, architecture and team ownership now
+  describe this behavior. Earlier checkpoints below are preserved as history and
+  do not describe current state.
+- Verification for this docs change: `git diff --check` clean; `npm run
+  typecheck`, `npm run build` and `npm test` PASS. E2E was not rerun for a
+  docs-only change.
+- NOT_RUN: physical WebGPU execution, physical-GPU numeric parity, live GPU
+  timing, fair measured two-backend benchmark, MVP acceptance and release. #75's
+  WebGL2 readback evidence is software-rendered (SwiftShader), not physical-GPU
+  proof.
+
+## 26/10/2026 — PR #63 TV1 review fixes
+
+- Merged latest `dev@a6e460d` into the existing feature branch via `89bb87c`;
+  merged #44/#60 source is preserved. No published history was rewritten.
+- All seven TV1 findings have code/regression changes: transactional staging and
+  rollback, explicit switch results/toasts, guarded initial start, capability-safe
+  E2E, generation-specific requested backend, preserved fallback content, and one
+  shared production/fixture canvas factory. Human re-review remains required.
+- Test mapping and integration boundaries are in the
+  [review-fix evidence](04-testing/backend-reinit-review-fixes-2026-10-26.md).
+  Final full verify PASS: 139 unit/contract/integration tests, 52 desktop/mobile
+  E2E PASS and two WebGPU-adapter skips, both typechecks and production build.
+  No retries in the final full run; an earlier timeout is recorded in the evidence.
+  The initial handoff below records historical evidence, not current verification.
+- #61 still needs TV3 canvas recovery/pause fixes and an agreed recovery ownership
+  API with TV1. #62 stays Draft pending freshness fixes and TV1/TV5 contract review;
+  #63 does not invent its fields. #64 is a separate benchmark-runner candidate.
+- #14 stays open pending acceptance wording for the negative `uiState` regression.
+  #16/#49 hash and Vortex decisions remain open; #55 waits #62; #56 waits #16/#49.
+  #43/#51 source is merged but their owners still need to confirm Issue closure.
+- Physical WebGPU, GPU readback parity (#50), lifetime/respawn (#48), fair measured
+  benchmark (#58), MVP acceptance and release remain separate unmet gates.
+
+## 26/10/2026 — TV4 Issue #54 backend re-initialization candidate
+
+- Baseline: `dev@ac364912`; branch `feat/54-backend-reinit`, assigned to TV4
+  (`duyanhtr130905`). Backend selection now has an explicit Apply action that
+  replaces the adapter and canvas without page reload. Configuration and pause
+  intent survive; measurements are cleared while initialization is pending.
+- Composition owns generations/disposal; UI stays mounted once and retains one
+  poller and host ResizeObserver. `RendererPort` and backend/simulation source
+  are unchanged. TV1 composition and TV3 lifecycle review are required.
+- Focused evidence: 10 session/composition integration tests PASS; six new
+  desktop/mobile E2E checks PASS, including real production backend apply.
+  Full `CI=1 npm run verify` PASS: typechecks, 140 unit/integration tests,
+  44 browser E2E passed and two WebGPU skips, production build. Evidence is in
+  [backend re-init handoff](04-testing/backend-reinit-2026-10-26.md).
+- #16 remains BLOCKED by #49/hash/Vortex owner decisions; #55 by Draft #62 and
+  freshness contract review; #56 by #16/#49. These are not included in #54.
+- Hardware WebGPU, numeric GPU parity, fair benchmarks and MVP/release acceptance
+  remain NOT_RUN. New tests exercise WebGL2/fallback in this environment and
+  explicitly labelled fake ports for races/failure paths. Do not infer GPU parity.
+- Next: human TV1/TV3 review → address findings → owner merge; TV2/TV1 settle
+  #49/hash; TV1/TV5 settle #62 before TV4 continues #16/#55/#56. No self-approval,
+  merge, release or direct push to dev/main is part of this candidate.
+
+## 26/10/2026 — #49/#48 merged; #50 GPU readback checkpoint
+
+- #49 froze the public vortex parameters to `vortexStrength` + `vortexDamping`
+  (no `vortexRadius`); schema v2, `LabConfig`, `SimulationConfig` and the adapter
+  share one default and validation rule. No hardcoded damping uniform.
+- #48 added deterministic seed-based lifetime respawn to the CPU reference and
+  both TSL kernels, with `spawnRadius`/`lifetime` uniform wiring. `delta = 0`
+  remains a strict no-op, including for expired particles.
+- #49 merged in #73 and #48 in #74. #50 adds a real GPU readback harness:
+  WebGL2 (SwiftShader) passes 6/6 cases, including primed zero-delta and
+  immutable-seed checks; 3/3 corrupt readbacks fail validation. The validator
+  unpacks vec3 readback by the backend stride (3 packed WebGL2, 4 padded WebGPU),
+  so the same harness accepts both layouts. WebGPU is SKIPPED with an explicit
+  missing-adapter reason.
+  Evidence: [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
+- #50 is in PR #75 and has not merged. No release, physical-WebGPU execution or
+  physical-GPU acceptance is implied by the software-rendered WebGL2 evidence.
+
 ## 26/10/2026 — dev reconciliation at `a6e460d`
 
 - Current `dev` is `a6e460d` (26/10/2026). It includes adapter/fallback #40 at
@@ -19,9 +108,7 @@
   acceptance reconciliation; #16 remains blocked on shared hash/Vortex
   decisions.
 
-## Historical checkpoints (superseded by the current section above)
-
-### 25/10/2026 — TV4 integration of dev `04f1522`
+## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
   are preserved unchanged in PR #33's integration result. No backend/contract
@@ -41,6 +128,8 @@
 - Local source/test typechecks and `CI=1 npm run verify` PASS: 134 tests,
   38 desktop/mobile E2E passed, two WebGPU skips, build passed. Remote CI for
   the pushed head is a separate gate; these results do not establish GPU parity.
+
+## Historical checkpoints (superseded by the current section above)
 
 > **25/10/2026 — issue #14 timing projection follow-up:** UI now rejects zero GPU
 > timing even if a producer marks it available, matching `RendererPort` and the
