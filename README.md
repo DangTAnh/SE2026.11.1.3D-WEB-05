@@ -33,7 +33,7 @@ npm run dev                     # Vite development server
 npm run typecheck               # source TypeScript
 npm run typecheck:tests         # test TypeScript
 npm test                        # Vitest unit/contract tests
-npm run test:e2e                # desktop/mobile Chromium; excludes screenshots
+npm run test:e2e                # desktop/mobile Chromium (1 worker for GPU stability); excludes screenshots
 npm run build                   # production build
 npm run preview                 # serve the production build
 npm run verify                  # source/tests typecheck, unit, E2E, build
