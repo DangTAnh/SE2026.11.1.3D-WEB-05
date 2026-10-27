@@ -1,6 +1,45 @@
 # PROJECT STATUS — 3D-WEB-05
 
-## 27/10/2026 — Issue #53 synchronized with latest dev
+## 27/10/2026 — Issue #53 PR #62 review follow-up
+
+- Latest fetched base: `dev@09723af8055df0a76d983959e7d0818cf6091450`.
+  Reviewed head `b9bf795f42cf05df4e869c1a9ee65bfa6bf02a82` already
+  merges that base normally. Test revision
+  `d2ef6866ef6580941dae9a5e8ba4e6ae084287fc` adds the collector regression;
+  this checkpoint is its documentation-only follow-up on the same PR branch.
+- The new fake-port case reports available GPU timing at age 2,001 ms with
+  `gpuTimeMs: 3`: the collector retains FPS 60 and emits
+  `gpuTimingAvailable: false` / `gpuTimeMs: null`.
+- GPU-only age still starts at compute submission, includes readback delay,
+  and expires after 2,000 ms. Cadence stays one query per 10 compute frames;
+  5 FPS reaches the window before readback delay, and slower frames/delays may
+  make timing unavailable. Independent FPS freshness remains Issue #55.
+- Verification on test revision `d2ef686` (this follow-up changes only docs):
+  `npm run typecheck` PASS; `npm run build` PASS (including test typecheck);
+  `npm test` PASS, 174 tests across 20 files. Focused collector: 7/7 PASS.
+- `CI=1 npm run verify` PASS: both typechecks, 174 unit/contract/integration
+  tests, 54 desktop/mobile Chromium E2E passes and 4 expected skips (3.9 min,
+  1 worker), then production build. No E2E retries or flaky cases in this run.
+  Skips: two unavailable WebGPU-adapter checks and two desktop-only parity
+  checks on mobile. Vite retains the 1,060.55 kB minified JS chunk advisory.
+- The default-parallel E2E suite was not rerun for this test/docs follow-up;
+  its prior 12 failures remain recorded separately below and are not fixed by
+  the serial pass.
+- Hardware WebGPU / physical timestamp freshness: **NOT_RUN**. Software
+  WebGL2/SwiftShader and fake ports do not establish hardware timestamp cadence
+  or freshness. TV1/TV5 re-review and human approval remain required.
+
+## Historical checkpoint — 27/10/2026 — reviewed head b9bf795
+
+- Base `dev@09723af`, head `b9bf795`. The PR body at review time recorded
+  source typecheck/build PASS, 173 unit/contract/integration tests PASS, and
+  serial `CI=1 npm run verify` PASS with 54 E2E passes and 4 expected skips.
+  These are prior-run evidence, not the new 174-test run.
+- Separately, the default-parallel E2E run at that head recorded 42 passes,
+  4 skips and 12 timeout/polling failures under 10 workers. The serial pass
+  does not turn that parallel run into a pass or prove the flakes fixed.
+
+## Historical checkpoint — 27/10/2026 — Issue #53 with dev@93fd267
 
 - Branch `fix/53-measurement-age` integrates `dev@93fd267` through a normal
   merge. This brings in the merged #63 composition/backend re-initialization
@@ -55,9 +94,34 @@
   #43/#51 source is merged but their owners still need to confirm Issue closure.
 - Physical WebGPU, GPU readback parity (#50), lifetime/respawn (#48), fair measured
   benchmark (#58), MVP acceptance and release remain separate unmet gates.
+
+## 26/10/2026 — TV4 Issue #54 backend re-initialization candidate
+
+> Historical checkpoint restored verbatim from `dev@09723af`. PR #63
+> superseded this initial candidate; the evidence and next steps below describe
+> that earlier run, not the current #53 revision.
+
+- Baseline: `dev@ac364912`; branch `feat/54-backend-reinit`, assigned to TV4
+  (`duyanhtr130905`). Backend selection now has an explicit Apply action that
+  replaces the adapter and canvas without page reload. Configuration and pause
+  intent survive; measurements are cleared while initialization is pending.
+- Composition owns generations/disposal; UI stays mounted once and retains one
+  poller and host ResizeObserver. `RendererPort` and backend/simulation source
+  are unchanged. TV1 composition and TV3 lifecycle review are required.
+- Focused evidence: 10 session/composition integration tests PASS; six new
+  desktop/mobile E2E checks PASS, including real production backend apply.
+  Full `CI=1 npm run verify` PASS: typechecks, 140 unit/integration tests,
+  44 browser E2E passed and two WebGPU skips, production build. Evidence is in
+  [backend re-init handoff](04-testing/backend-reinit-2026-10-26.md).
+- #16 remains BLOCKED by #49/hash/Vortex owner decisions; #55 by Draft #62 and
+  freshness contract review; #56 by #16/#49. These are not included in #54.
+- Hardware WebGPU, numeric GPU parity, fair benchmarks and MVP/release acceptance
+  remain NOT_RUN. New tests exercise WebGL2/fallback in this environment and
+  explicitly labelled fake ports for races/failure paths. Do not infer GPU parity.
 - Next: human TV1/TV3 review → address findings → owner merge; TV2/TV1 settle
   #49/hash; TV1/TV5 settle #62 before TV4 continues #16/#55/#56. No self-approval,
   merge, release or direct push to dev/main is part of this candidate.
+
 ## 26/10/2026 — #49/#48 merged; #50 GPU readback checkpoint
 
 - #49 froze the public vortex parameters to `vortexStrength` + `vortexDamping`
@@ -75,6 +139,7 @@
   Evidence: [GPU kernel readback parity](04-testing/gpu-kernel-parity-2026-10-26.md).
 - #50 is in PR #75 and has not merged. No release, physical-WebGPU execution or
   physical-GPU acceptance is implied by the software-rendered WebGL2 evidence.
+
 ## 25/10/2026 — TV4 integration of dev `04f1522`
 
 - PR #40 is merged: #12 adapter, #13 WebGL2 fallback/timing and composition
