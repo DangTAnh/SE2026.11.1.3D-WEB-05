@@ -9,7 +9,7 @@
 - First recorded run (#58): headed Chromium 156 / Windows 10 / AMD Radeon(TM)
   Graphics (WebGPU adapter `amd`/`rdna-2`), same host for both backends, with the
   fixed protocol and `DEFAULT_CONFIG` (`2a8003e2...`). Artifact:
-  `docs/06-benchmark/2026-10-28-amd-radeon-chromium-headed.md`.
+  `docs/06-benchmark/2026-10-28-amd-radeon-chromium.md`.
 - 100 samples per backend: WebGL2 median 59.92 FPS and WebGPU median 59.90 FPS,
   both refresh-bound at the host's ~59.9 Hz display cadence; GPU timing was
   unavailable on both. This is a real two-backend execution, not a performance

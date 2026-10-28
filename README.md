@@ -17,7 +17,7 @@ no WebGPU adapter, so its WebGPU smoke test is skipped; headed Chromium on the
 same host does expose one. Preset import/export remains available. #58 records a
 headed two-backend comparison (WebGPU + WebGL2, same host, AMD Radeon, 100
 samples each) in
-[`docs/06-benchmark/2026-10-28-amd-radeon-chromium-headed.md`](docs/06-benchmark/2026-10-28-amd-radeon-chromium-headed.md);
+[`docs/06-benchmark/2026-10-28-amd-radeon-chromium.md`](docs/06-benchmark/2026-10-28-amd-radeon-chromium.md);
 a headless WebGL2/SwiftShader session is kept in
 [`docs/06-benchmark/2026-10-27-swiftshader-chromium.md`](docs/06-benchmark/2026-10-27-swiftshader-chromium.md).
 Both headed rows were refresh-bound at ~60 FPS with GPU timing unavailable, so a

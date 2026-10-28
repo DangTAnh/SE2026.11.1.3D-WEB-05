@@ -23,5 +23,5 @@
 
 ## Limitations
 - This session ran in headless Chromium. In that context `navigator.gpu.requestAdapter()` returned null, so no WebGPU adapter was available; physical WebGPU execution is BLOCKED for headless runs.
-- Headed Chromium on the same host does expose a WebGPU adapter; the two-backend headed run is recorded in `2026-10-28-amd-radeon-chromium-headed.md`.
+- Headed Chromium on the same host does expose a WebGPU adapter; the two-backend headed run is recorded in `2026-10-28-amd-radeon-chromium.md`.
 - Compute on WebGL2 runs through transform feedback, not a native compute shader.
