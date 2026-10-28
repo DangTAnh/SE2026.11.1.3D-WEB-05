@@ -1,11 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { probeCapabilities } from './support/capabilities';
 
 test('WebGPU adapter initializes and renders on the application canvas when available', async ({ page }) => {
-  const supported = await page.evaluate(async () => {
-    const gpu = (navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown> } }).gpu;
-    return gpu ? (await gpu.requestAdapter()) !== null : false;
-  });
-  test.skip(!supported, 'This browser does not expose WebGPU.');
+  const caps = await probeCapabilities(page);
+  test.skip(!caps.webgpu, 'This browser does not expose WebGPU.');
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 

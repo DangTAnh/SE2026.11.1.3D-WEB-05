@@ -1,0 +1,29 @@
+# Review routing for TV1–TV5. The last matching pattern wins.
+# TV1 @minhhhduc — core/contracts/composition/CI/benchmark docs
+# TV2 @Terivn — simulation math, WebGPU and shared GPU state
+# TV3 @justcoffeee — WebGL2 backend adapter and fallback
+# TV4 @duyanhtr130905 — UI and presets
+# TV5 @DangTAnh — perf and tests
+
+* @minhhhduc
+
+/src/core/ @minhhhduc
+/src/main.ts @minhhhduc
+/src/composition.ts @minhhhduc
+/src/composition/ @minhhhduc
+/.github/ @minhhhduc
+/docs/06-benchmark/ @minhhhduc
+
+/src/simulations/webgpu/ @Terivn
+/src/simulations/simulation.ts @Terivn
+/src/simulations/shared/ @Terivn @justcoffeee
+
+/src/simulations/webgl2/ @justcoffeee
+/src/simulations/rendererAdapter.ts @justcoffeee
+/src/simulations/backend/ @justcoffeee
+
+/src/ui/ @duyanhtr130905
+/src/presets/ @duyanhtr130905
+
+/src/perf/ @DangTAnh
+/tests/ @DangTAnh

@@ -32,7 +32,7 @@ npm run dev                     # Vite development server
 npm run typecheck               # source TypeScript
 npm run typecheck:tests         # test TypeScript
 npm test                        # Vitest unit/contract tests
-npm run test:e2e                # desktop/mobile Chromium; excludes screenshots
+npm run test:e2e                # desktop/mobile Chromium (1 worker for GPU stability); excludes screenshots
 npm run build                   # production build
 npm run preview                 # serve the production build
 npm run verify                  # source/tests typecheck, unit, E2E, build
@@ -123,6 +123,8 @@ Default branch: `main`. Integration branch: `dev`.
 Work starts from a tracked issue on a separate branch from current `dev`
 (pattern `type/<issue-number>-slug`, e.g. `feat/9-ui-renderer-port`), then a PR into `dev`, passing CI and at
 least one independent approval before merge. Do not push directly to `main`.
+Use the issue templates and `.github/CODEOWNERS` described in
+[CONTRIBUTING](CONTRIBUTING.md).
 
 Request TV1 (`minhhhduc`) review for the UI port/composition boundary and README.
 The GitHub Pages workflow from PR #27 is integrated into dev. Publish a live

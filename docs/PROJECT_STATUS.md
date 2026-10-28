@@ -1,5 +1,26 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 28/10/2026 — PR #76 local synchronization with dev@4fdf67ac
+
+- Original remote head is `fe853f1`; locally merge `dev@4fdf67ac` normally,
+  preserving #64 benchmark runner/contracts, #77 single-worker Playwright and
+  #72 CODEOWNERS/issue workflow. No rebase or force-push.
+- Only explicit conflict: two readiness polls in `tests/e2e/ui-port.spec.ts`.
+  Keep the v2 60s readiness / 90s overall budgets already verified for 65536
+  particles; all capability/actual-backend assertions remain unchanged.
+- Automatic merges retain v2 README wording, direct Node Vite startup, workers:1,
+  all strict benchmark environment checks and the full nested-config regression.
+  Add a benchmark-runner integration regression for validated v2 configs with
+  counts 65536/500000, both mode groups, appearance and camera in the report.
+- Runtime nested preset/schema/hash/adapter/session/UI implementation is unchanged;
+  #55/#56 and unmerged #62 source are excluded. No shared contract change is made.
+- Source/test typechecks and 222 unit/contract/integration tests pass locally.
+  Full verification is rerun on the local merge commit; exact SHA/results are
+  recorded in the local handoff report. Old remote CI is not proof of this merge.
+- Local only: user permission is required before push. Keep Draft; do not merge
+  PR, release or close Issue. TV2/TV5 still owe implementation review; TV1/TV3
+  approvals refer to the old remote head and require consideration of this sync.
+
 ## 27/10/2026 — PR #76 synchronized with dev@fd3f1de
 
 - Normally merge `dev@fd3f1defd648d5cad8fb464be053f64391a83e47`
