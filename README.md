@@ -12,12 +12,17 @@ measurements on both backends.
 **Current implementation: the real renderer adapter is wired through RendererPort.**
 The Canvas2D preview has been removed. The default entry point initializes the
 adapter before mounting the UI. On `dev` at `09723af` (27/10/2026), browser
-tests exercise a real WebGL2 path; the available Chromium environment has no
-WebGPU adapter, so its WebGPU smoke test is skipped. Preset import/export
-remains available. Physical-GPU/WebGPU parity and a fair two-backend benchmark
-run is recorded for software-rendered WebGL2 in docs/06-benchmark/2026-10-27-swiftshader-chromium.md
-(#58); WebGPU execution was blocked by missing adapter. #50's WebGL2 readback parity is software-rendered
-(SwiftShader), not physical-GPU proof.
+tests exercise a real WebGL2 path. The default headless Chromium context exposes
+no WebGPU adapter, so its WebGPU smoke test is skipped; headed Chromium on the
+same host does expose one. Preset import/export remains available. #58 records a
+headed two-backend comparison (WebGPU + WebGL2, same host, AMD Radeon, 100
+samples each) in
+[`docs/06-benchmark/2026-10-28-amd-radeon-chromium-headed.md`](docs/06-benchmark/2026-10-28-amd-radeon-chromium-headed.md);
+a headless WebGL2/SwiftShader session is kept in
+[`docs/06-benchmark/2026-10-27-swiftshader-chromium.md`](docs/06-benchmark/2026-10-27-swiftshader-chromium.md).
+Both headed rows were refresh-bound at ~60 FPS with GPU timing unavailable, so a
+backend performance advantage remains unverified. #50's WebGL2 readback parity
+is software-rendered (SwiftShader), not physical-GPU proof.
 
 ## Run and verify
 

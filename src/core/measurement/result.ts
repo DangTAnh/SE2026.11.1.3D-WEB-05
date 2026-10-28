@@ -20,6 +20,9 @@ export interface BenchmarkEnvironment {
   readonly sameHost: boolean;
 }
 
+/** Backends a benchmark run is expected to cover. */
+export type BenchmarkBackend = 'webgpu' | 'webgl2';
+
 /** Values `docs/01-requirements/mvp-acceptance.md` §2 leaves to TV5. */
 export interface BenchmarkProtocol {
   readonly warmUpSeconds: number | null;
@@ -33,6 +36,8 @@ export interface BenchmarkResult {
   readonly configHash: string;
   readonly protocol: BenchmarkProtocol;
   readonly groups: readonly AggregateGroup[];
+  /** Backends that could not run; rendered as `n/a`, never as a sample group. */
+  readonly blockedBackends: readonly BenchmarkBackend[];
   readonly limitations: readonly string[];
 }
 
@@ -81,6 +86,11 @@ export function toMarkdown(result: BenchmarkResult): string {
       throw new TypeError('toMarkdown: every group must belong to the result configuration');
     }
   }
+  for (const backend of result.blockedBackends) {
+    if (groups.some((group) => group.actual === backend)) {
+      throw new TypeError(`toMarkdown: backend "${backend}" cannot be both measured and blocked`);
+    }
+  }
 
   const lines: string[] = [
     '# Benchmark result',
@@ -109,6 +119,9 @@ export function toMarkdown(result: BenchmarkResult): string {
     lines.push(
       `| ${group.actual} | ${group.count} | ${formatMetric(group.fps)} | ${formatMetric(group.gpuTimeMs)} |`,
     );
+  }
+  for (const backend of result.blockedBackends) {
+    lines.push(`| ${backend} | n/a | n/a | n/a |`);
   }
 
   lines.push('', '## Limitations');

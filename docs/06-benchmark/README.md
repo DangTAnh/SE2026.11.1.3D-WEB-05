@@ -14,9 +14,19 @@ boundary (`docs/architecture.md` §5.1).
 run missing an environment field, samples, or a single `configHash`.
 `tests/e2e/backend.spec.ts` is the browser matrix.
 
-A recorded comparison still requires a machine where both backends run. When
-WebGPU is unavailable, write `n/a` for that row and say so under Limitations;
-never turn a request into an `actual` backend.
+Run the evidence test headless with
+`npx playwright test tests/e2e/benchmark-run.spec.ts --project=desktop-chromium`,
+or add `--headed` on the same host for a two-backend comparison: Chromium may
+expose WebGPU only in a headed context. The runner probes the WebGL renderer,
+WebGPU adapter, browser, OS and commit at run time, then writes
+`test-results/benchmark-result.md` (or `BENCHMARK_OUTPUT_PATH`). Promote that
+file into this directory deliberately; a test run never overwrites a dated
+result.
+
+A recorded comparison requires a machine where both backends run. When a
+backend cannot run, `buildBenchmarkResult` records it in `blockedBackends` and
+the table shows `n/a` for that row; the reason goes under Limitations. Never
+turn a request into an `actual` backend.
 
 ## Result file template
 

@@ -18,14 +18,35 @@ test('record fair two-backend benchmark run @evidence', async ({ page, browser, 
   await expect(page.locator('#host')).toBeVisible();
 
   // Dynamic environment probing
-  const probed = await page.evaluate(() => {
+  const probed = await page.evaluate(async () => {
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl2');
-    if (!gl) return { supported: false, renderer: '', vendor: '' };
+    if (!gl) return { supported: false, renderer: '', vendor: '', webgpuAdapter: null };
     const ext = gl.getExtension('WEBGL_debug_renderer_info');
     const renderer = ext ? (gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) as string) : '';
     const vendor = ext ? (gl.getParameter(ext.UNMASKED_VENDOR_WEBGL) as string) : '';
-    return { supported: true, renderer, vendor };
+    const gpu = (
+      navigator as Navigator & {
+        gpu?: {
+          requestAdapter?: () => Promise<{
+            info?: { vendor?: string; architecture?: string };
+          } | null>;
+        };
+      }
+    ).gpu;
+    let webgpuAdapter: { vendor: string; architecture: string } | null = null;
+    if (typeof gpu?.requestAdapter === 'function') {
+      try {
+        const adapter = await gpu.requestAdapter();
+        if (adapter !== null) {
+          const info = adapter.info ?? {};
+          webgpuAdapter = { vendor: info.vendor ?? '', architecture: info.architecture ?? '' };
+        }
+      } catch {
+        webgpuAdapter = null;
+      }
+    }
+    return { supported: true, renderer, vendor, webgpuAdapter };
   });
 
   expect(probed.supported).toBe(true);
@@ -45,8 +66,19 @@ test('record fair two-backend benchmark run @evidence', async ({ page, browser, 
 
   const osString = `${os.type()} ${os.release()}`;
   const isSoftwareRenderer = probed.renderer.includes('SwiftShader') || probed.renderer.includes('Subzero');
-  const gpuName = isSoftwareRenderer ? `${probed.renderer} [Software Renderer]` : probed.renderer;
-  const driverName = isSoftwareRenderer ? 'SwiftShader' : (probed.vendor || 'Unknown Driver');
+  const adapterLabel = probed.webgpuAdapter
+    ? [probed.webgpuAdapter.vendor, probed.webgpuAdapter.architecture].filter((part) => part !== '').join(' ')
+    : '';
+  const gpuName = isSoftwareRenderer
+    ? `${probed.renderer} [Software Renderer]`
+    : adapterLabel
+      ? `${probed.renderer} [WebGPU adapter: ${adapterLabel}]`
+      : probed.renderer;
+  const driverName = isSoftwareRenderer
+    ? 'SwiftShader'
+    : probed.vendor
+      ? `${probed.vendor}; exact driver version not exposed by the browser`
+      : 'Unknown Driver';
 
   const env = {
     browser: browserName === 'chromium' ? 'Chromium' : browserName,

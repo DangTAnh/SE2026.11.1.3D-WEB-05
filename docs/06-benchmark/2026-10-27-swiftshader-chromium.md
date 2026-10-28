@@ -19,7 +19,9 @@
 | actual backend | samples | fps median (min–max) | gpuTimeMs median (min–max) |
 |---|---|---|---|
 | webgl2 | 100 | 3.5830953374193797 (3.000300030003007–4.186435947530001, n=100) | n/a |
+| webgpu | n/a | n/a | n/a |
 
 ## Limitations
+- This session ran in headless Chromium. In that context `navigator.gpu.requestAdapter()` returned null, so no WebGPU adapter was available; physical WebGPU execution is BLOCKED for headless runs.
+- Headed Chromium on the same host does expose a WebGPU adapter; the two-backend headed run is recorded in `2026-10-28-amd-radeon-chromium-headed.md`.
 - Compute on WebGL2 runs through transform feedback, not a native compute shader.
-- WebGPU is unavailable in this Chromium environment (navigator.gpu.requestAdapter() returned null). Physical WebGPU execution is BLOCKED; the requested webgpu run fell back to webgl2 and was not substituted.

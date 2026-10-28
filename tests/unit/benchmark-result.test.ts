@@ -42,6 +42,7 @@ const result = (patch: Partial<BenchmarkResult> = {}): BenchmarkResult => ({
       gpuTimeMs: null,
     },
   ],
+  blockedBackends: [],
   limitations: [],
   ...patch,
 });
@@ -67,6 +68,23 @@ test('result: missing GPU timing is written as n/a, never as zero', () => {
   const webgl2Row = text.split('\n').find((line) => line.startsWith('| webgl2 '))!;
   assert.match(webgl2Row, /n\/a/);
   assert.doesNotMatch(webgl2Row, /\| 0 \|/);
+});
+
+test('result: a blocked backend gets an n/a row instead of a fabricated group', () => {
+  const text = toMarkdown(
+    result({
+      groups: [result().groups[1]!],
+      blockedBackends: ['webgpu'],
+      limitations: ['WebGPU unavailable in this context'],
+    }),
+  );
+
+  assert.match(text, /^\| webgpu \| n\/a \| n\/a \| n\/a \|$/m);
+  assert.ok(text.includes('WebGPU unavailable in this context'));
+});
+
+test('result: a backend cannot be both measured and blocked', () => {
+  assert.throws(() => toMarkdown(result({ blockedBackends: ['webgl2'] })), TypeError);
 });
 
 test('result: unfixed protocol values stay unset instead of being guessed', () => {
