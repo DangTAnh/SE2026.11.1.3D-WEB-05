@@ -1,6 +1,27 @@
 # PROJECT STATUS — 3D-WEB-05
 
-## 28/10/2026 — Issue #53 synchronized with dev@4fdf67a
+## 28/10/2026 — Issue #53 synchronized after PR #69
+
+- Normally merge `dev@db8231568a700918ac42c6efa9beb3b20aab6831`
+  into `fix/53-measurement-age` from `3451aec`. Git applied the merge cleanly;
+  no textual conflict required resolution. Preserve #69 CI hardening and its
+  exact lockfile alongside all #53 source and regression tests, unchanged.
+- GPU-only age remains measured from compute submission including readback:
+  2,000 ms threshold, 10-frame query cadence, lifecycle/generation invalidation,
+  stale GPU timing unavailable/null while valid FPS is retained, and null age
+  for pending sessions. Preserve #61 recovery; independent FPS freshness is #55.
+- Full head/base, actual per-command verification and current CI are recorded in
+  [PR #62](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/62).
+  Historical parallel E2E failures are separate from the one-worker default.
+- All six inline review threads are resolved. Historical TV1 contract approvals
+  were dismissed after later pushes; current-head owner re-review, TV5 collector
+  confirmation and independent human approval remain required. GitHub was Ready
+  at this inspection; this update does not change Draft/Ready or approve/merge.
+- Keep every historical checkpoint below, including the superseded #54 candidate.
+  Hardware WebGPU recovery, physical GPU parity/timestamp freshness and fair
+  benchmark acceptance remain **NOT_RUN**; software/test doubles are not proof.
+
+## Historical checkpoint — 28/10/2026 — Issue #53 synchronized with dev@4fdf67a
 
 - Normally merge `dev@4fdf67ac6e6913e5f45215faf9e025626f220a29`
   into `fix/53-measurement-age` from `1d0cabd`. Preserve merged #71

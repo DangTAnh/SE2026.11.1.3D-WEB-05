@@ -4,10 +4,10 @@ Owner: TV1 (`src/core/`, `src/main.ts`, `.github/`).
 Status: **partially implemented**. This file records what exists today, what the
 target shape is, and the rules that keep the two from drifting apart.
 
-PR #62 integration baseline (27/10/2026): `dev@38a1d05` includes Issue #52
-runtime recovery. The merged recovery policy and the Issue #53 GPU-age proposal
-below coexist; hardware WebGPU recovery/timestamp freshness remains **NOT_RUN**,
-and TV1/TV5 acceptance of #53 is still required.
+PR #62 integration baseline (28/10/2026): `dev@db82315` includes Issue #52
+runtime recovery and PR #69 CI hardening. The merged recovery policy and the
+Issue #53 GPU-age proposal below coexist; hardware WebGPU recovery/timestamp
+freshness remains **NOT_RUN**, and TV1/TV5 acceptance of #53 is still required.
 
 Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 [`mvp-acceptance.md`](01-requirements/mvp-acceptance.md),

@@ -88,7 +88,7 @@ can start, except the ones marked *(after …)*.
 | Contract tests | adapter against `RendererPort` |
 | Handoff | browser notes for TV5 |
 
-PR #62 integration at `dev@38a1d05` (27/10/2026) retains #52 recovery and
+PR #62 integration at `dev@db82315` (28/10/2026), after #69, retains #52 recovery and
 owner-scoped canvas adoption/disposal alongside the #53 proposal below. TV1
 reviews the shared contract, TV3 recovery lifecycle and TV5 collector behavior.
 Hardware WebGPU recovery/timestamp freshness remains **NOT_RUN**.
@@ -102,7 +102,7 @@ FPS when only GPU timing is stale, but this field does not define FPS freshness;
 Issue #55 owns that separate contract. TV1 must review the shared contract and
 TV5 the collector behavior before merge. The #62 integration now provides
 `measurementAgeMs: null` in the pending composition status; the active adapter
-reports the measured age or null when no fresh GPU timing is available.
+reports the measured age (including stale age) or null when no GPU sample exists.
 
 **TV4 — UI and presets**
 
