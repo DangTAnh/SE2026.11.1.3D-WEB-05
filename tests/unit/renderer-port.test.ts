@@ -32,6 +32,7 @@ test('port contract: an unavailable backend never reports gpu timing', async () 
 
   assert.equal(status.actual, 'unavailable');
   assert.equal(status.gpuTimingAvailable, false);
+  assert.equal(status.measurementAgeMs, null);
   assert.equal(status.gpuTimeMs, null);
   assert.equal(status.fps, null);
 });
@@ -54,6 +55,7 @@ test('fake: status is configurable and every call is recorded in order', async (
     actual: 'webgpu',
     running: true,
     gpuTimingAvailable: true,
+    measurementAgeMs: 0,
     fps: 60,
     gpuTimeMs: 2.5,
   });
@@ -63,6 +65,7 @@ test('fake: status is configurable and every call is recorded in order', async (
   assert.equal(status.actual, 'webgpu');
   assert.equal(status.running, true);
   assert.equal(status.gpuTimingAvailable, true);
+  assert.equal(status.measurementAgeMs, 0);
   assert.equal(status.fps, 60);
   assert.equal(status.gpuTimeMs, 2.5);
 
@@ -81,4 +84,22 @@ test('fake: status is configurable and every call is recorded in order', async (
   assert.deepEqual(fake.calls[1], { type: 'init', target: TARGET });
   assert.deepEqual(fake.calls[2], { type: 'applyConfig', config: DEFAULT_CONFIG });
   assert.equal(fake.disposed, true);
+});
+
+test('fake: pause and reset clear the previous GPU timing sample', () => {
+  const fake = new FakeRenderer({ actual: 'webgpu', running: true, gpuTimingAvailable: true,
+    measurementAgeMs: 10, gpuTimeMs: 2.5 });
+
+  fake.pause();
+  assert.deepEqual(fake.getStatus(), {
+    requested: 'auto', actual: 'webgpu', running: false,
+    gpuTimingAvailable: false, measurementAgeMs: null, fps: null, gpuTimeMs: null,
+  });
+
+  fake.setStatus({ running: true, gpuTimingAvailable: true, measurementAgeMs: 5, gpuTimeMs: 3 });
+  fake.reset();
+  assert.deepEqual(fake.getStatus(), {
+    requested: 'auto', actual: 'webgpu', running: true,
+    gpuTimingAvailable: false, measurementAgeMs: null, fps: null, gpuTimeMs: null,
+  });
 });

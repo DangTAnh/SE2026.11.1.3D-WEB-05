@@ -88,6 +88,22 @@ can start, except the ones marked *(after …)*.
 | Contract tests | adapter against `RendererPort` |
 | Handoff | browser notes for TV5 |
 
+PR #62 integration at `dev@db82315` (28/10/2026), after #69, retains #52 recovery and
+owner-scoped canvas adoption/disposal alongside the #53 proposal below. TV1
+reviews the shared contract, TV3 recovery lifecycle and TV5 collector behavior.
+Hardware WebGPU recovery/timestamp freshness remains **NOT_RUN**.
+
+GPU timing in `RendererStatus` carries a monotonic `measurementAgeMs` proposal
+in Issue #53. Age starts at compute submission (including query-readback delay),
+with a two-second freshness limit and one timestamp query every 10 compute
+frames; below the nominal 5 FPS cadence, or with long readback delays, timing
+may still expire. Pause/reset clear cached GPU timing. The collector preserves
+FPS when only GPU timing is stale, but this field does not define FPS freshness;
+Issue #55 owns that separate contract. TV1 must review the shared contract and
+TV5 the collector behavior before merge. The #62 integration now provides
+`measurementAgeMs: null` in the pending composition status; the active adapter
+reports the measured age (including stale age) or null when no GPU sample exists.
+
 **TV4 — UI and presets**
 
 | Block | Contents |
@@ -114,6 +130,12 @@ can start, except the ones marked *(after …)*.
 | Measurement runs | result files produced through TV1's tooling |
 | Fairness report | same host, same config, limitations written down |
 | Regression triage | failing measurements become tests, not anecdotes |
+
+The #53 collector skips paused snapshots. When GPU age exceeds the shared
+`MAX_GPU_MEASUREMENT_AGE_MS` threshold, it preserves valid FPS and records
+`gpuTimingAvailable: false` with `gpuTimeMs: null`, even if the producer marks
+the stale GPU timing available. Missing timing also permits a sample with null
+GPU timing. Independent FPS freshness remains #55.
 
 ### 3.1.1 Handoffs
 

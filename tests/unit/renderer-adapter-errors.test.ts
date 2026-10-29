@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MAX_GPU_MEASUREMENT_AGE_MS } from '../../src/core/renderer/RendererPort.ts';
 import { ThreeRendererAdapter } from '../../src/simulations/rendererAdapter.ts';
 import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 
 const harness = vi.hoisted(() => ({
   scenario: '' as string,
   error: null as Error | null,
+  deferNextCompute: false,
+  deferTimestamps: false,
   deferWebGLInit: false,
   webGLInitStarted: false,
   resolveWebGLInit: null as (() => void) | null,
@@ -19,6 +22,10 @@ const harness = vi.hoisted(() => ({
     backendDisposed: boolean;
     internalFallbackUsed: boolean;
     animationLoopValues: unknown[];
+    animationLoopCallback: ((time: number) => void) | null;
+    resolveCompute: (() => void) | null;
+    resolveTimestamp: ((durationMs: number) => void) | null;
+    timestampResolveCalls: number;
     triggerDeviceLost: () => void;
   }>,
 }));
@@ -40,6 +47,10 @@ vi.mock('three/webgpu', async () => {
         backendDisposed: false,
         internalFallbackUsed: false,
         animationLoopValues: [],
+        animationLoopCallback: null,
+        resolveCompute: null,
+        resolveTimestamp: null,
+        timestampResolveCalls: 0,
         triggerDeviceLost: () => this.onDeviceLost({ api: 'WebGPU', message: 'Device removed', reason: 'unknown', originalEvent: null }),
       };
       harness.instances.push(this.record);
@@ -81,8 +92,12 @@ vi.mock('three/webgpu', async () => {
       }
     }
 
-    async compute(): Promise<void> {
+    compute(): Promise<void> | void {
       if (this.record.forceWebGL) return;
+      if (harness.deferNextCompute) {
+        harness.deferNextCompute = false;
+        return new Promise<void>((resolve) => { this.record.resolveCompute = resolve; });
+      }
       if (harness.scenario === 'compute-programming') throw harness.error;
       if (harness.scenario === 'compute-device-lost') {
         this.onDeviceLost({ api: 'WebGPU', message: 'Device removed', reason: 'unknown', originalEvent: null });
@@ -92,6 +107,7 @@ vi.mock('three/webgpu', async () => {
 
     async setAnimationLoop(callback: ((time: number) => void) | null): Promise<void> {
       this.record.animationLoopValues.push(callback);
+      if (callback) this.record.animationLoopCallback = callback;
       if (this.record.forceWebGL || callback === null) return;
       if (harness.scenario === 'animation-programming') throw harness.error;
       if (harness.scenario === 'animation-device-lost') {
@@ -103,7 +119,13 @@ vi.mock('three/webgpu', async () => {
     setPixelRatio(): void {}
     setSize(): void {}
     hasFeature(): boolean { return harness.timestampSupported; }
-    async resolveTimestampsAsync(): Promise<number> { return harness.timestampValue; }
+    resolveTimestampsAsync(): Promise<number> {
+      this.record.timestampResolveCalls += 1;
+      if (harness.deferTimestamps) {
+        return new Promise((resolve) => { this.record.resolveTimestamp = resolve; });
+      }
+      return Promise.resolve(harness.timestampValue);
+    }
     render(): void {}
     dispose(): void { this.record.disposed = true; }
   }
@@ -152,6 +174,8 @@ describe('ThreeRendererAdapter initialization error classification', () => {
   beforeEach(() => {
     harness.scenario = '';
     harness.error = null;
+    harness.deferNextCompute = false;
+    harness.deferTimestamps = false;
     harness.deferWebGLInit = false;
     harness.webGLInitStarted = false;
     harness.resolveWebGLInit = null;
@@ -173,6 +197,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
@@ -266,6 +291,129 @@ describe('ThreeRendererAdapter initialization error classification', () => {
 
     expect(harness.instances).toHaveLength(2);
     await expectDisposed(harness.instances[0]!);
+    adapter.dispose();
+  });
+
+  it('clears GPU timing on pause and reset and ignores a result that resolves after pause', async () => {
+    harness.timestampSupported = true;
+    harness.deferTimestamps = true;
+    vi.useFakeTimers();
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopCallback!;
+
+    for (let index = 1; index <= 30; index += 1) frame(index * 16);
+    await vi.waitFor(() => expect(harness.instances[0]?.resolveTimestamp).toBeTypeOf('function'));
+    adapter.pause();
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+
+    harness.instances[0]!.resolveTimestamp!(3.25);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+
+    adapter.start();
+    for (let index = 31; index <= 60; index += 1) frame(index * 16);
+    await vi.waitFor(() => expect(harness.instances[0]?.resolveTimestamp).toBeTypeOf('function'));
+    harness.instances[0]!.resolveTimestamp!(3.25);
+    await vi.waitFor(() => expect(adapter.getStatus().gpuTimingAvailable).toBe(true));
+    expect(adapter.getStatus().measurementAgeMs).not.toBeNull();
+
+    await vi.advanceTimersByTimeAsync(MAX_GPU_MEASUREMENT_AGE_MS + 1);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, gpuTimeMs: null });
+    expect(adapter.getStatus().measurementAgeMs).toBeGreaterThan(MAX_GPU_MEASUREMENT_AGE_MS);
+
+    adapter.reset();
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+    adapter.dispose();
+  });
+
+  it.each(['pause', 'reset', 'dispose'] as const)(
+    'does not start a timestamp query when sampled compute resolves after %s',
+    async (action) => {
+      harness.timestampSupported = true;
+      harness.deferTimestamps = true;
+      const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+      await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+      adapter.start();
+      const frame = harness.instances[0]!.animationLoopCallback!;
+      for (let index = 1; index < 10; index += 1) frame(index * 16);
+      harness.deferNextCompute = true;
+      frame(10 * 16);
+      await vi.waitFor(() => expect(harness.instances[0]?.resolveCompute).toBeTypeOf('function'));
+
+      if (action === 'pause') adapter.pause();
+      else if (action === 'reset') adapter.reset();
+      else adapter.dispose();
+      harness.instances[0]!.resolveCompute!();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(harness.instances[0]?.timestampResolveCalls).toBe(0);
+      expect(adapter.getStatus()).toMatchObject({
+        gpuTimingAvailable: false,
+        measurementAgeMs: null,
+        gpuTimeMs: null,
+      });
+      if (action !== 'dispose') adapter.dispose();
+    },
+  );
+
+  it('ages a GPU sample from compute submission, including delayed timestamp readback', async () => {
+    harness.timestampSupported = true;
+    harness.deferTimestamps = true;
+    vi.useFakeTimers();
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopCallback!;
+    for (let index = 1; index <= 10; index += 1) frame(index * 16);
+
+    expect(harness.instances[0]?.timestampResolveCalls).toBe(1);
+    await vi.advanceTimersByTimeAsync(500);
+    harness.instances[0]!.resolveTimestamp!(3.25);
+    await vi.waitFor(() => expect(adapter.getStatus().gpuTimingAvailable).toBe(true));
+
+    expect(adapter.getStatus().measurementAgeMs).toBeGreaterThanOrEqual(500);
+    adapter.dispose();
+  });
+
+  it('rejects late GPU timing from the lost renderer and samples the recovered renderer independently', async () => {
+    harness.timestampSupported = true;
+    harness.deferTimestamps = true;
+    harness.deferWebGLInit = true;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), DEFAULT_CONFIG);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const lost = harness.instances[0]!;
+    for (let index = 1; index <= 10; index += 1) lost.animationLoopCallback!(index * 16);
+    expect(lost.timestampResolveCalls).toBe(1);
+
+    lost.triggerDeviceLost();
+    await vi.waitFor(() => expect(harness.webGLInitStarted).toBe(true));
+    expect(adapter.getStatus()).toMatchObject({
+      actual: 'unavailable', measurementAgeMs: null, gpuTimingAvailable: false, gpuTimeMs: null,
+    });
+    harness.resolveWebGLInit!();
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: true }));
+    const recovered = harness.instances[1]!;
+    for (let index = 1; index <= 10; index += 1) recovered.animationLoopCallback!(index * 16);
+    expect(recovered.timestampResolveCalls).toBe(1);
+
+    lost.resolveTimestamp!(99);
+    await new Promise<void>(resolve => setTimeout(resolve, 0));
+    expect(adapter.getStatus()).toMatchObject({
+      actual: 'webgl2', measurementAgeMs: null, gpuTimingAvailable: false, gpuTimeMs: null,
+    });
+    // A stale request's finally handler must not unlock the new in-flight query.
+    for (let index = 11; index <= 20; index += 1) recovered.animationLoopCallback!(index * 16);
+    expect(recovered.timestampResolveCalls).toBe(1);
+    recovered.resolveTimestamp!(2.5);
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({
+      actual: 'webgl2', running: true, gpuTimingAvailable: true, gpuTimeMs: 2.5,
+      measurementAgeMs: expect.any(Number),
+    }));
     adapter.dispose();
   });
 
