@@ -106,3 +106,94 @@ No clean final full-suite result is claimed here. G0 and 235 unit tests on the
 follow-up content passed. Do not infer a production root cause from this timeout;
 TV3/TV5 must review the preserved trace and exact-head CI. No broad timeout
 increase or unrelated source change was made in response.
+
+## TV1 final review follow-up — 29/10/2026
+
+The exact-head schema finding was checked against `7a6992a`: both strengths
+already have minimum 0.2, maximum 4 and multipleOf 0.001. `preset.ts:3` imports
+that v2 JSON directly; no v1 schema is imported by product source. Schema is
+unchanged. Direct JSON import regressions accept 0.2/4/1.234 and reject
+50/0.199/4.001/1.2345 for both modes with the actual error message. Existing
+coverage rejects missing/unknown keys at every level, accepts 65536/500000,
+and tests atomic UI invalid-import behavior.
+
+Option A retains the owner-approved active-workload hash and golden vectors.
+TV1 explicitly accepts this option in discussion_r4411879288 provided §5.1
+states the collision consequence. Architecture now states that rendering and
+camera can change GPU cost without changing hash. Sampling pins the validated
+full config and rejects observed changes, including excluded fields; the result
+builder stores an isolated validated snapshot. Raw hash-only samples cannot
+prove retrospective full-config provenance; callers must not concatenate runs
+solely by hash/backend. This remains an explicit limitation, not a fairness claim.
+
+### Verified remote baseline (not evidence for later local edits)
+
+CI run [40860125420](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/actions/runs/40860125420),
+job 123400946463, SUCCESS: checkout log identifies synthetic merge
+`17337a98d351a443cb42a79c6a6959ff47f2791e` of feature
+`7a6992a5e6b3ab04ce1b428550e5b6543d73a7d2` into
+`dev@142769176cdb081dac2cf5f87419e55ac6fa726c`.
+Both typechecks, 235 tests /22 files, 208-module build PASS. E2E: 76 PASS /
+8 SKIP, one worker, 9.8 minutes, no retry/flaky entries (retry policy remained
+2; actual log shows no retries). Context loss desktop/mobile 24.5s/18.5s;
+backend re-init desktop/mobile 49.6s/27.9s; live status desktop/mobile
+33.6s/24.9s. The earlier statement that no clean remote full suite existed is
+superseded for this baseline only. Prior failed/incomplete local runs remain
+historical evidence above.
+
+### Integration with #78
+
+Compared #76 `7a6992a` and #78 `4c85bea` against common dev `1427691`.
+Proposed order: #76 first, then TV5 normally merges dev into #78. Shared paths
+include README, PROJECT_STATUS, benchmark-result.test.ts, benchmark.test.ts,
+and src/perf/benchmark.ts (the latter now also changes for the guard).
+The later PR must preserve nested v2 config, use
+`result.config.simulation.particleCount`, expect default 65536 (not 20000),
+retain both v2 full-config tests and #78 blocked-backend tests, add
+`blockedBackends: []` to manually constructed result fixtures, and keep this
+full-config guard/snapshot alongside #78's optional blockedBackends input and
+WebGPU outcome handling. Preserve every PROJECT_STATUS checkpoint.
+If #78 lands first, #76 must normally merge dev and make the same nested-count,
+required-fixture and guard reconciliation before rerunning verification.
+Do not add #78's unmerged required result field to #76 preemptively.
+Existing v1/20k artifacts remain historical; v2-default benchmark acceptance
+requires new measurements or an explicit owner-recorded limitation. No #78
+branch edit or merge is performed here.
+
+### Final sequential local verification — review follow-up content
+
+- npm ci: PASS, 54 packages, 0 vulnerabilities (committed lockfile unchanged).
+- npm run typecheck / npm run typecheck:tests: PASS.
+- npm test: PASS, 241 tests /22 files.
+- CI=1 npx playwright test --grep-invert '@evidence' --retries=0: PASS,
+  76 desktop/mobile tests /8 expected skips, 8.7min, one worker, zero retries
+  or flaky entries; axe PASS. Strength-50 invalid import preserves slider and
+  output 2.4 with no renderer call on both viewports.
+- npm run build: PASS, 208 modules, existing 1092.53 kB chunk advisory.
+- This sequential command chain covers all npm run verify stages, with the
+  E2E stage explicitly forced to retries=0; all source/test/config content
+  is the content committed in this follow-up. Only evidence/status text follows.
+- Context loss desktop/mobile 23.3/16.6s; backend re-init 35.3/25.4s;
+  live-status 24.3/19.7s. No test assertion weakened, skip added or global
+  timeout/retry policy changed. Physical GPU gates remain NOT_RUN.
+
+The resumed original CI=1 npm run verify completed with 241 unit tests,
+74 E2E PASS /8 SKIP /2 FLAKY (10.6min) and build PASS. Desktop ui-port
+reported page.evaluate target/browser closed, not an assertion mismatch;
+mobile backend-reinit reported missing trace/artifact files during context
+close (ENOENT). A second runner was mistakenly launched while this first
+runner still ran: its startup failed because port 4173 was occupied, but it
+also cleaned shared test-results artifacts. This explains the artifact
+interference; it does not establish a production cause for the browser-close
+error. No production fix was invented. Runs are now strictly sequential.
+The complete isolated retries=0 result above supersedes neither historical
+failure nor trace provenance; it is separate final-content verification.
+
+Independent read-only Codex review found no actionable defect in nested
+parser/UI/session, simulation/material/camera mapping, OrbitControls cleanup
+or benchmark guard/snapshot. This is supplementary AI evidence, not human
+owner sign-off. Final exact-head CI, review replies, Ready state and requested
+reviewers are tracked live on PR #76. Owner decisions permit option A; affected
+owners must review the implementation and an independent human must approve.
+No merge, auto-merge, deployment, release, tag or issue closure is authorized
+by these checks.

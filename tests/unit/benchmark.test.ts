@@ -241,3 +241,31 @@ test('build: full validated nested v2 config survives the benchmark result and r
     assert.equal(Object.hasOwn(result.config, 'name'), false, 'envelope metadata is not an engine parameter');
   }
 });
+test('build: result config is isolated from later caller mutation', async () => {
+  const config = cloneConfig(DEFAULT_CONFIG);
+  const hash = await configHash(config);
+  const result = await buildBenchmarkResult({ environment: ENVIRONMENT, config,
+    samples: Array.from({ length: 100 }, () => snapshot(hash)) });
+  config.rendering.opacity = 0.3;
+  assert.equal(result.config.rendering.opacity, 1);
+});
+
+test.each(['rendering', 'camera', 'inactive mode'] as const)('collect: rejects same-hash %s changes', async field => {
+  const config = cloneConfig(DEFAULT_CONFIG);
+  const originalHash = await configHash(config);
+  const port = new FakeRenderer({ actual: 'webgl2', running: true, fps: 60 });
+  let reads = 0;
+  const run = collectBenchmarkSamples(port, () => {
+    if (++reads === 3) {
+      if (field === 'rendering') config.rendering.additiveBlend = true;
+      if (field === 'camera') config.camera.distance = 50;
+      if (field === 'inactive mode') config.modes.vortex.vortexStrength = 3;
+    }
+    return config;
+  }, { warmUpMs: 1, cadenceMs: 5, sampleCount: 3 });
+  await assert.rejects(run, /full preset changed/);
+  assert.equal(await configHash(config), originalHash);
+  const calls = port.calls.length;
+  await new Promise(resolve => setTimeout(resolve, 20));
+  assert.equal(port.calls.length, calls);
+});

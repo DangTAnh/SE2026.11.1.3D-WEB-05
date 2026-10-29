@@ -1,3 +1,28 @@
+## 29/10/2026 — PR #76 final review follow-up
+
+- Retain TV1-approved active-workload hash option A and golden vectors.
+  Architecture §5.1 now explicitly documents rendering/camera collisions and
+  full-preset benchmark fairness. Collection rejects observed full-config changes
+  even when the hash stays equal; result config is a validated isolated snapshot.
+- Reviewed head 7a6992a already has strength 0.2–4 and precision 0.001; schema
+  is unchanged. New direct-parser regression and desktop/mobile UI rejection of
+  strength 50 demonstrate matching validation and preserved controls/state.
+- Final sequential local checks on follow-up source/test/config: npm ci,
+  both typechecks, 241 tests /22 files, explicit E2E retries=0 (76 PASS /8 SKIP,
+  8.7min, axe PASS), and 208-module build PASS. No retry/flaky in that run.
+  Earlier interrupted/concurrent runs and actual failures remain in
+  [review evidence](04-testing/preset-v2-review-2026-10-29.md).
+- Proposed integration order #76 then #78; later integration must reconcile
+  nested particleCount/default 65536, blockedBackends fixtures, benchmark guard
+  and all status checkpoints. [Plan posted on #78](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/78#discussion_r4414554026).
+  No TV5 branch edits or transitive unmerged contract dependency.
+- Exact final SHA/remote CI, owner re-review requests and actual Draft/Ready
+  state are tracked on [PR #76](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/76).
+  Human owner approval remains required; AI review is supplementary. #55/#56
+  stay post-MVP, #14 is not reopened. Physical WebGPU/parity/timestamp freshness
+  and v2-default benchmark acceptance remain NOT_RUN. No merge/auto-merge,
+  release/deploy/tag, settings change or Issue closure.
+
 # PROJECT STATUS — 3D-WEB-05
 
 ## 29/10/2026 — PR #76 TV5 review revision

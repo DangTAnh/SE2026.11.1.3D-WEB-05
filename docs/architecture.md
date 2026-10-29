@@ -215,6 +215,23 @@ It is not full preset identity. A benchmark must retain the full validated
 nested `config` beside the hash (`BenchmarkResult.config`); compare rendering
 and camera settings before treating two runs as fair comparisons.
 
+Decision reaffirmed by [TV1 review 29/10/2026](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/76#discussion_r4411879288): retain this projection (option A).
+It does **not** identify total GPU rendering cost. For example, changing only
+`rendering.additiveBlend` or `rendering.opacity` (including a transparent-state
+transition) keeps the same hash although material/GPU state and cost can change.
+Camera changes can similarly alter visible work. These are intentional identity
+collisions, not evidence of equivalent benchmark conditions.
+
+`collectBenchmarkSamples` pins a validated full config and rejects any config
+change observed during sampling, including excluded rendering/camera fields.
+`buildBenchmarkResult` retains an isolated validated config snapshot. Its raw
+sample input contains only hashes: it cannot reconstruct missing full-config
+provenance or detect previously mixed same-hash samples. Callers must collect
+under the pinned full preset and must never concatenate independent datasets
+solely by `(configHash, actual)`. Compare the full validated preset, environment
+and protocol before combining runs; backend preference may differ deliberately
+when selecting backends, but actual backend is always recorded separately.
+
 | Canonical field | Source | Attractor | Vortex |
 |---|---|---|---|
 | mode | config.mode | included | included |

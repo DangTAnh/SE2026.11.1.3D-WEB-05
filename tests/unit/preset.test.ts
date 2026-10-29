@@ -78,3 +78,14 @@ test('disabled camera with autoRotate preference is valid', () => {
   const d = document(); d.config.camera.enabled = false; d.config.camera.autoRotate = true;
   expect(parsePresetDocument(serializePresetDocument(d))).toEqual(d);
 });
+// Direct JSON import pins the review counterexamples against the shipped schema.
+test.each(['attractor', 'vortex'] as const)('%s direct-import strength contract', mode => {
+  const key = mode === 'attractor' ? 'attractorStrength' : 'vortexStrength';
+  for (const value of [0.2, 4, 1.234]) {
+    const d = document(); Object.assign(d.config.modes[mode], { [key]: value });
+    expect(parsePresetDocument(JSON.stringify(d))).toEqual(d);
+  }
+  for (const value of [50, 0.199, 4.001, 1.2345]) {
+    rejected(d => { d.config.modes[mode][key] = value; }, /0.2–4.*0.001/);
+  }
+});

@@ -10,7 +10,7 @@ import { configHash } from '../core/measurement/configHash.ts';
 import type { BenchmarkEnvironment, BenchmarkResult } from '../core/measurement/result.ts';
 import type { RendererPort } from '../core/renderer/RendererPort.ts';
 import type { PerformanceSnapshot } from '../core/types/measurement.ts';
-import type { LabConfig } from '../presets/preset.ts';
+import { parsePreset, serializePreset, type LabConfig } from '../presets/preset.ts';
 import { PerformanceCollector } from './collector.ts';
 
 /** Fixed by the team in issue #18; identical for WebGPU and WebGL2. */
@@ -57,7 +57,8 @@ export async function buildBenchmarkResult(input: BenchmarkInput): Promise<Bench
     throw new TypeError('buildBenchmarkResult: at least one sample is required');
   }
 
-  const hash = await configHash(input.config);
+  const config = parsePreset(serializePreset(input.config));
+  const hash = await configHash(config);
   for (const sample of input.samples) {
     if (sample.configHash !== hash) {
       throw new TypeError('buildBenchmarkResult: every sample must belong to the reported configuration');
@@ -75,7 +76,7 @@ export async function buildBenchmarkResult(input: BenchmarkInput): Promise<Bench
 
   return {
     environment: input.environment,
-    config: input.config,
+    config,
     configHash: hash,
     protocol: {
       warmUpSeconds: BENCHMARK_PROTOCOL.warmUpMs / 1000,
@@ -104,12 +105,22 @@ export function collectBenchmarkSamples(
   protocol: BenchmarkRunProtocol = BENCHMARK_PROTOCOL,
 ): Promise<PerformanceSnapshot[]> {
   return new Promise((resolve, reject) => {
+    // Stable serialization validates and pins all fields, including hash exclusions.
+    const pinnedPreset = serializePreset(getConfig());
+    const checkedConfig = (): Readonly<LabConfig> => {
+      const config = getConfig();
+      if (serializePreset(config) !== pinnedPreset) {
+        throw new TypeError('collectBenchmarkSamples: full preset changed during the run');
+      }
+      return parsePreset(pinnedPreset);
+    };
     const samples: PerformanceSnapshot[] = [];
     const collector = new PerformanceCollector(port, {
       warmUpMs: protocol.warmUpMs,
       cadenceMs: protocol.cadenceMs,
-      getConfig,
+      getConfig: checkedConfig,
       onSample: (sample) => {
+        checkedConfig(); // Also check after the asynchronous hash/status capture.
         samples.push(sample);
         if (samples.length >= protocol.sampleCount) {
           collector.dispose();

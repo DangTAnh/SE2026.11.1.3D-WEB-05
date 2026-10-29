@@ -176,6 +176,13 @@ test('import applies atomically once and invalid imports do not call the port', 
   await expect(page.locator('#toast')).toContainText('Tốc độ nằm ngoài');
   await expect(page.locator('#speed-value')).toContainText('2,2');
   expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus'))).toEqual([]);
+  preset.config.simulation.speed = 2.2;
+  preset.config.modes.vortex.vortexStrength = 50;
+  await page.locator('#preset-file').setInputFiles({ name: 'bad-strength.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(preset)) });
+  await expect(page.locator('#toast')).toContainText('0.2–4');
+  await expect(page.locator('#strength')).toHaveValue('2.4');
+  await expect(page.locator('#strength-value')).toContainText('2,4');
+  expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus'))).toEqual([]);
 });
 
 test('rejected apply preserves the previous UI config and does not reset', async ({ page }) => {
