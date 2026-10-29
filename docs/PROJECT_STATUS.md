@@ -21,10 +21,11 @@
   unavailable on both. This is a real two-backend execution, not a performance
   advantage claim.
 - A headless Chromium session on the same host renders WebGL2 through SwiftShader
-  and exposes no WebGPU adapter; that 100-sample session (median 3.58 FPS) is kept
-  as software-rendered evidence in
-  `docs/06-benchmark/2026-10-27-swiftshader-chromium.md`. Physical-GPU parity and
-  a performance advantage remain NOT_RUN/unverified. No numbers were fabricated.
+  and exposes no WebGPU adapter; that 100-sample session (median 2.55 FPS, re-run
+  at `07f217d`, runner output promoted unchanged) is kept as software-rendered
+  evidence in `docs/06-benchmark/2026-10-29-swiftshader-chromium.md`.
+  Physical-GPU parity and a performance advantage remain NOT_RUN/unverified.
+  No numbers were fabricated.
 
 ## 28/10/2026 — Issue #53 synchronized after PR #69
 

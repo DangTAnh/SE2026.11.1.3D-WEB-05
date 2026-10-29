@@ -4,7 +4,7 @@
 - Browser: Chromium 156.0.8078.4
 - OS: Windows_NT 10.0.26300
 - GPU: ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver) [Software Renderer] (driver SwiftShader)
-- Commit: 6ec98a3
+- Commit: 07f217d
 - Same host for both backends: yes
 
 ## Configuration
@@ -18,10 +18,10 @@
 ## Runs
 | actual backend | samples | fps median (min–max) | gpuTimeMs median (min–max) |
 |---|---|---|---|
-| webgl2 | 100 | 3.5830953374193797 (3.000300030003007–4.186435947530001, n=100) | n/a |
+| webgl2 | 100 | 2.553300140431498 (1.9357336430507217–2.727768685215491, n=100) | n/a |
 | webgpu | n/a | n/a | n/a |
 
 ## Limitations
-- This session ran in headless Chromium. In that context `navigator.gpu.requestAdapter()` returned null, so no WebGPU adapter was available; physical WebGPU execution is BLOCKED for headless runs.
-- Headed Chromium on the same host does expose a WebGPU adapter; the two-backend headed run is recorded in `2026-10-28-amd-radeon-chromium.md`.
 - Compute on WebGL2 runs through transform feedback, not a native compute shader.
+- WebGL2 is measured before WebGPU in the same page; backend order is not counterbalanced.
+- navigator.gpu.requestAdapter() returned null; no WebGPU adapter was available to this run. Physical WebGPU execution is BLOCKED.

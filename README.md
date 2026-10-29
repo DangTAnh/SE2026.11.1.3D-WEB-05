@@ -19,7 +19,7 @@ headed two-backend comparison (WebGPU + WebGL2, same host, AMD Radeon, 100
 samples each) in
 [`docs/06-benchmark/2026-10-28-amd-radeon-chromium.md`](docs/06-benchmark/2026-10-28-amd-radeon-chromium.md);
 a headless WebGL2/SwiftShader session is kept in
-[`docs/06-benchmark/2026-10-27-swiftshader-chromium.md`](docs/06-benchmark/2026-10-27-swiftshader-chromium.md).
+[`docs/06-benchmark/2026-10-29-swiftshader-chromium.md`](docs/06-benchmark/2026-10-29-swiftshader-chromium.md).
 Both headed rows were refresh-bound at ~60 FPS with GPU timing unavailable, so a
 backend performance advantage remains unverified. #50's WebGL2 readback parity
 is software-rendered (SwiftShader), not physical-GPU proof.
