@@ -116,7 +116,7 @@ export class RendererSession implements RendererPort {
     const active = this.#disposed ? null : this.#active?.port.getStatus();
     return { requested: this.#pending?.requested ?? this.#requested,
       actual: active?.actual ?? 'unavailable', running: active?.running ?? false,
-      gpuTimingAvailable: false, gpuTimeMs: null, fps: null };
+      gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null, fps: null };
   }
 
   dispose(): void {

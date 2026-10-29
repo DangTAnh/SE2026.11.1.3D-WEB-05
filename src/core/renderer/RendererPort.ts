@@ -16,6 +16,9 @@
 import type { ActualBackend, BackendPreference } from '../types/backend.ts';
 import type { LabConfig } from '../../presets/preset.ts';
 
+/** GPU timing older than this is stale and must not be reported as available. */
+export const MAX_GPU_MEASUREMENT_AGE_MS = 2_000;
+
 export interface RendererTarget {
   width: number;
   height: number;
@@ -28,13 +31,15 @@ export interface RendererTarget {
  *
  * `actual` is authoritative and comes from the engine after init; `requested`
  * is kept only so the UI can explain a fallback. `gpuTimeMs` is null whenever
- * `gpuTimingAvailable` is false — never 0.
+ * `gpuTimingAvailable` is false — never 0. `measurementAgeMs` is the monotonic
+ * age of the latest GPU timing measurement, or null when no sample exists.
  */
 export interface RendererStatus {
   requested: BackendPreference;
   actual: ActualBackend;
   running: boolean;
   gpuTimingAvailable: boolean;
+  measurementAgeMs: number | null;
   fps: number | null;
   gpuTimeMs: number | null;
 }

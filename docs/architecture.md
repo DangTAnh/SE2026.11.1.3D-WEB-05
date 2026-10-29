@@ -4,6 +4,11 @@ Owner: TV1 (`src/core/`, `src/main.ts`, `.github/`).
 Status: **partially implemented**. This file records what exists today, what the
 target shape is, and the rules that keep the two from drifting apart.
 
+PR #62 integration baseline (28/10/2026): `dev@db82315` includes Issue #52
+runtime recovery and PR #69 CI hardening. The merged recovery policy and the
+Issue #53 GPU-age proposal below coexist; hardware WebGPU recovery/timestamp
+freshness remains **NOT_RUN**, and TV1/TV5 acceptance of #53 is still required.
+
 Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 [`mvp-acceptance.md`](01-requirements/mvp-acceptance.md),
 [`ui-interaction-spec.md`](02-design/ui-interaction-spec.md),
@@ -86,6 +91,19 @@ invalidates every comparison the project is built to produce.
 `RendererStatus` encodes this directly: `requested` exists only to explain a
 fallback, and `actual` is the only backend identity a benchmark row may store.
 
+`measurementAgeMs` describes only the age of the latest valid GPU timing
+sample, measured from compute submission with a monotonic clock. Its age
+therefore includes asynchronous timestamp-readback delay. A sample is fresh for
+at most `MAX_GPU_MEASUREMENT_AGE_MS` (2 seconds); the adapter requests one query
+per 10 compute frames (nominally supports 5 FPS before readback latency), and
+slower frames or delayed queries may still make it stale. Stale timing is
+reported unavailable with a null value. Pause, reset and renderer/backend
+reinitialization clear timing and age. The collector skips paused samples; when
+only GPU timing is stale, it preserves valid FPS and records GPU timing as
+unavailable/null. This field does not establish FPS freshness; that remains the
+separate Issue #55 contract. The field and threshold are the Issue #53 proposal
+and require TV1 review before merge.
+
 **Runtime device/context loss policy (Issue #52).** If the active WebGPU device
 is lost after initialization, the adapter disposes it, replaces the canvas in
 the same stable host, and attempts WebGL2 once. A canvas cannot change its
@@ -155,8 +173,10 @@ late init completion from publishing an obsolete backend. User config and runnin
 intent survive re-init; initial unavailable cannot create running intent. The
 application callback returns applied/failed/superseded plus requested/actual and
 rollback information so UI can report failure even when initialization resolves.
-Metrics come only from the current ready adapter. No unapproved freshness contract
-from Draft #62 is included; its eventual empty-status fields require integration.
+Metrics come only from the current ready adapter. The #63 change merged into
+`dev` did not include the Draft #62 freshness proposal; the #62 branch now adds
+the shared field and reports `measurementAgeMs: null` while initialization is
+pending. TV1/TV5 contract and collector review remain required before merge.
 This
 composition/lifecycle change requires TV1/TV3 review before merge.
 

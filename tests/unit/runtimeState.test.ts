@@ -1,10 +1,10 @@
 import { expect, test } from 'vitest';
 import { createInitializingRuntimeState, createRendererRuntimeState, formatFps, formatGpuTiming } from '../../src/ui/state/runtimeState.ts';
-import type { RendererStatus } from '../../src/core/renderer/RendererPort.ts';
+import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererStatus } from '../../src/core/renderer/RendererPort.ts';
 
 const ready: RendererStatus = {
   actual: 'webgpu', requested: 'auto', running: true, fps: 59.6,
-  gpuTimingAvailable: true, gpuTimeMs: 4.126,
+  gpuTimingAvailable: true, measurementAgeMs: 0, gpuTimeMs: 4.126,
 };
 
 test('pending initialization has no backend claim or measurements and disables simulation controls', () => {
@@ -43,6 +43,19 @@ test('unavailable timing overrides a numeric value from an inconsistent producer
   const state = createRendererRuntimeState({ ...ready, gpuTimingAvailable: false });
   expect(state.gpuTimeMs).toBeNull();
   expect(formatGpuTiming(state)).toBe('Không khả dụng');
+});
+
+test('stale GPU timing is hidden even when the producer still marks it available', () => {
+  const state = createRendererRuntimeState({ ...ready, measurementAgeMs: MAX_GPU_MEASUREMENT_AGE_MS + 1 });
+  expect(state.gpuTimingAvailable).toBe(false);
+  expect(state.gpuTimeMs).toBeNull();
+  expect(formatGpuTiming(state)).toBe('Không khả dụng');
+});
+
+test('GPU timing without a measurement age is not displayed', () => {
+  const state = createRendererRuntimeState({ ...ready, measurementAgeMs: null });
+  expect(state.gpuTimingAvailable).toBe(false);
+  expect(state.gpuTimeMs).toBeNull();
 });
 
 for (const invalid of [null, NaN, Infinity, -1]) {
