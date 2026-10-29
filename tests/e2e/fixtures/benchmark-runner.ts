@@ -69,6 +69,7 @@ window.executeFullBenchmark = async (env: BenchmarkEnvironment): Promise<FullBen
   const host = document.querySelector<HTMLElement>('#host')!;
   const limitations: string[] = [
     'Compute on WebGL2 runs through transform feedback, not a native compute shader.',
+    'WebGL2 is measured before WebGPU in the same page; backend order is not counterbalanced.',
   ];
 
   // 1. Measure WebGL2
@@ -141,8 +142,12 @@ window.executeFullBenchmark = async (env: BenchmarkEnvironment): Promise<FullBen
   const limitation = webGpuLimitation(webgpuOutcome);
   if (limitation !== null) limitations.push(limitation);
 
+  const webgpuMeasured = webgpuOutcome.status === 'initialized'
+    && webgpuOutcome.actual === 'webgpu'
+    && webgpuSamples.length === BENCHMARK_PROTOCOL.sampleCount;
+
   const allSamples = [...webglSamples];
-  if (webgpuSamples.length === BENCHMARK_PROTOCOL.sampleCount) {
+  if (webgpuMeasured) {
     allSamples.push(...webgpuSamples);
   }
 
@@ -150,7 +155,7 @@ window.executeFullBenchmark = async (env: BenchmarkEnvironment): Promise<FullBen
     environment: env,
     config: DEFAULT_CONFIG,
     samples: allSamples,
-    blockedBackends: webgpuSamples.length === BENCHMARK_PROTOCOL.sampleCount ? [] : ['webgpu'],
+    blockedBackends: webgpuMeasured ? [] : ['webgpu'],
     limitations,
   });
 

@@ -7,7 +7,7 @@ import type { FullBenchmarkExecutionResult } from './fixtures/benchmark-runner.t
 
 const FIXTURE_URL = '/tests/e2e/fixtures/benchmark-runner.html';
 
-test('record fair two-backend benchmark run @evidence', async ({ page, browser, browserName, isMobile }) => {
+test('record same-host two-backend benchmark run @evidence', async ({ page, browser, browserName, isMobile }) => {
   test.skip(isMobile, 'Benchmark runs once on desktop Chromium');
   test.setTimeout(180_000);
 
