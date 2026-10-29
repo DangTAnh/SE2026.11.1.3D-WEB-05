@@ -1,5 +1,24 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 29/10/2026 — PR #76 TV5 review revision
+
+- Bound only production context-loss at 90s total /60s readiness, retaining
+  65536 default, 10s loss assertion and all capability/assertion checks.
+  Targeted repeats: 3/3 PASS, retries=0. Restore standard npm dev webServer.
+- Refresh UI interaction design to nested v2 and merged #62; explicitly mark
+  old flat v1/Canvas2D as Historical / Superseded. Runtime source is unchanged.
+- Explicit retries=0 full run exposed mobile live-status protocol-handle failure:
+  75 PASS /8 SKIP /1 FAIL. Unchanged targeted repeats: 2 PASS /1 60s timeout.
+  Narrow follow-up uses 90s/60s budget and in-page capability probe; changed
+  targeted repeats 3/3 PASS, retries=0. Preserve failed evidence, not just passes.
+- G0 and 235 tests PASS after follow-up. Final local verify was interrupted
+  after unchanged production backend-reinit exceeded its existing 90s budget;
+  no final clean local full-suite claim. Earlier full verify 76/8 PASS is for
+  preceding test content. See [triage evidence](04-testing/preset-v2-review-2026-10-29.md).
+- Exact-head CI and final run outcomes are recorded on PR #76. Keep Draft;
+  stability/TV1/TV2/TV3/TV5 re-review and independent human approval remain gates.
+  No #55/#56, schema/default/range/hash, source lifecycle or settings change.
+  Physical WebGPU/parity/timestamp freshness and fair v2 benchmark NOT_RUN.
 ## 29/10/2026 — PR #76 integration of merged #62
 
 - Normally merge `dev@142769176cdb081dac2cf5f87419e55ac6fa726c` into
