@@ -60,6 +60,21 @@ test('successful switch commits a fresh candidate and preserves the full config 
   session.dispose();
 });
 
+test('pending initialization exposes no fabricated measurement age', async () => {
+  const next = new DeferredRenderer({ actual: 'webgpu' });
+  const { session } = makeHarness([next]);
+  const task = session.init(target);
+
+  expect(session.initializing).toBe(true);
+  expect(session.getStatus()).toMatchObject({
+    actual: 'unavailable', gpuTimingAvailable: false,
+    measurementAgeMs: null, gpuTimeMs: null, fps: null,
+  });
+
+  next.finish();
+  await task;
+  session.dispose();
+});
 for (const failure of ['reject', 'unavailable', 'inconsistent-status'] as const) {
   test(`failed switch (${failure}) retains the live port/config/actual and disposes only the candidate`, async () => {
     const old = new FakeRenderer({ actual: 'webgpu', requested: 'auto' });

@@ -1,5 +1,34 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 29/10/2026 — PR #76 integration of merged #62
+
+- Normally merge `dev@142769176cdb081dac2cf5f87419e55ac6fa726c` into
+  `feat/16-preset-v2` from `ba19646ed7615dc8b96bf85ef5f83bd8a92172b5`.
+  Preserve published history, nested schema v2 and all #62 freshness behavior.
+- Resolve three conflicts: adapter imports retain v2 cloneConfig/OrbitControls
+  plus MAX_GPU_MEASUREMENT_AGE_MS; adapter test harness retains scene/camera
+  capture plus deferred timestamp controls; status keeps every checkpoint from
+  both branches. No shared kernel/formula, schema/default/range/hash change.
+- Session pending status reports null age/timing/FPS. Adapter age is GPU-only,
+  from compute submission, with lifecycle/generation guards; stale GPU timing
+  becomes unavailable/null while valid FPS remains. Collector/runtime-state
+  source and freshness regressions match merged dev exactly. #55/#56 excluded.
+- Fresh local npm ci PASS (0 vulnerabilities), source/test typechecks PASS,
+  235 unit/contract/integration tests /22 files PASS, production build PASS.
+  Full local CI=1 verify PASS: 76 desktop/mobile E2E PASS /8 expected SKIP,
+  one worker, 8.6 minutes, no retries/flaky cases. Exact resulting SHA and
+  remote CI results are recorded on PR #76.
+  Old fe853f1/ba19646 evidence below is historical, not proof of this merge.
+- Initial restricted npm ci was interrupted; premature commands lacked tsc/vitest.
+  After install, restricted unit execution had 17 suite-load ENOENT errors and
+  51 tests passed (no assertion failures); execution outside that restriction
+  passed 235/235. An earlier verify session disconnected before E2E completion
+  and is incomplete evidence; the final full run is recorded separately.
+- Keep Draft pending final checks, current-head TV1/TV2/TV3/TV5 owner review and
+  independent human approval. Prior TV1/TV3 approvals are DISMISSED. Software
+  Chromium/SwiftShader, fake clocks and test doubles are not physical GPU proof.
+  No release/deploy/tag or #55/#56 implementation is included.
+
 ## 28/10/2026 — PR #76 local synchronization with dev@4fdf67ac
 
 - Original remote head is `fe853f1`; locally merge `dev@4fdf67ac` normally,
@@ -49,6 +78,148 @@
 - [Implementation/verification handoff](04-testing/preset-v2-2026-10-27.md) records
   API/reset/name policy, mapping, software-rendering test limits and owner gates.
 - TV1/TV2/TV3/TV5 review remains required. No merge/release/deploy/Issue closure.
+
+## 28/10/2026 — Issue #53 synchronized after PR #69
+
+- Normally merge `dev@db8231568a700918ac42c6efa9beb3b20aab6831`
+  into `fix/53-measurement-age` from `3451aec`. Git applied the merge cleanly;
+  no textual conflict required resolution. Preserve #69 CI hardening and its
+  exact lockfile alongside all #53 source and regression tests, unchanged.
+- GPU-only age remains measured from compute submission including readback:
+  2,000 ms threshold, 10-frame query cadence, lifecycle/generation invalidation,
+  stale GPU timing unavailable/null while valid FPS is retained, and null age
+  for pending sessions. Preserve #61 recovery; independent FPS freshness is #55.
+- Full head/base, actual per-command verification and current CI are recorded in
+  [PR #62](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/62).
+  Historical parallel E2E failures are separate from the one-worker default.
+- All six inline review threads are resolved. Historical TV1 contract approvals
+  were dismissed after later pushes; current-head owner re-review, TV5 collector
+  confirmation and independent human approval remain required. GitHub was Ready
+  at this inspection; this update does not change Draft/Ready or approve/merge.
+- Keep every historical checkpoint below, including the superseded #54 candidate.
+  Hardware WebGPU recovery, physical GPU parity/timestamp freshness and fair
+  benchmark acceptance remain **NOT_RUN**; software/test doubles are not proof.
+
+## Historical checkpoint — 28/10/2026 — Issue #53 synchronized with dev@4fdf67a
+
+- Normally merge `dev@4fdf67ac6e6913e5f45215faf9e025626f220a29`
+  into `fix/53-measurement-age` from `1d0cabd`. Preserve merged #71
+  reconciliation/history, #64 benchmark runner, #57 deterministic E2E settings
+  and #46 repository standards. The conflict was in this checkpoint file only.
+- Keep Issue #53 source/tests unchanged: GPU-only age from compute submission,
+  2,000 ms threshold, 10-frame cadence, lifecycle invalidation, valid FPS retained
+  when GPU timing is stale, unavailable/null GPU timing, and null pending-session
+  age. Preserve #61 recovery and late lost-renderer timestamp guards. #55 stays
+  separate; no preset-v2 branch or second simulation pipeline is imported.
+- TV1's contract-only approval at `1d0cabd` is historical review evidence, not
+  approval of this new integration. TV5 collector review, downstream dependencies
+  and independent approval remain gates. Keep Draft; no approval/PR merge here.
+- Actual per-command outcomes, new full head/base and CI state are recorded in
+  [PR #62](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/62).
+  E2E now follows dev's one-worker default; the old parallel 12-failure report
+  remains separate history, not a result for this configuration.
+- All earlier checkpoints, including #54, are preserved below. Hardware WebGPU,
+  physical GPU timestamp freshness/parity and fair measured benchmark remain
+  **NOT_RUN**. Software/test-double evidence does not establish hardware acceptance.
+
+## Historical checkpoint — 27/10/2026 — PR #62 integrates runtime recovery from dev@38a1d05
+
+- Branch `fix/53-measurement-age` merges
+  `dev@38a1d05740f20d886b177196b3a1852b1c2ae5fd` normally into the
+  previous `88d4bb1` head. PR #61 / Issue #52 recovery is now merged in dev.
+  All earlier checkpoints, including the superseded #54 candidate, are retained
+  below as historical reports; their counts are not current-head evidence.
+- Keep WebGPU runtime-loss recovery with one WebGL2 attempt, fresh canvas
+  replacement, owner-scoped surface adoption/disposal and generation guards.
+  Session start/pause intent survives recovery and a later backend Apply.
+- Keep Issue #53 GPU-only age from compute submission (including readback),
+  2,000 ms threshold, 10-frame cadence and lifecycle timing invalidation.
+  Pending session age is null; the collector skips paused samples but retains
+  valid FPS with unavailable/null GPU timing when only GPU age is stale.
+  Independent FPS freshness remains #55.
+- Both regression sets are retained. An integration regression also checks that
+  a timestamp resolving from the lost renderer cannot publish into or unlock
+  the recovered renderer's pending query.
+- Current-head verification commands/results are recorded with full base/head
+  SHAs in [PR #62](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/62).
+  The earlier default-parallel E2E run's 12 timeout/polling failures remain
+  separate from serial verification; they are not claimed fixed without a rerun.
+- Hardware WebGPU recovery and physical GPU timestamp freshness: **NOT_RUN**.
+  Software WebGL2, synthetic context loss and fake ports do not prove hardware
+  acceptance. Keep Draft pending TV1's measurementAgeMs contract decision,
+  TV5's collector confirmation and independent human approval. No PR merge.
+
+## Historical checkpoint — 27/10/2026 — Issue #53 PR #62 review follow-up
+
+- Latest fetched base: `dev@09723af8055df0a76d983959e7d0818cf6091450`.
+  Reviewed head `b9bf795f42cf05df4e869c1a9ee65bfa6bf02a82` already
+  merges that base normally. Test revision
+  `d2ef6866ef6580941dae9a5e8ba4e6ae084287fc` adds the collector regression;
+  this checkpoint is its documentation-only follow-up on the same PR branch.
+- The new fake-port case reports available GPU timing at age 2,001 ms with
+  `gpuTimeMs: 3`: the collector retains FPS 60 and emits
+  `gpuTimingAvailable: false` / `gpuTimeMs: null`.
+- GPU-only age still starts at compute submission, includes readback delay,
+  and expires after 2,000 ms. Cadence stays one query per 10 compute frames;
+  5 FPS reaches the window before readback delay, and slower frames/delays may
+  make timing unavailable. Independent FPS freshness remains Issue #55.
+- Verification on test revision `d2ef686` (this follow-up changes only docs):
+  `npm run typecheck` PASS; `npm run build` PASS (including test typecheck);
+  `npm test` PASS, 174 tests across 20 files. Focused collector: 7/7 PASS.
+- `CI=1 npm run verify` PASS: both typechecks, 174 unit/contract/integration
+  tests, 54 desktop/mobile Chromium E2E passes and 4 expected skips (3.9 min,
+  1 worker), then production build. No E2E retries or flaky cases in this run.
+  Skips: two unavailable WebGPU-adapter checks and two desktop-only parity
+  checks on mobile. Vite retains the 1,060.55 kB minified JS chunk advisory.
+- The default-parallel E2E suite was not rerun for this test/docs follow-up;
+  its prior 12 failures remain recorded separately below and are not fixed by
+  the serial pass.
+- Hardware WebGPU / physical timestamp freshness: **NOT_RUN**. Software
+  WebGL2/SwiftShader and fake ports do not establish hardware timestamp cadence
+  or freshness. TV1/TV5 re-review and human approval remain required.
+
+## Historical checkpoint — 27/10/2026 — reviewed head b9bf795
+
+- Base `dev@09723af`, head `b9bf795`. The PR body at review time recorded
+  source typecheck/build PASS, 173 unit/contract/integration tests PASS, and
+  serial `CI=1 npm run verify` PASS with 54 E2E passes and 4 expected skips.
+  These are prior-run evidence, not the new 174-test run.
+- Separately, the default-parallel E2E run at that head recorded 42 passes,
+  4 skips and 12 timeout/polling failures under 10 workers. The serial pass
+  does not turn that parallel run into a pass or prove the flakes fixed.
+
+## Historical checkpoint — 27/10/2026 — Issue #53 with dev@93fd267
+
+- Branch `fix/53-measurement-age` integrates `dev@93fd267` through a normal
+  merge. This brings in the merged #63 composition/backend re-initialization
+  flow plus current #48/#49 simulation updates. The merged composition session
+  now reports `measurementAgeMs: null` while initialization is pending and
+  forwards the active adapter status after initialization.
+- This candidate keeps the #53 GPU timing freshness contract: sample age starts
+  at compute submission, stale timing becomes null/unavailable, and valid FPS
+  can remain in a sample when only GPU timing is stale. No CPU fallback is added.
+- `CI=1 npm run verify`: PASS — both typechecks, 162 unit/contract/integration
+  tests, 52 desktop/mobile Chromium E2E tests, two WebGPU-adapter skips, and
+  production build. No E2E retries were needed. Existing Vite chunk warning
+  remains (~1,061 kB minified). Physical GPU timing-age behavior remains
+  **NOT_RUN** because this environment has no WebGPU adapter.
+
+## Previous checkpoint — 26/10/2026 — Issue #53 review follow-up
+
+- Branch `fix/53-measurement-age` now includes latest fetched `dev@e226697`.
+  The local review-fix candidate timestamps GPU samples from compute submission,
+  requests one query every 10 compute frames, and preserves valid FPS when only
+  GPU timing is stale. FPS freshness remains the separate scope of Issue #55.
+- `npm run verify`: source/test typechecks PASS; 139 unit/contract/integration
+  tests PASS; Chromium desktop/mobile E2E 38 PASS, 2 WebGPU adapter cases
+  skipped; build PASS with the existing ~1,055 kB chunk warning. Focused
+  collector/adapter regressions: 18/18 PASS. Physical GPU timing-age behavior
+  is **NOT_RUN**.
+- PR #63 remains open and its pending `RendererStatus` omits required
+  `measurementAgeMs`; keep #62 draft until TV1 resolves merge-order
+  compatibility and TV1/TV5 re-review the contract/collector behavior.
+  This records the state before #63 merged into `dev` on 27/10; retain as
+  historical evidence only.
 
 ## 27/10/2026 — dev `38a1d05`: #61 merged after the `09723af` reconciliation
 
@@ -129,6 +300,10 @@
   benchmark (#58), MVP acceptance and release remain separate unmet gates.
 
 ## 26/10/2026 — TV4 Issue #54 backend re-initialization candidate
+
+> Historical checkpoint restored verbatim from `dev@09723af`. PR #63
+> superseded this initial candidate; the evidence and next steps below describe
+> that earlier run, not the current #53 revision.
 
 - Baseline: `dev@ac364912`; branch `feat/54-backend-reinit`, assigned to TV4
   (`duyanhtr130905`). Backend selection now has an explicit Apply action that

@@ -43,17 +43,21 @@ test('live status replaces metrics and backend identity across failure and recov
   await page.clock.install();
   await page.goto(fixturePage);
   await expect(page.locator('#actual-backend')).toHaveText('WebGPU');
-  await page.evaluate(() => window.uiTest.setStatus({ fps: 61.7, gpuTimingAvailable: true, gpuTimeMs: 1.25 }));
+  await page.evaluate(() => window.uiTest.setStatus({ fps: 61.7, gpuTimingAvailable: true, measurementAgeMs: 0, gpuTimeMs: 1.25 }));
   await page.clock.fastForward(500);
   await expect(page.locator('#runtime-fps')).toHaveText('62 FPS');
   await expect(page.locator('#gpu-timing')).toHaveText('1.25 ms');
 
-  await page.evaluate(() => window.uiTest.setStatus({ gpuTimingAvailable: true, gpuTimeMs: 0 }));
+  await page.evaluate(() => window.uiTest.setStatus({ measurementAgeMs: 2_001 }));
+  await page.clock.fastForward(500);
+  await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
+
+  await page.evaluate(() => window.uiTest.setStatus({ gpuTimingAvailable: true, measurementAgeMs: 0, gpuTimeMs: 0 }));
   await page.clock.fastForward(500);
   await expect(page.locator('#gpu-timing')).toHaveText('Không khả dụng');
 
   await page.evaluate(() => window.uiTest.setStatus({ actual: 'webgl2', requested: 'webgpu', fps: 48,
-    gpuTimingAvailable: false, gpuTimeMs: 0 }));
+    gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: 0 }));
   await page.clock.fastForward(500);
   await expect(page.locator('#actual-backend')).toHaveText('WebGL2 fallback');
   await expect(page.locator('#runtime-fps')).toHaveText('48 FPS');
@@ -74,7 +78,7 @@ test('live status replaces metrics and backend identity across failure and recov
 
   await page.evaluate(() => {
     window.uiTest.setFailure(false);
-    window.uiTest.setStatus({ actual: 'webgpu', fps: 60, gpuTimingAvailable: true, gpuTimeMs: 2 });
+    window.uiTest.setStatus({ actual: 'webgpu', fps: 60, gpuTimingAvailable: true, measurementAgeMs: 0, gpuTimeMs: 2 });
   });
   await page.clock.fastForward(500);
   await expect(page.locator('#runtime-phase-label')).toHaveText('READY');
@@ -87,7 +91,7 @@ test('live status replaces metrics and backend identity across failure and recov
 test('paused and invalid samples never keep old GPU timing visible', async ({ page }) => {
   await page.clock.install();
   await page.goto(fixturePage);
-  await page.evaluate(() => window.uiTest.setStatus({ fps: 60, gpuTimingAvailable: true, gpuTimeMs: 3 }));
+  await page.evaluate(() => window.uiTest.setStatus({ fps: 60, gpuTimingAvailable: true, measurementAgeMs: 0, gpuTimeMs: 3 }));
   await page.clock.fastForward(500);
   await expect(page.locator('#gpu-timing')).toHaveText('3.00 ms');
   await page.evaluate(() => window.uiTest.setStatus({ running: false }));
@@ -98,7 +102,7 @@ test('paused and invalid samples never keep old GPU timing visible', async ({ pa
   await page.locator('#toggle-preview').click();
   await expect(page.locator('#toggle-preview')).toHaveAttribute('aria-label', 'Tạm dừng xem trước');
   expect(await page.evaluate(() => window.uiTest.port.getStatus().running)).toBe(true);
-  await page.evaluate(() => window.uiTest.setStatus({ running: true, fps: NaN, gpuTimeMs: -1 }));
+  await page.evaluate(() => window.uiTest.setStatus({ running: true, fps: NaN, measurementAgeMs: 0, gpuTimeMs: -1 }));
   await page.clock.fastForward(500);
   await expect(page.locator('#runtime-fps')).toHaveText('—');
   await expect(page.locator('#runtime-fps-detail')).toHaveText('Không có số đo hợp lệ');

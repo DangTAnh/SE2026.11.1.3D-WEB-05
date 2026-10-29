@@ -60,6 +60,7 @@ for the exact active-workload hash matrix and full runtime mapping.
 
 Schema, runtime defaults, types, examples and contract tests migrate together.
 The existing UI controls read nested values and update active strength only.
-New controls remain #56; independent FPS freshness remains #55. No changes from
-Draft PR #62 are imported. GPU parity and release/benchmark acceptance stay
+New controls remain #56; independent FPS freshness remains #55. Merged PR #62
+is integrated from `dev@1427691`; its GPU-only timing freshness contract is
+preserved alongside nested v2 snapshots. GPU parity and release/benchmark acceptance stay
 separate; software/mock evidence is not physical GPU proof.
