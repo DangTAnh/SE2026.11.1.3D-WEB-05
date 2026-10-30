@@ -22,6 +22,8 @@
 | webgpu | 100 | 59.904153354632676 (59.89219405070899–59.92808629644444, n=100) | n/a |
 
 ## Limitations
+- Compute on WebGL2 runs through transform feedback, not a native compute shader.
+- WebGL2 is measured before WebGPU in the same page; backend order is not counterbalanced.
 - Headed Chromium is refresh-bound at the host's ~59.9 Hz display cadence; this run shows both backends sustaining ~60 FPS at 20,000 particles, not peak throughput.
 - GPU timing was unavailable on both backends; only FPS is reported.
-- Compute on WebGL2 runs through transform feedback, not a native compute shader.
+- Provenance: Environment and Runs are the `6d8f304` headed run output; that runner emitted only the transform-feedback limitation, so the backend-order, refresh-bound and GPU-timing limitations were written by the author after the run.
