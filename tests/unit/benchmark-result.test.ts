@@ -109,3 +109,12 @@ test('result: a group from another configuration is rejected', () => {
     TypeError,
   );
 });
+
+
+test('result: full nested config remains beside workload hash, including excluded appearance/camera/inactive fields', () => {
+  const text = toMarkdown(result());
+  assert.ok(text.includes(JSON.stringify(DEFAULT_CONFIG)));
+  for (const group of ['simulation', 'modes', 'attractor', 'vortex', 'rendering', 'camera']) {
+    assert.ok(text.includes('"' + group + '"'), group);
+  }
+});

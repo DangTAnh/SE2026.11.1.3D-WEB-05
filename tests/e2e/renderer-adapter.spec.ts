@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 
 test('forced WebGL2 initializes a renderer on the application canvas when supported', async ({ page }) => {
-  test.setTimeout(60_000);
+  // v2 default 65536 is kept here; software rendering needs a startup budget.
+  test.setTimeout(90_000);
   const pageErrors: string[] = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   await page.goto('/?webgl=1');
@@ -13,7 +14,7 @@ test('forced WebGL2 initializes a renderer on the application canvas when suppor
     };
   });
 
-  await expect(page.locator('#actual-backend')).toHaveText(capabilities.webgl2 ? 'WebGL2' : 'Không khả dụng');
+  await expect(page.locator('#actual-backend')).toHaveText(capabilities.webgl2 ? 'WebGL2' : 'Không khả dụng', { timeout: 60_000 });
   await expect(page.locator('#runtime-phase-label')).toHaveText(capabilities.webgl2 ? 'READY' : 'UNSUPPORTED');
 
   if (capabilities.webgl2) {

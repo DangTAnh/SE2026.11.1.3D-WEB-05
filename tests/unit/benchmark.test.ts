@@ -7,10 +7,10 @@
 import assert from 'node:assert/strict';
 import { afterEach, test, vi } from 'vitest';
 import { configHash } from '../../src/core/measurement/configHash.ts';
-import type { BenchmarkEnvironment } from '../../src/core/measurement/result.ts';
+import { toMarkdown, type BenchmarkEnvironment } from '../../src/core/measurement/result.ts';
 import type { PerformanceSnapshot } from '../../src/core/types/measurement.ts';
 import { BENCHMARK_PROTOCOL, buildBenchmarkResult, collectBenchmarkSamples } from '../../src/perf/benchmark.ts';
-import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
+import { cloneConfig, DEFAULT_CONFIG, parsePresetDocument, serializePresetDocument } from '../../src/presets/preset.ts';
 import { FakeRenderer } from '../support/fakeRenderer.ts';
 
 afterEach(() => {
@@ -213,4 +213,59 @@ test('collect: a sampling error rejects the run and stops the timer', async () =
     statusCalls,
     'a failed run does not keep sampling',
   );
+});
+
+
+test('build: full validated nested v2 config survives the benchmark result and report', async () => {
+  for (const particleCount of [65536, 500000]) {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.mode = particleCount === 65536 ? 'attractor' : 'vortex';
+    Object.assign(config.simulation, { particleCount, spawnRadius: 23, lifetime: 9 });
+    config.modes.attractor.attractorStrength = 3.2;
+    config.modes.vortex.vortexDamping = 0.87;
+    config.rendering = { particleColor: '#abcdef', backgroundColor: '#123456', opacity: 0.3, additiveBlend: true };
+    config.camera = { enabled: false, autoRotate: true, distance: 500 };
+    const document = parsePresetDocument(serializePresetDocument({
+      schemaVersion: 2, app: '3D-WEB-05', name: 'validated benchmark preset', config,
+    }));
+    const hash = await configHash(document.config);
+    const result = await buildBenchmarkResult({
+      environment: ENVIRONMENT,
+      config: document.config,
+      samples: Array.from({ length: BENCHMARK_PROTOCOL.sampleCount }, () => snapshot(hash, { actual: 'webgl2' })),
+    });
+    assert.deepEqual(result.config, document.config);
+    assert.equal(result.configHash, hash);
+    assert.equal(result.groups[0]!.count, BENCHMARK_PROTOCOL.sampleCount);
+    assert.ok(toMarkdown(result).includes(JSON.stringify(document.config)));
+    assert.equal(Object.hasOwn(result.config, 'name'), false, 'envelope metadata is not an engine parameter');
+  }
+});
+test('build: result config is isolated from later caller mutation', async () => {
+  const config = cloneConfig(DEFAULT_CONFIG);
+  const hash = await configHash(config);
+  const result = await buildBenchmarkResult({ environment: ENVIRONMENT, config,
+    samples: Array.from({ length: 100 }, () => snapshot(hash)) });
+  config.rendering.opacity = 0.3;
+  assert.equal(result.config.rendering.opacity, 1);
+});
+
+test.each(['rendering', 'camera', 'inactive mode'] as const)('collect: rejects same-hash %s changes', async field => {
+  const config = cloneConfig(DEFAULT_CONFIG);
+  const originalHash = await configHash(config);
+  const port = new FakeRenderer({ actual: 'webgl2', running: true, fps: 60 });
+  let reads = 0;
+  const run = collectBenchmarkSamples(port, () => {
+    if (++reads === 3) {
+      if (field === 'rendering') config.rendering.additiveBlend = true;
+      if (field === 'camera') config.camera.distance = 50;
+      if (field === 'inactive mode') config.modes.vortex.vortexStrength = 3;
+    }
+    return config;
+  }, { warmUpMs: 1, cadenceMs: 5, sampleCount: 3 });
+  await assert.rejects(run, /full preset changed/);
+  assert.equal(await configHash(config), originalHash);
+  const calls = port.calls.length;
+  await new Promise(resolve => setTimeout(resolve, 20));
+  assert.equal(port.calls.length, calls);
 });

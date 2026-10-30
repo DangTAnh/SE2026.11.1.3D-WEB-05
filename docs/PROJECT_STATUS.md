@@ -1,4 +1,127 @@
+## 29/10/2026 — PR #76 final review follow-up
+
+- Retain TV1-approved active-workload hash option A and golden vectors.
+  Architecture §5.1 now explicitly documents rendering/camera collisions and
+  full-preset benchmark fairness. Collection rejects observed full-config changes
+  even when the hash stays equal; result config is a validated isolated snapshot.
+- Reviewed head 7a6992a already has strength 0.2–4 and precision 0.001; schema
+  is unchanged. New direct-parser regression and desktop/mobile UI rejection of
+  strength 50 demonstrate matching validation and preserved controls/state.
+- Final sequential local checks on follow-up source/test/config: npm ci,
+  both typechecks, 241 tests /22 files, explicit E2E retries=0 (76 PASS /8 SKIP,
+  8.7min, axe PASS), and 208-module build PASS. No retry/flaky in that run.
+  Earlier interrupted/concurrent runs and actual failures remain in
+  [review evidence](04-testing/preset-v2-review-2026-10-29.md).
+- Proposed integration order #76 then #78; later integration must reconcile
+  nested particleCount/default 65536, blockedBackends fixtures, benchmark guard
+  and all status checkpoints. [Plan posted on #78](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/78#discussion_r4414554026).
+  No TV5 branch edits or transitive unmerged contract dependency.
+- Exact final SHA/remote CI, owner re-review requests and actual Draft/Ready
+  state are tracked on [PR #76](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/76).
+  Human owner approval remains required; AI review is supplementary. #55/#56
+  stay post-MVP, #14 is not reopened. Physical WebGPU/parity/timestamp freshness
+  and v2-default benchmark acceptance remain NOT_RUN. No merge/auto-merge,
+  release/deploy/tag, settings change or Issue closure.
+
 # PROJECT STATUS — 3D-WEB-05
+
+## 29/10/2026 — PR #76 TV5 review revision
+
+- Bound only production context-loss at 90s total /60s readiness, retaining
+  65536 default, 10s loss assertion and all capability/assertion checks.
+  Targeted repeats: 3/3 PASS, retries=0. Restore standard npm dev webServer.
+- Refresh UI interaction design to nested v2 and merged #62; explicitly mark
+  old flat v1/Canvas2D as Historical / Superseded. Runtime source is unchanged.
+- Explicit retries=0 full run exposed mobile live-status protocol-handle failure:
+  75 PASS /8 SKIP /1 FAIL. Unchanged targeted repeats: 2 PASS /1 60s timeout.
+  Narrow follow-up uses 90s/60s budget and in-page capability probe; changed
+  targeted repeats 3/3 PASS, retries=0. Preserve failed evidence, not just passes.
+- G0 and 235 tests PASS after follow-up. Final local verify was interrupted
+  after unchanged production backend-reinit exceeded its existing 90s budget;
+  no final clean local full-suite claim. Earlier full verify 76/8 PASS is for
+  preceding test content. See [triage evidence](04-testing/preset-v2-review-2026-10-29.md).
+- Exact-head CI and final run outcomes are recorded on PR #76. Keep Draft;
+  stability/TV1/TV2/TV3/TV5 re-review and independent human approval remain gates.
+  No #55/#56, schema/default/range/hash, source lifecycle or settings change.
+  Physical WebGPU/parity/timestamp freshness and fair v2 benchmark NOT_RUN.
+## 29/10/2026 — PR #76 integration of merged #62
+
+- Normally merge `dev@142769176cdb081dac2cf5f87419e55ac6fa726c` into
+  `feat/16-preset-v2` from `ba19646ed7615dc8b96bf85ef5f83bd8a92172b5`.
+  Preserve published history, nested schema v2 and all #62 freshness behavior.
+- Resolve three conflicts: adapter imports retain v2 cloneConfig/OrbitControls
+  plus MAX_GPU_MEASUREMENT_AGE_MS; adapter test harness retains scene/camera
+  capture plus deferred timestamp controls; status keeps every checkpoint from
+  both branches. No shared kernel/formula, schema/default/range/hash change.
+- Session pending status reports null age/timing/FPS. Adapter age is GPU-only,
+  from compute submission, with lifecycle/generation guards; stale GPU timing
+  becomes unavailable/null while valid FPS remains. Collector/runtime-state
+  source and freshness regressions match merged dev exactly. #55/#56 excluded.
+- Fresh local npm ci PASS (0 vulnerabilities), source/test typechecks PASS,
+  235 unit/contract/integration tests /22 files PASS, production build PASS.
+  Full local CI=1 verify PASS: 76 desktop/mobile E2E PASS /8 expected SKIP,
+  one worker, 8.6 minutes, no retries/flaky cases. Exact resulting SHA and
+  remote CI results are recorded on PR #76.
+  Old fe853f1/ba19646 evidence below is historical, not proof of this merge.
+- Initial restricted npm ci was interrupted; premature commands lacked tsc/vitest.
+  After install, restricted unit execution had 17 suite-load ENOENT errors and
+  51 tests passed (no assertion failures); execution outside that restriction
+  passed 235/235. An earlier verify session disconnected before E2E completion
+  and is incomplete evidence; the final full run is recorded separately.
+- Keep Draft pending final checks, current-head TV1/TV2/TV3/TV5 owner review and
+  independent human approval. Prior TV1/TV3 approvals are DISMISSED. Software
+  Chromium/SwiftShader, fake clocks and test doubles are not physical GPU proof.
+  No release/deploy/tag or #55/#56 implementation is included.
+
+## 28/10/2026 — PR #76 local synchronization with dev@4fdf67ac
+
+- Original remote head is `fe853f1`; locally merge `dev@4fdf67ac` normally,
+  preserving #64 benchmark runner/contracts, #77 single-worker Playwright and
+  #72 CODEOWNERS/issue workflow. No rebase or force-push.
+- Only explicit conflict: two readiness polls in `tests/e2e/ui-port.spec.ts`.
+  Keep the v2 60s readiness / 90s overall budgets already verified for 65536
+  particles; all capability/actual-backend assertions remain unchanged.
+- Automatic merges retain v2 README wording, direct Node Vite startup, workers:1,
+  all strict benchmark environment checks and the full nested-config regression.
+  Add a benchmark-runner integration regression for validated v2 configs with
+  counts 65536/500000, both mode groups, appearance and camera in the report.
+- Runtime nested preset/schema/hash/adapter/session/UI implementation is unchanged;
+  #55/#56 and unmerged #62 source are excluded. No shared contract change is made.
+- Source/test typechecks and 222 unit/contract/integration tests pass locally.
+  Full verification is rerun on the local merge commit; exact SHA/results are
+  recorded in the local handoff report. Old remote CI is not proof of this merge.
+- Local only: user permission is required before push. Keep Draft; do not merge
+  PR, release or close Issue. TV2/TV5 still owe implementation review; TV1/TV3
+  approvals refer to the old remote head and require consideration of this sync.
+
+## 27/10/2026 — PR #76 synchronized with dev@fd3f1de
+
+- Normally merge `dev@fd3f1defd648d5cad8fb464be053f64391a83e47`
+  into candidate `feat/16-preset-v2` from `70ba103`. Preserve both the nested
+  schema/preset/hash/session implementation and the merged #71/#61 documentation.
+  Earlier checkpoints, including #54, remain historical reports.
+- Runtime source/schema/tests are unchanged by this synchronization. The README
+  now identifies preset v2 as this branch's candidate rather than describing the
+  dev v1 parser as its current runtime. No #62/#55/#56 source is imported.
+- Final-head commands, counts, retries and CI are recorded in
+  [PR #76](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/76).
+  Earlier 210-test/browser reports below are prior-run evidence.
+- Hardware WebGPU and physical-GPU parity/timestamp freshness remain **NOT_RUN**.
+  Three consumer tests, synthetic loss and SwiftShader do not prove hardware
+  acceptance. TV3 review is scoped to its mapping/lifecycle boundary; TV1, TV2,
+  TV5 and independent human approval are separate gates. Keep Draft until met.
+
+## Historical checkpoint — 27/10/2026 — Issue #16 nested preset v2 implementation candidate
+
+- Branch `feat/16-preset-v2` starts from `dev@38a1d057`. Runtime schema, nested
+  config, full preset envelope/name, active-workload hash, all renderer fields
+  and existing UI bindings migrate together. No #55/#56 implementation.
+- Source/test typechecks, 210 unit/contract/integration tests and production build
+  pass locally. Browser and exact-head CI evidence are recorded on the PR before
+  readiness; this source checkpoint does not claim human acceptance.
+- [Implementation/verification handoff](04-testing/preset-v2-2026-10-27.md) records
+  API/reset/name policy, mapping, software-rendering test limits and owner gates.
+- TV1/TV2/TV3/TV5 review remains required. No merge/release/deploy/Issue closure.
 
 ## 28/10/2026 — Issue #53 synchronized after PR #69
 

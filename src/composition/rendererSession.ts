@@ -1,6 +1,6 @@
 import type { RendererPort, RendererStatus, RendererTarget } from '../core/renderer/RendererPort.ts';
 import type { ActualBackend, BackendPreference } from '../core/types/backend.ts';
-import type { LabConfig } from '../presets/preset.ts';
+import { cloneConfig, type LabConfig } from '../presets/preset.ts';
 import type { BackendSwitchResult, RendererCandidate } from './backendSwitch.ts';
 
 /** Stable UI-facing port; backend replacement commits only after candidate readiness. */
@@ -19,7 +19,7 @@ export class RendererSession implements RendererPort {
     config: Readonly<LabConfig>,
     private readonly createCandidate: (config: Readonly<LabConfig>) => RendererCandidate,
   ) {
-    this.#config = { ...config };
+    this.#config = cloneConfig(config);
     this.#requested = config.backendPreference;
   }
 
@@ -47,12 +47,12 @@ export class RendererSession implements RendererPort {
     let previousPaused = false;
     let committed = false;
     try {
-      const candidate = this.createCandidate({ ...this.#config });
+      const candidate = this.createCandidate(cloneConfig(this.#config));
       pending.candidate = candidate;
       const actual = await candidate.port.init(this.#target);
       if (!isCurrent()) return result('superseded');
       candidate.port.pause();
-      candidate.port.applyConfig({ ...this.#config, backendPreference: requested });
+      candidate.port.applyConfig({ ...cloneConfig(this.#config), backendPreference: requested });
       candidate.port.resize?.(this.#target);
       if (actual === 'unavailable' || candidate.port.getStatus().actual !== actual) return result('failed');
       // Candidate initialization is paused. Stop the old simulation before starting
@@ -89,7 +89,7 @@ export class RendererSession implements RendererPort {
   applyConfig(config: Readonly<LabConfig>): void {
     if (this.#disposed) return;
     this.#active?.port.applyConfig(config);
-    this.#config = { ...config };
+    this.#config = cloneConfig(config);
   }
 
   start(): void {

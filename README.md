@@ -43,7 +43,7 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
 
 ## What exists
 
-- **UI / presets:** controls, preset v1 JSON validation and round-trip,
+- **UI / presets:** controls, nested preset v2 JSON validation and document/name round-trip,
   pause/resume/reset through an injected `RendererPort`, responsive layout,
   accessibility checks, unavailable/error presentation and cleanup.
 - **Port consumer:** `mountLabUI(root, port)` applies defaults once, sends one
@@ -67,8 +67,11 @@ merge. CI runs `npm run verify` on PRs and configured pushes.
   corrupt-readback rejections) is recorded in
   `docs/04-testing/gpu-kernel-parity-2026-10-26.md`. WebGPU execution remains
   pending because this environment exposes no adapter.
-- **Schema v2:** proposal and JSON Schema are available. Runtime parsing still
-  uses v1 until issue #16 and its shared config/hash decisions are implemented.
+- **Schema v2 candidate (#76 / #16):** this branch uses nested v2 at runtime,
+  preserves both mode groups and optional document name, and rejects v1, unknown
+  and missing keys. Rendering/camera fields reach adapter consumers; workload
+  hash follows TV1's active-mode projection. Owner review remains required;
+  the v1 schema is retained only as history.
 - **Verification:** UI interaction tests use an explicit
   `tests/e2e/fixtures/renderer-port.html` harness with `FakeRenderer`.
   The harness starts no GPU and its backend labels are test inputs, not runtime

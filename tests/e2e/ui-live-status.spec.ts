@@ -3,13 +3,20 @@ import { expect, test } from '@playwright/test';
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
 test('production WebGL2 shows live FPS and clears metrics when paused', async ({ page }, testInfo) => {
-  test.setTimeout(60_000);
+  // Initialize the real 65536 default before reducing the status workload.
+  // Match production smoke budget so slow software GL leaves time to pause.
+  test.setTimeout(90_000);
   await page.goto('/?webgl=1');
-  const supported = await page.locator('#preview-canvas').evaluate(canvas =>
-    (canvas as HTMLCanvasElement).getContext('webgl2') !== null);
+  // Probe in-page without transferring an ElementHandle over the connection.
+  const supported = await page.evaluate(() =>
+    document.querySelector<HTMLCanvasElement>('#preview-canvas')!.getContext('webgl2') !== null);
   test.skip(!supported, 'This browser cannot initialize WebGL2 on the application canvas.');
-  await expect(page.locator('#actual-backend')).toHaveText('WebGL2', { timeout: 20_000 });
+  await expect(page.locator('#actual-backend')).toHaveText('WebGL2', { timeout: 60_000 });
   await expect(page.locator('#runtime-phase-label')).toHaveText('READY');
+  // Exercise status transitions on a small real GPU workload. The v2 default
+  // (65536) is validated by the production initialization smoke; software
+  // rendering it here makes screenshot/click latency dominate this status test.
+  await page.locator('#particle-count').fill('1000');
   await expect(page.locator('#runtime-fps')).toHaveText(/^\d+ FPS$/, { timeout: 20_000 });
   await expect(page.locator('#runtime-fps-detail')).toHaveText('Dữ liệu từ renderer');
   await page.screenshot({ path: testInfo.outputPath('live-webgl2.png') });

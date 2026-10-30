@@ -6,7 +6,7 @@
  * arguments, not just the final status.
  */
 import type { ActualBackend, BackendPreference } from '../../src/core/types/backend.ts';
-import type { LabConfig } from '../../src/presets/preset.ts';
+import { cloneConfig, type LabConfig } from '../../src/presets/preset.ts';
 import type { RendererPort, RendererStatus, RendererTarget } from '../../src/core/renderer/RendererPort.ts';
 
 export type RendererCall =
@@ -73,8 +73,8 @@ export class FakeRenderer implements RendererPort {
   }
 
   applyConfig(config: Readonly<LabConfig>): void {
-    this.calls.push({ type: 'applyConfig', config });
-    this.#lastConfig = config;
+    this.calls.push({ type: 'applyConfig', config: cloneConfig(config) });
+    this.#lastConfig = cloneConfig(config);
   }
 
   start(): void {
