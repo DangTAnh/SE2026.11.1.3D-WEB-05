@@ -7,7 +7,7 @@ import type { FullBenchmarkExecutionResult } from './fixtures/benchmark-runner.t
 
 const FIXTURE_URL = '/tests/e2e/fixtures/benchmark-runner.html';
 
-test('record same-host two-backend benchmark run @evidence', async ({ page, browser, browserName, isMobile }) => {
+test('record same-host benchmark run for the backends this host supports @evidence', async ({ page, browser, browserName, isMobile }) => {
   test.skip(isMobile, 'Benchmark runs once on desktop Chromium');
   test.setTimeout(180_000);
 
@@ -100,7 +100,19 @@ test('record same-host two-backend benchmark run @evidence', async ({ page, brow
   expect(result.markdown).toContain('## Configuration');
   expect(result.markdown).toContain('Mode / particleCount');
   expect(result.markdown).toContain('## Runs');
-  expect(result.markdown).toContain('webgl2');
+  expect(result.markdown).toContain('| webgl2 | 100 |');
+
+  const webgpuRow = result.markdown.split('\n').find((line) => line.startsWith('| webgpu '));
+  if (webgpuRow === undefined) {
+    throw new Error('benchmark: the result has no WebGPU row');
+  }
+  if (probed.webgpuAdapter !== null) {
+    expect(result.webgpuCount).toBe(100);
+    expect(webgpuRow).toMatch(/^\| webgpu \| 100 \|/);
+  } else {
+    expect(result.webgpuCount).toBe(0);
+    expect(webgpuRow).toBe('| webgpu | n/a | n/a | n/a |');
+  }
 
   // Write to test-results/ (or explicit env var), never overwrite committed documents
   const outputPath = process.env.BENCHMARK_OUTPUT_PATH
