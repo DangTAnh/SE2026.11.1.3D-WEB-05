@@ -1,56 +1,162 @@
-import { DEFAULT_CONFIG } from '../presets/preset.ts';
+import { cloneConfig, DEFAULT_CONFIG } from '../presets/preset.ts';
 import type { LabConfig } from '../presets/preset.ts';
+import type { RendererPort } from '../core/renderer/RendererPort.ts';
+import type { BackendSwitchResult } from '../composition/backendSwitch.ts';
 import { bindLabControls, renderLabControls } from './controls/controlBindings.ts';
 import { byId } from './dom.ts';
-import { createParticlePreview } from './mock/particlePreview.ts';
 import { createToastController } from './notifications.ts';
 import { renderRuntimeStatus } from './overlays/statusOverlay.ts';
-import {
-  createRuntimeState,
-  resolveRuntimeFixture,
-  withPreviewFps,
-} from './state/runtimeState.ts';
+import { createInitializingRuntimeState, createRendererRuntimeState } from './state/runtimeState.ts';
 import { createLabMarkup } from './template.ts';
+import { measureRendererTarget } from './rendererTarget.ts';
 
-export function mountLabUI(root: HTMLElement): void {
-  let config: LabConfig = { ...DEFAULT_CONFIG };
-  let runtimeState = createRuntimeState(resolveRuntimeFixture(window.location.search));
-
+/** The composition root owns init/canvas binding; UI only consumes the injected port. */
+export function prepareLabUI(root: HTMLElement): HTMLCanvasElement {
   root.innerHTML = createLabMarkup();
+  renderRuntimeStatus(createInitializingRuntimeState());
+  const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
+  if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
+  return canvas;
+}
+export function mountLabUI(
+  root: HTMLElement,
+  port?: RendererPort,
+  options: {
+    initialConfig?: Readonly<LabConfig>;
+    isInitializing?: () => boolean;
+    reinitializeBackend?: () => Promise<BackendSwitchResult>;
+  } = {},
+): () => void {
+  let config: LabConfig = cloneConfig(options.initialConfig ?? DEFAULT_CONFIG);
+  // Metadata belongs to the preset document, never to RendererPort parameters.
+  // Ordinary edits and simulation reset retain it; restoring defaults clears it.
+  let presetName: string | undefined;
+  let disposed = false;
+  let configApplied = !port;
 
-  const preview = createParticlePreview(byId<HTMLCanvasElement>('preview-canvas'), () => config);
+  if (!root.querySelector('#preview-canvas')) prepareLabUI(root);
+
+  const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
+  if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
+  const rendererPort = port;
+  const canvasHost = canvas.parentElement ?? canvas;
+  const getRendererTarget = () => measureRendererTarget(canvasHost);
+  const resizeObserver = rendererPort?.resize
+    ? new ResizeObserver(() => rendererPort.resize?.(getRendererTarget()))
+    : null;
+  if (resizeObserver) resizeObserver.observe(canvasHost);
+
   const toast = createToastController();
+  let backendRequest = 0;
 
-  const updateConfig = (next: LabConfig, resetPreview = false): void => {
-    config = next;
+  const refreshStatus = (): void => {
+    if (disposed) return;
+    if (options.isInitializing?.()) {
+      renderRuntimeStatus(createInitializingRuntimeState());
+      return;
+    }
+    if (!configApplied) {
+      renderRuntimeStatus(createRendererRuntimeState(undefined, true));
+      return;
+    }
+    try {
+      const status = rendererPort?.getStatus();
+      renderRuntimeStatus(createRendererRuntimeState(status));
+      const running = status?.running ?? false;
+      const toggle = byId<HTMLButtonElement>('toggle-preview');
+      toggle.textContent = running ? 'Ⅱ' : '▶';
+      toggle.setAttribute('aria-label', running ? 'Tạm dừng xem trước' : 'Tiếp tục xem trước');
+    } catch {
+      renderRuntimeStatus(createRendererRuntimeState(undefined, true));
+    }
+  };
+
+  const resetSimulation = (): void => {
+    try { rendererPort?.reset(); }
+    catch { throw new Error('Không thể khởi tạo lại mô phỏng. Vui lòng thử lại.'); }
+  };
+
+  const updateConfig = (next: LabConfig, shouldReset = false, metadata?: { name?: string }): void => {
+    if (disposed) return;
+    const countChanged = next.simulation.particleCount !== config.simulation.particleCount;
+    try {
+      rendererPort?.applyConfig(cloneConfig(next));
+    } catch {
+      renderLabControls(config);
+      throw new Error('Không thể áp dụng cấu hình. Cấu hình trước vẫn được giữ trong UI.');
+    }
+    configApplied = true;
+    config = cloneConfig(next);
+    if (metadata) presetName = metadata.name;
     renderLabControls(config);
-    if (resetPreview) preview.reset();
+    if (shouldReset && !countChanged) {
+      try { resetSimulation(); }
+      catch {
+        refreshStatus();
+        throw new Error('Cấu hình đã được áp dụng. Không thể khởi tạo lại mô phỏng; vui lòng thử Reset.');
+      }
+    }
+    refreshStatus();
   };
 
   const disposeControls = bindLabControls({
     getConfig: () => config,
     updateConfig,
-    resetPreview: preview.reset,
-    togglePreview: preview.toggle,
+    getPresetDocument: () => ({ schemaVersion: 2, app: '3D-WEB-05',
+      ...(presetName === undefined ? {} : { name: presetName }), config: cloneConfig(config) }),
+    importPresetDocument: document => updateConfig(document.config, true,
+      document.name === undefined ? {} : { name: document.name }),
+    restoreDefaults: () => updateConfig(cloneConfig(DEFAULT_CONFIG), true, {}),
+    resetSimulation: () => { resetSimulation(); refreshStatus(); },
+    toggleSimulation: () => {
+      if (!rendererPort) return;
+      if (rendererPort.getStatus().running) rendererPort.pause();
+      else rendererPort.start();
+      refreshStatus();
+    },
+    applyBackend: () => {
+      if (!options.reinitializeBackend) return;
+      const request = ++backendRequest;
+      const task = options.reinitializeBackend();
+      refreshStatus();
+      void task.then(result => {
+        if (disposed || request !== backendRequest || result.outcome === 'superseded') return;
+        const backend = result.actual === 'webgpu' ? 'WebGPU' : 'WebGL2';
+        if (result.outcome === 'failed' || result.actual === 'unavailable') {
+          toast.notify(result.retainedPrevious
+            ? `Không thể áp dụng backend. Vẫn sử dụng ${backend} trước đó.`
+            : 'Không thể áp dụng backend. Không có renderer khả dụng; vui lòng thử lại.', 'error');
+        } else if (result.actual === 'webgl2' && result.requested !== 'webgl2') {
+          toast.notify('Đã áp dụng backend: WebGL2 fallback thay cho WebGPU.', 'info');
+        } else {
+          toast.notify(`Đã áp dụng backend: ${backend}.`);
+        }
+      }).catch(() => {
+        if (!disposed && request === backendRequest) toast.notify('Không thể áp dụng backend. Vui lòng thử lại.', 'error');
+      }).finally(() => { if (!disposed) refreshStatus(); });
+    },
     notify: toast.notify,
   });
 
+  byId<HTMLButtonElement>('apply-backend').disabled = !options.reinitializeBackend;
+
   renderLabControls(config);
-  renderRuntimeStatus(runtimeState);
+  try {
+    rendererPort?.applyConfig(cloneConfig(config));
+    if (port) configApplied = true;
+    refreshStatus();
+  } catch {
+    renderRuntimeStatus(createRendererRuntimeState(undefined, true));
+  }
 
-  const fpsTimer = window.setInterval(() => {
-    runtimeState = withPreviewFps(runtimeState, preview.getFps());
-    renderRuntimeStatus(runtimeState);
-  }, 500);
-
-  window.addEventListener(
-    'beforeunload',
-    () => {
-      window.clearInterval(fpsTimer);
-      disposeControls();
-      toast.dispose();
-      preview.dispose();
-    },
-    { once: true },
-  );
+  const statusTimer = window.setInterval(refreshStatus, 500);
+  const dispose = (): void => {
+    if (disposed) return;
+    disposed = true;
+    window.clearInterval(statusTimer);
+    disposeControls();
+    toast.dispose();
+    resizeObserver?.disconnect();
+  };
+  return dispose;
 }
