@@ -1,5 +1,30 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 31/10/2026 — Issue #79 cached GPU timestamp fix candidate
+
+- Branch `fix/79-cached-gpu-timestamps` starts from merged #78 at
+  `dev@24c4d968392c84abd2046918aa8e1d45d832381c`. No published history rewritten.
+- Pinned Three can return cached timing on errors/disjoint queries, including
+  WebGL2 with advanced frame ids. Invalidate its internal cache before resolving
+  and require the submitted compute frame; only fresh finite-positive results
+  can reach adapter status. Null/unavailable semantics and generation guards stay.
+- Two adapter regressions FAIL on the old code and PASS after the fix. New tests
+  exercise actual pinned WebGPU error fallback and WebGL2 disjoint/read failures,
+  repeated equal valid durations, pending/older queries and invalid results.
+  Both typechecks and 265 unit/contract/integration tests PASS.
+- Headed Chromium readback-error/recovery smoke: 2/2 PASS, retries=0, 9.3s;
+  actual WebGPU and WebGL2 first report timing, then unavailable under injected
+  read errors, then recover timing while the same backend continues running.
+  These are real query pools with injected errors, not physical GPU failures.
+- `CI=1 npm run verify` PASS: both typechecks, 265 tests /24 files, 76 E2E PASS
+  /12 expected SKIP in 6.1 minutes, no actual retries/flaky cases, and build PASS
+  (209 modules, existing chunk advisory). Four added skips reflect unavailable
+  headless timestamp support; both new cases PASS on the headed hardware run.
+  [Reproduction and limits](04-testing/cached-gpu-timestamps-2026-10-31.md).
+  Exact pushed head/remote CI are recorded in the Issue #79 PR. Keep
+  release #70 Draft until the fix is merged, final-head checks pass and release
+  review is accepted. No schema/hash/physics/#55/#56 change or dependency upgrade.
+
 ## 31/10/2026 — PR #78 integration with preset v2
 
 - Normally merge `dev@2389f0f550b33899801e1ab07c6312baea0c9faf` into

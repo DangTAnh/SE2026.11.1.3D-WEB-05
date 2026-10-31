@@ -107,6 +107,18 @@ unavailable/null. This field does not establish FPS freshness; that remains the
 separate Issue #55 contract. The field and threshold are the Issue #53
 contract merged through PR #62.
 
+Issue #79 hardens the pinned Three 0.186.1 query boundary: failed or disjoint
+queries may fulfill with cached `lastValue`, and WebGL2 can advance frame ids
+while doing so. Before each non-overlapping compute timestamp resolve, the
+adapter invalidates that internal cache with a non-finite sentinel and requires
+the resolved frame to equal the captured submission frame. The sentinel never
+leaves the backend boundary; missing/failed/stale results remain null/unavailable.
+Existing generation guards reject completions after pause/reset/dispose/recovery.
+This implementation depends on the pinned query-pool runtime surface and needs
+TV3/TV1 review when that dependency changes. RendererPort and FPS semantics do
+not change. Headed tests inject readback errors into real query pools; physical
+GPU failure and numerical parity remain separate acceptance gates.
+
 **Runtime device/context loss policy (Issue #52).** If the active WebGPU device
 is lost after initialization, the adapter disposes it, replaces the canvas in
 the same stable host, and attempts WebGL2 once. A canvas cannot change its
