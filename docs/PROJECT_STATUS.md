@@ -8,9 +8,22 @@
 - The report now reads `config.simulation.particleCount`; its regression expects
   the v2 default 65536. Retain full validated config pinning, result snapshots,
   `blockedBackends: []` fixtures and all blocked/measured outcome regressions.
-- The committed 28/10 and 29/10 artifacts remain historical v1/20000 sessions.
-  They are not relabelled as v2. A new default-v2 run and exact-head verification
-  are recorded separately before handoff; no release acceptance is inferred.
+- `npm ci` and `CI=1 npm run verify` PASS at `d6ee6e3`: both typechecks,
+  252 unit/contract/integration tests, 76 desktop/mobile E2E PASS /8 expected
+  SKIP in 6.1 minutes, no retries/flaky cases, and 208-module build. Existing
+  chunk advisory and inherited moderate Vite advisory remain; no upgrade.
+- New [headed default-v2 artifact](06-benchmark/2026-10-31-amd-radeon-chromium-v2.md)
+  is unchanged runner output at `d6ee6e3`, Chromium 156 /AMD Radeon, 65536
+  particles, hash `0f917cd0...`: 100 samples per actual backend, both FPS medians
+  59.9161. Adapter-reported GPU timing medians are 0.13916 ms (WebGL2) and
+  0.131072 ms (WebGPU). Fixed backend order and near-60 FPS establish no advantage;
+  positive timing does not prove freshness under timestamp resolution errors.
+- The [headless v2 artifact](06-benchmark/2026-10-31-swiftshader-chromium-v2.md)
+  uses the same source/config: SwiftShader WebGL2, 100 samples, median 1.5790 FPS,
+  GPU timing unavailable, WebGPU explicitly n/a because no adapter was returned.
+  Both evidence tests PASS with retries=0. The committed 28/10 and 29/10 artifacts
+  remain historical v1/20000 sessions; no old numbers or labels were rewritten.
+  [Verification and reproduction](04-testing/benchmark-v2-integration-2026-10-31.md).
 - The inherited #62 cached-timestamp freshness finding remains a separate
   TV1/TV3 follow-up. No adapter, kernel, schema, hash, #55 or #56 changes here.
   Owner re-review and independent human approval are required before PR merge.

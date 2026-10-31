@@ -6,6 +6,26 @@ committed with the numbers. A screenshot or a chat message is not a result.
 Acceptance criteria for a run: `docs/01-requirements/mvp-acceptance.md` §2.
 Aggregation key: `(mode, configHash) × actual` — never merge across a hash
 boundary (`docs/architecture.md` §5.1).
+The hash excludes rendering and camera fields; compare the complete validated
+config, environment and protocol before combining independent sessions.
+
+## Recorded sessions
+
+- [31/10 default v2, AMD Radeon, headed Chromium](2026-10-31-amd-radeon-chromium-v2.md):
+  commit `d6ee6e3`, 65,536 particles, 100 samples on each actual backend.
+- [31/10 default v2, SwiftShader, headless Chromium](2026-10-31-swiftshader-chromium-v2.md):
+  the same source/config; software WebGL2 with the unavailable WebGPU row explicit.
+- Historical v1/20,000 sessions:
+  [28/10 headed AMD Radeon](2026-10-28-amd-radeon-chromium.md) and
+  [29/10 headless SwiftShader](2026-10-29-swiftshader-chromium.md).
+
+The new artifacts are promoted runner output without editing the numbers or
+limitations. Interpretation and verification are recorded separately in the
+[v2 integration handoff](../04-testing/benchmark-v2-integration-2026-10-31.md).
+The headed FPS medians remain near 60; backend order is fixed and no performance
+advantage is claimed. Its positive GPU durations do not establish freshness when
+timestamp resolution fails: the inherited #62 cached-value finding needs a
+separate TV1/TV3 follow-up. Physical-GPU numerical parity remains NOT_RUN.
 
 ## Runner
 

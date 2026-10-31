@@ -11,18 +11,22 @@ measurements on both backends.
 
 **Current implementation: the real renderer adapter is wired through RendererPort.**
 The Canvas2D preview has been removed. The default entry point initializes the
-adapter before mounting the UI. On `dev` at `09723af` (27/10/2026), browser
-tests exercise a real WebGL2 path. The default headless Chromium context exposes
-no WebGPU adapter, so its WebGPU smoke test is skipped; headed Chromium on the
-same host does expose one. Preset import/export remains available. #58 records a
-headed two-backend comparison (WebGPU + WebGL2, same host, AMD Radeon, 100
-samples each) in
-[`docs/06-benchmark/2026-10-28-amd-radeon-chromium.md`](docs/06-benchmark/2026-10-28-amd-radeon-chromium.md);
-a headless WebGL2/SwiftShader session is kept in
-[`docs/06-benchmark/2026-10-29-swiftshader-chromium.md`](docs/06-benchmark/2026-10-29-swiftshader-chromium.md).
-Both headed rows were refresh-bound at ~60 FPS with GPU timing unavailable, so a
-backend performance advantage remains unverified. #50's WebGL2 readback parity
-is software-rendered (SwiftShader), not physical-GPU proof.
+adapter before mounting the UI. Preset import/export uses strict nested schema
+v2 with a default of 65,536 particles. Browser tests exercise a real WebGL2 path;
+the recorded headless Chromium environment has no WebGPU adapter, so those
+WebGPU cases are skipped.
+
+#58 now records a default-v2 headed comparison (WebGPU + WebGL2, same host,
+AMD Radeon, 100 samples each) at `d6ee6e3` in
+[`the 31/10 benchmark`](docs/06-benchmark/2026-10-31-amd-radeon-chromium-v2.md).
+Both FPS medians are about 59.92; these fixed-order measurements establish no
+backend performance advantage. Positive GPU timing is adapter-reported and does
+not verify timestamp freshness under readback errors; that inherited #62 finding
+remains a separate follow-up. The earlier 28/10 and 29/10 artifacts are historical
+v1/20,000-particle sessions, retained in the
+[benchmark index](docs/06-benchmark/README.md).
+#50's WebGL2 readback parity is software-rendered (SwiftShader), not physical-GPU
+numerical parity proof.
 
 ## Run and verify
 
