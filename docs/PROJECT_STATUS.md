@@ -1,3 +1,33 @@
+# PROJECT STATUS — 3D-WEB-05
+
+## 31/10/2026 — PR #78 integration with preset v2
+
+- Normally merge `dev@2389f0f550b33899801e1ab07c6312baea0c9faf` into
+  `feat/58-first-benchmark-run` after #76 and #68 merged. Preserve every #58,
+  #16, #53 and #54 checkpoint below; the only textual conflict was this file.
+- The report now reads `config.simulation.particleCount`; its regression expects
+  the v2 default 65536. Retain full validated config pinning, result snapshots,
+  `blockedBackends: []` fixtures and all blocked/measured outcome regressions.
+- `npm ci` and `CI=1 npm run verify` PASS at `d6ee6e3`: both typechecks,
+  252 unit/contract/integration tests, 76 desktop/mobile E2E PASS /8 expected
+  SKIP in 6.1 minutes, no retries/flaky cases, and 208-module build. Existing
+  chunk advisory and inherited moderate Vite advisory remain; no upgrade.
+- New [headed default-v2 artifact](06-benchmark/2026-10-31-amd-radeon-chromium-v2.md)
+  is unchanged runner output at `d6ee6e3`, Chromium 156 /AMD Radeon, 65536
+  particles, hash `0f917cd0...`: 100 samples per actual backend, both FPS medians
+  59.9161. Adapter-reported GPU timing medians are 0.13916 ms (WebGL2) and
+  0.131072 ms (WebGPU). Fixed backend order and near-60 FPS establish no advantage;
+  positive timing does not prove freshness under timestamp resolution errors.
+- The [headless v2 artifact](06-benchmark/2026-10-31-swiftshader-chromium-v2.md)
+  uses the same source/config: SwiftShader WebGL2, 100 samples, median 1.5790 FPS,
+  GPU timing unavailable, WebGPU explicitly n/a because no adapter was returned.
+  Both evidence tests PASS with retries=0. The committed 28/10 and 29/10 artifacts
+  remain historical v1/20000 sessions; no old numbers or labels were rewritten.
+  [Verification and reproduction](04-testing/benchmark-v2-integration-2026-10-31.md).
+- The inherited #62 cached-timestamp freshness finding remains a separate
+  TV1/TV3 follow-up. No adapter, kernel, schema, hash, #55 or #56 changes here.
+  Owner re-review and independent human approval are required before PR merge.
+
 ## 29/10/2026 — PR #76 final review follow-up
 
 - Retain TV1-approved active-workload hash option A and golden vectors.
@@ -23,8 +53,32 @@
   and v2-default benchmark acceptance remain NOT_RUN. No merge/auto-merge,
   release/deploy/tag, settings change or Issue closure.
 
-# PROJECT STATUS — 3D-WEB-05
+## 28/10/2026 — dev `1427691`: #58 benchmark evidence on top of merged #62
 
+- This branch normally merges `dev@1427691` (PR #62 merged). The #53 checkpoint
+  below is retained as history; benchmark evidence remains scoped to #58.
+
+## 28/10/2026 — dev `7fc03c9`: #18 benchmark runner merged and two-backend benchmark recorded (#58)
+
+- PR #64 merged into dev at `7fc03c9`. It implements the TV5 two-backend
+  benchmark runner (`src/perf/benchmark.ts`), `BENCHMARK_PROTOCOL` (3000 ms warm-up,
+  100 ms cadence, 100 samples, 10 s, median), environment validation, same-origin
+  probe and the browser matrix.
+- First recorded run (#58): headed Chromium 156 on Windows 11 (probe
+  `Windows_NT 10.0.26300`) / AMD Radeon(TM) Graphics (WebGPU adapter `amd`/`rdna-2`),
+  same host for both backends, with the
+  fixed protocol and `DEFAULT_CONFIG` (`2a8003e2...`). Artifact:
+  `docs/06-benchmark/2026-10-28-amd-radeon-chromium.md`.
+- 100 samples per backend: WebGL2 median 59.92 FPS and WebGPU median 59.90 FPS,
+  both refresh-bound at the host's ~59.9 Hz display cadence; GPU timing was
+  unavailable on both. This is a real two-backend execution, not a performance
+  advantage claim.
+- A headless Chromium session on the same host renders WebGL2 through SwiftShader
+  and exposes no WebGPU adapter; that 100-sample session (median 2.55 FPS, re-run
+  at `07f217d`, runner output promoted unchanged) is kept as software-rendered
+  evidence in `docs/06-benchmark/2026-10-29-swiftshader-chromium.md`.
+  Physical-GPU parity and a performance advantage remain NOT_RUN/unverified.
+  No numbers were fabricated.
 ## 29/10/2026 — PR #76 TV5 review revision
 
 - Bound only production context-loss at 90s total /60s readiness, retaining
