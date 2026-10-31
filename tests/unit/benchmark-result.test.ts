@@ -55,7 +55,7 @@ test('result: markdown carries environment, configuration and one row per backen
   assert.match(text, /driver 581\.15/);
   assert.match(text, /Windows 11/);
   assert.match(text, /## Configuration/);
-  assert.match(text, /Mode \/ particleCount: attractor \/ 20000/);
+  assert.match(text, /Mode \/ particleCount: attractor \/ 65536/);
   assert.ok(text.includes(HASH));
   assert.match(text, /## Runs/);
   assert.match(text, /\| webgpu \|/);
@@ -127,4 +127,13 @@ test('result: a group from another configuration is rejected', () => {
     () => toMarkdown(result({ groups: [{ ...result().groups[0]!, configHash: 'b'.repeat(64) }] })),
     TypeError,
   );
+});
+
+
+test('result: full nested config remains beside workload hash, including excluded appearance/camera/inactive fields', () => {
+  const text = toMarkdown(result());
+  assert.ok(text.includes(JSON.stringify(DEFAULT_CONFIG)));
+  for (const group of ['simulation', 'modes', 'attractor', 'vortex', 'rendering', 'camera']) {
+    assert.ok(text.includes('"' + group + '"'), group);
+  }
 });

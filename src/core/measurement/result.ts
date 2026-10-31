@@ -105,7 +105,7 @@ export function toMarkdown(result: BenchmarkResult): string {
     '## Configuration',
     `- configHash: ${result.configHash}`,
     `- Preset JSON: \`${JSON.stringify(result.config)}\``,
-    `- Mode / particleCount: ${result.config.mode} / ${result.config.particleCount}`,
+    `- Mode / particleCount: ${result.config.mode} / ${result.config.simulation.particleCount}`,
     `- ${formatProtocol('warm-up', protocol.warmUpSeconds)}`,
     `- ${formatProtocol('sample count', protocol.sampleCount)}`,
     `- ${formatProtocol('duration', protocol.durationSeconds)}`,

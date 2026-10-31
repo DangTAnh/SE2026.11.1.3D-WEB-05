@@ -1,8 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { cloneConfig, DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 
 const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
 
 test('production ignores the removed UI state query and reports the initialized backend', async ({ page }) => {
+  // v2 initializes 65536 real particles; allow software-rendered startup.
+  test.setTimeout(90_000);
   await page.goto('/?uiState=ready-webgpu');
   const capabilities = await page.evaluate(async () => {
     const gpu = (navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown | null> } }).gpu;
@@ -12,10 +15,8 @@ test('production ignores the removed UI state query and reports the initialized 
   });
   await expect(page.locator('#lab-shell')).not.toHaveAttribute('data-fixture', 'true');
   await expect(page.locator('#runtime-phase-label')).not.toContainText('UI FIXTURE');
-  await expect.poll(
-    async () => page.locator('#actual-backend').textContent(),
-    { timeout: 20_000 },
-  ).not.toBe('Đang khởi tạo');
+  await expect.poll(async () => page.locator('#actual-backend').textContent(), { timeout: 60_000 })
+    .not.toBe('Đang khởi tạo');
   const actual = await page.locator('#actual-backend').textContent();
   if (actual === 'WebGPU') expect(capabilities.webgpu).toBe(true);
   else if (actual?.includes('WebGL2')) expect(capabilities.webgl2).toBe(true);
@@ -27,14 +28,13 @@ test('production ignores the removed UI state query and reports the initialized 
 });
 
 test('webgl=1 forces the WebGL2 backend when available', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.goto('/?webgl=1');
   const webgl2Available = await page.evaluate(() =>
     document.createElement('canvas').getContext('webgl2') !== null,
   );
-  await expect.poll(
-    async () => page.locator('#actual-backend').textContent(),
-    { timeout: 20_000 },
-  ).not.toBe('Đang khởi tạo');
+  await expect.poll(async () => page.locator('#actual-backend').textContent(), { timeout: 60_000 })
+    .not.toBe('Đang khởi tạo');
   if (webgl2Available) await expect(page.locator('#actual-backend')).toHaveText('WebGL2');
   else await expect(page.locator('#actual-backend')).toHaveText('Không khả dụng');
 });
@@ -45,18 +45,18 @@ test('each control change applies once; mode resets and particle count rebuilds 
   expect(initialCalls[0]).toEqual({ type: 'init', target: { width: 800, height: 600, pixelRatio: 1 } });
   expect(initialCalls.filter(c => c.type === 'applyConfig').length).toBe(1);
   const cases = [
-    { id: '#speed', value: '2.5', field: 'speed', expected: 2.5 },
-    { id: '#particle-size', value: '4', field: 'particleSize', expected: 4 },
-    { id: '#strength', value: '2', field: 'strength', expected: 2 },
-    { id: '#particle-color', value: '#ff8800', field: 'particleColor', expected: '#ff8800' },
-    { id: '#particle-count', value: '32000', field: 'particleCount', expected: 32000 },
+    { id: '#speed', value: '2.5', expected: { simulation: { speed: 2.5 } } },
+    { id: '#particle-size', value: '4', expected: { simulation: { particleSize: 4 } } },
+    { id: '#strength', value: '2', expected: { modes: { attractor: { attractorStrength: 2 } } } },
+    { id: '#particle-color', value: '#ff8800', expected: { rendering: { particleColor: '#ff8800' } } },
+    { id: '#particle-count', value: '32000', expected: { simulation: { particleCount: 32000 } } },
   ];
   for (const change of cases) {
     await page.evaluate(() => { window.uiTest.port.calls.length = 0; });
     await page.locator(change.id).fill(change.value);
     const calls = await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus'));
     expect(calls.map(c => c.type)).toEqual(['applyConfig']);
-    expect(calls[0]).toMatchObject({ config: { [change.field]: change.expected } });
+    expect(calls[0]).toMatchObject({ config: change.expected });
   }
   await page.evaluate(() => { window.uiTest.port.calls.length = 0; });
   await page.locator('#mode-vortex').click();
@@ -115,10 +115,7 @@ test('initial apply failure stays disabled across polling until a successful imp
     window.uiTest.port.applyConfig = function(config) { this.calls.push({ type: 'applyConfig', config }); };
   });
   await page.locator('#preset-file').setInputFiles({ name: 'retry.json', mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify({ schemaVersion: 1, app: '3D-WEB-05', config: {
-      mode: 'attractor', backendPreference: 'auto', particleCount: 20000, speed: 1.2,
-      particleSize: 2.5, particleColor: '#6ce6ff', strength: 1.5,
-    } })) });
+    buffer: Buffer.from(JSON.stringify({ schemaVersion: 2, app: '3D-WEB-05', config: cloneConfig(DEFAULT_CONFIG) })) });
   await expect(page.locator('#toast')).toHaveText('Đã nhập preset hợp lệ.');
   await expect(page.locator('#mode-vortex')).toBeEnabled();
 });
@@ -129,10 +126,7 @@ test('renderer reset errors during import do not expose backend details', async 
     window.uiTest.port.reset = () => { throw new Error('sensitive backend detail'); };
   });
   await page.locator('#preset-file').setInputFiles({ name: 'preset.json', mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify({ schemaVersion: 1, app: '3D-WEB-05', config: {
-      mode: 'vortex', backendPreference: 'auto', particleCount: 20000, speed: 1.2,
-      particleSize: 2.5, particleColor: '#6ce6ff', strength: 1.5,
-    } })) });
+    buffer: Buffer.from(JSON.stringify({ schemaVersion: 2, app: '3D-WEB-05', config: { ...cloneConfig(DEFAULT_CONFIG), mode: 'vortex' } })) });
   await expect(page.locator('#toast')).toContainText('Không thể khởi tạo lại mô phỏng');
   await expect(page.locator('#toast')).toContainText('Cấu hình đã được áp dụng');
   await expect(page.locator('#toast')).not.toContainText('sensitive');
@@ -141,15 +135,12 @@ test('renderer reset errors during import do not expose backend details', async 
 
 test('a pending file read cannot apply configuration after unmount', async ({ page }) => {
   await page.goto(fixturePage);
-  await page.evaluate(() => {
+  await page.evaluate((config) => {
     File.prototype.text = () => new Promise<string>(resolve => {
-      window.uiTest.finishImport = () => resolve(JSON.stringify({ schemaVersion: 1, app: '3D-WEB-05', config: {
-        mode: 'vortex', backendPreference: 'auto', particleCount: 20000, speed: 1.2,
-        particleSize: 2.5, particleColor: '#6ce6ff', strength: 1.5,
-      } }));
+      window.uiTest.finishImport = () => resolve(JSON.stringify({ schemaVersion: 2, app: '3D-WEB-05', config: { ...config, mode: 'vortex' } }));
     });
     window.uiTest.port.calls.length = 0;
-  });
+  }, cloneConfig(DEFAULT_CONFIG));
   await page.locator('#preset-file').setInputFiles({ name: 'delayed.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
   await expect.poll(() => page.evaluate(() => Boolean(window.uiTest.finishImport))).toBe(true);
   await page.evaluate(async () => {
@@ -165,9 +156,11 @@ test('a pending file read cannot apply configuration after unmount', async ({ pa
 test('import applies atomically once and invalid imports do not call the port', async ({ page }) => {
   await page.goto(fixturePage);
   const preset = {
-    schemaVersion: 1, app: '3D-WEB-05', config: {
-      mode: 'vortex', backendPreference: 'webgl2', particleCount: 32000,
-      speed: 2.2, particleSize: 4, particleColor: '#ff8800', strength: 2.4,
+    schemaVersion: 2, app: '3D-WEB-05', config: {
+      ...cloneConfig(DEFAULT_CONFIG), mode: 'vortex', backendPreference: 'webgl2',
+      simulation: { ...DEFAULT_CONFIG.simulation, particleCount: 32000, speed: 2.2, particleSize: 4 },
+      rendering: { ...DEFAULT_CONFIG.rendering, particleColor: '#ff8800' },
+      modes: { ...cloneConfig(DEFAULT_CONFIG).modes, vortex: { vortexStrength: 2.4, vortexDamping: 0.99 } },
     },
   };
   await page.evaluate(() => { window.uiTest.port.calls.length = 0; });
@@ -178,10 +171,17 @@ test('import applies atomically once and invalid imports do not call the port', 
   expect(await page.evaluate(() => window.uiTest.port.calls.find(c => c.type === 'applyConfig')))
     .toMatchObject({ config: preset.config });
   await page.evaluate(() => { window.uiTest.port.calls.length = 0; });
-  preset.config.speed = 99;
+  preset.config.simulation.speed = 99;
   await page.locator('#preset-file').setInputFiles({ name: 'bad.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(preset)) });
   await expect(page.locator('#toast')).toContainText('Tốc độ nằm ngoài');
   await expect(page.locator('#speed-value')).toContainText('2,2');
+  expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus'))).toEqual([]);
+  preset.config.simulation.speed = 2.2;
+  preset.config.modes.vortex.vortexStrength = 50;
+  await page.locator('#preset-file').setInputFiles({ name: 'bad-strength.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(preset)) });
+  await expect(page.locator('#toast')).toContainText('0.2–4');
+  await expect(page.locator('#strength')).toHaveValue('2.4');
+  await expect(page.locator('#strength-value')).toContainText('2,4');
   expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type !== 'getStatus'))).toEqual([]);
 });
 

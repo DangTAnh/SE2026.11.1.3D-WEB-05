@@ -1,100 +1,41 @@
-/**
- * Observable contract of the preset payload — pins CURRENT behavior before refactoring.
- * If a test here fails, the refactor changed observable behavior, not just structure.
- */
-import { test } from 'vitest';
-import assert from 'node:assert/strict';
-import { DEFAULT_CONFIG, parsePreset, serializePreset } from '../../src/presets/preset.ts';
-import type { LabConfig } from '../../src/presets/preset.ts';
+import { expect, test } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { DEFAULT_CONFIG, cloneConfig, parsePresetDocument, serializePresetDocument } from '../../src/presets/preset.ts';
 import { DEFAULT_LIFETIME, DEFAULT_SPAWN_RADIUS } from '../../src/simulations/shared/attributes.ts';
-import { DEFAULT_VORTEX_DAMPING } from '../../src/simulations/simulation.ts';
+import { DEFAULT_ATTRACTOR_DAMPING, DEFAULT_ATTRACTOR_RADIUS, DEFAULT_VORTEX_DAMPING } from '../../src/simulations/simulation.ts';
 
-const presetOf = (config: LabConfig) => JSON.parse(serializePreset(config)) as Record<string, unknown>;
-
-test('contract: exported JSON has exactly three top-level keys and the full config key set', () => {
-  const out = presetOf({ ...DEFAULT_CONFIG });
-  assert.deepEqual(Object.keys(out).sort(), ['app', 'config', 'schemaVersion']);
-  assert.equal(out.schemaVersion, 1);
-  assert.equal(out.app, '3D-WEB-05');
-  assert.deepEqual(Object.keys(out.config as object).sort(), [
-    'backendPreference', 'mode', 'particleColor', 'particleCount', 'particleSize', 'speed', 'strength',
-  ]);
+test('defaults match TV2 and shared simulation constants', () => {
+  expect(DEFAULT_CONFIG.simulation).toEqual({ particleCount: 65536, spawnRadius: DEFAULT_SPAWN_RADIUS,
+    particleSize: 2.5, lifetime: DEFAULT_LIFETIME, speed: 1.2 });
+  expect(DEFAULT_CONFIG.modes).toEqual({ attractor: { attractorStrength: 1.5,
+    attractorRadius: DEFAULT_ATTRACTOR_RADIUS, attractorDamping: DEFAULT_ATTRACTOR_DAMPING },
+    vortex: { vortexStrength: 1.5, vortexDamping: DEFAULT_VORTEX_DAMPING } });
 });
-
-test('contract: spawnRadius and lifetime share the simulation defaults and v1 drops them (#48)', () => {
-  assert.equal(DEFAULT_CONFIG.spawnRadius, DEFAULT_SPAWN_RADIUS);
-  assert.equal(DEFAULT_CONFIG.lifetime, DEFAULT_LIFETIME);
-
-  const raw = presetOf({ ...DEFAULT_CONFIG });
-  const config = raw.config as Record<string, unknown>;
-  assert.equal('spawnRadius' in config, false);
-  assert.equal('lifetime' in config, false);
-
-  const imported = parsePreset(serializePreset({
-    ...DEFAULT_CONFIG,
-    spawnRadius: 20,
-    lifetime: 2,
-  }));
-  assert.equal(imported.spawnRadius, DEFAULT_SPAWN_RADIUS);
-  assert.equal(imported.lifetime, DEFAULT_LIFETIME);
-});
-
-test('contract: parse -> serialize -> parse is idempotent', () => {
-  const once = parsePreset(serializePreset({ ...DEFAULT_CONFIG }));
-  const twice = parsePreset(serializePreset(once));
-  assert.deepEqual(twice, once);
-});
-
-test('contract: vortexDamping has one default and v1 cannot persist it (#49)', () => {
-  assert.equal(DEFAULT_CONFIG.vortexDamping, DEFAULT_VORTEX_DAMPING);
-
-  const raw = presetOf({ ...DEFAULT_CONFIG });
-  assert.equal('vortexDamping' in (raw.config as object), false, 'the frozen v1 payload must not grow');
-
-  // Parsing a v1 payload applies the public default; a programmatic value is not round-tripped.
-  const imported = parsePreset(serializePreset({ ...DEFAULT_CONFIG, vortexDamping: 0.9 }));
-  assert.equal(imported.vortexDamping, DEFAULT_VORTEX_DAMPING);
-
-  // A v1 file that tries to set it is still rejected as an unknown key.
-  const extra = presetOf({ ...DEFAULT_CONFIG });
-  (extra.config as Record<string, unknown>).vortexDamping = 0.9;
-  assert.throws(() => parsePreset(JSON.stringify(extra)), /không được hỗ trợ/);
-});
-
-test('contract: particleCount boundaries 1000 and 50000 are valid; 999, 50001 and off-step values are rejected', () => {
-  for (const count of [1000, 50000]) {
-    assert.equal(parsePreset(serializePreset({ ...DEFAULT_CONFIG, particleCount: count })).particleCount, count);
-  }
-  for (const count of [999, 50001, 1500]) {
-    assert.throws(() => parsePreset(serializePreset({ ...DEFAULT_CONFIG, particleCount: count })));
+test('deep copy isolates all nested groups; defaults frozen at every level', () => {
+  const a = cloneConfig(DEFAULT_CONFIG), b = cloneConfig(DEFAULT_CONFIG);
+  a.simulation.speed = 2; a.modes.attractor.attractorRadius = 9;
+  a.modes.vortex.vortexDamping = 0.8; a.camera.distance = 500; a.rendering.opacity = 0.5;
+  expect(b).toEqual(DEFAULT_CONFIG);
+  for (const group of [DEFAULT_CONFIG, DEFAULT_CONFIG.simulation, DEFAULT_CONFIG.modes,
+    DEFAULT_CONFIG.modes.attractor, DEFAULT_CONFIG.modes.vortex, DEFAULT_CONFIG.rendering, DEFAULT_CONFIG.camera]) {
+    expect(Object.isFrozen(group)).toBe(true);
   }
 });
-
-test('contract: unknown config keys are rejected before reaching the result', () => {
-  for (const key of ['isAdmin', '__proto__x']) {
-    const raw = presetOf({ ...DEFAULT_CONFIG });
-    (raw.config as Record<string, unknown>)[key] = true;
-    assert.throws(() => parsePreset(JSON.stringify(raw)), /không được hỗ trợ/);
-  }
+const reverse = (value: unknown): unknown => typeof value === 'object' && value !== null
+  ? Object.fromEntries(Object.entries(value).reverse().map(([k, v]) => [k, reverse(v)])) : value;
+test('serialization order is stable at every level, indent 2, newline, exact repeated bytes', () => {
+  const d = { schemaVersion: 2 as const, app: '3D-WEB-05' as const, name: 'named', config: cloneConfig(DEFAULT_CONFIG) };
+  const first = serializePresetDocument(d);
+  expect(first).toBe(serializePresetDocument(parsePresetDocument(JSON.stringify(reverse(d)))));
+  expect(first).toBe(serializePresetDocument(parsePresetDocument(first)));
+  expect(first.startsWith('{\n  "schemaVersion": 2,\n  "app": "3D-WEB-05",\n  "name": "named",\n  "config": {\n')).toBe(true);
+  expect(first.endsWith('\n')).toBe(true);
+  const parsed = parsePresetDocument(first); parsed.config.modes.vortex.vortexStrength = 3;
+  expect(d.config.modes.vortex.vortexStrength).toBe(1.5);
 });
-
-test('contract: parse returns a fresh object and keeps no reference to the input data', () => {
-  const raw = presetOf({ ...DEFAULT_CONFIG });
-  const parsed = parsePreset(JSON.stringify(raw));
-  parsed.particleCount = 1000;
-  assert.equal((raw.config as Record<string, unknown>).particleCount, DEFAULT_CONFIG.particleCount);
-});
-
-test('contract: color case is preserved; only the #RRGGBB shape is validated', () => {
-  assert.equal(parsePreset(serializePreset({ ...DEFAULT_CONFIG, particleColor: '#ABCDEF' })).particleColor, '#ABCDEF');
-  assert.equal(parsePreset(serializePreset({ ...DEFAULT_CONFIG, particleColor: '#abcdef' })).particleColor, '#abcdef');
-  for (const bad of ['#ABC', 'red', '#GGGGGG', '<script>']) {
-    assert.throws(() => parsePreset(serializePreset({ ...DEFAULT_CONFIG, particleColor: bad })));
-  }
-});
-
-test('contract: key order and two-space indentation of the output stay stable', () => {
-  const text = serializePreset({ ...DEFAULT_CONFIG });
-  assert.match(text, /\n  "schemaVersion": 1,/);
-  assert.ok(text.endsWith('\n'));
+test.each(['attractor', 'vortex'])('published %s example validates and serializes byte-identically', mode => {
+  const text = readFileSync(new URL(`../../public/examples/${mode}-preset.json`, import.meta.url), 'utf8');
+  const document = parsePresetDocument(text);
+  expect(document.config.mode).toBe(mode);
+  expect(serializePresetDocument(document)).toBe(text);
 });

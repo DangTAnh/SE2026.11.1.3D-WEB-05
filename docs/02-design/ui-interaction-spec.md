@@ -1,144 +1,143 @@
-# Thiết kế tương tác & Integration Contract — TV4 v0.2
+# Thiết kế tương tác & Integration Contract — Preset v2
 
-> Đây là **đề xuất tích hợp** của TV4. `RendererPort` và `RendererStatus` không còn là đề xuất: chúng đã có trong code của TV1 (`src/core/renderer/RendererPort.ts`) và là contract chốt. Các phần còn lại vẫn chờ TV2/TV3/TV5 xác nhận.
+Tài liệu mô tả implementation trên nhánh #16 / PR #76, chưa phải xác nhận
+release. Thay thế thiết kế prototype v0.2. Contract dùng chung thuộc TV1;
+TV2 review ranges/defaults, TV3 lifecycle và TV5 bằng chứng kiểm thử.
+Owner review trên revision mới và independent human approval vẫn cần thiết.
 
-## 1. Luồng dữ liệu đề xuất
+## 1. Luồng dữ liệu
 
-```mermaid
-flowchart TD
-    U[Người dùng] --> Controls[UI / Controls - TV4]
-    Controls --> Config[LabConfig - TV4]
-    Config --> Port[RendererPort - TV1]
-    Port --> Adapter[Renderer adapter - TV3<br/>chọn backend, forceWebGL]
-    Adapter --> Sim[Simulation - TV2<br/>vật lý + material tree]
-    Port --> Status[RendererStatus - TV1]
-    Port --> Metric[Perf collector - TV5]
-    Status --> Overlay[Status overlay - TV4]
-    Metric --> Overlay
-    Config --> Preset[Import / Export JSON - TV4]
-    Preset --> Config
-```
+UI controls → nested `LabConfig` → injected `RendererPort` → adapter và shared
+simulation. UI nhận `RendererStatus` qua polling; collector lấy snapshot qua
+port. Preset import/export giữ toàn bộ document. UI không import backend hoặc
+simulation internals. Composition root sở hữu init và `RendererSession`.
+Chỉ có một renderer với shared TSL pipeline cho WebGPU/WebGL2.
 
-Chỉ có **một** renderer, không phải một nhánh WebGPU và một nhánh WebGL2 song song.
-TV2 sở hữu vật lý và material tree dùng chung; TV3 sở hữu việc chọn backend và
-`forceWebGL` bên trong cùng adapter. Xem `docs/05-management/team-ownership.md` §3.1
-và `docs/architecture.md` §4.
+Nguồn sự thật: [preset.ts](../../src/presets/preset.ts),
+[schema v2](preset-schema-v2.schema.json),
+[defaults/ranges và quyết định owner](preset-schema-v2-proposal.md),
+[RendererPort](../../src/core/renderer/RendererPort.ts) và
+[architecture](../architecture.md).
 
-## 2. State hiện có trong prototype
+## 2. State và cấu hình hiện hành
 
-```ts
-type SimulationMode = 'attractor' | 'vortex';
-type BackendPreference = 'auto' | 'webgpu' | 'webgl2';
+`PresetDocument = { schemaVersion: 2, app: "3D-WEB-05", name?: string, config: LabConfig }`.
+`name` là metadata 1–80 ký tự; không truyền vào renderer hoặc configHash.
+`LabConfig` gồm `mode`, `backendPreference` và các nhóm bắt buộc
+`simulation`, `modes` (cả attractor và vortex), `rendering`, `camera`.
+Existing controls đọc/ghi nested fields; strength chỉ cập nhật mode đang bật.
+Controls mới thuộc #56; FPS freshness độc lập thuộc #55, ngoài scope #16.
 
-interface LabConfig {
-  mode: SimulationMode;
-  backendPreference: BackendPreference;
-  particleCount: number;
-  speed: number;
-  particleSize: number;
-  particleColor: string; // '#RRGGBB'
-  strength: number;
-}
-```
+| Nhóm/field | Range | Default |
+|---|---|---|
+| mode / backendPreference | attractor hoặc vortex / auto, webgpu, webgl2 | attractor / auto |
+| simulation.particleCount | integer 1000–500000, không bước 1000 | 65536 |
+| simulation.spawnRadius | 1–100 world units | 10 |
+| simulation.particleSize | 1–8 adapter units | 2.5 |
+| simulation.lifetime | 0.5–20 giây mô phỏng | 6 |
+| simulation.speed | 0.1–3 | 1.2 |
+| modes.attractor.attractorStrength | 0.2–4 | 1.5 |
+| modes.attractor.attractorRadius | 0.5–50, ngưỡng damping | 6 |
+| modes.attractor.attractorDamping | 0.8–1, per step | 0.98 |
+| modes.vortex.vortexStrength / vortexDamping | 0.2–4 / 0.8–1 | 1.5 / 0.99 |
+| rendering.backgroundColor / particleColor | #RRGGBB | #07111f / #6ce6ff |
+| rendering.opacity / additiveBlend | 0.05–1 / boolean | 1 / false |
+| camera.enabled / autoRotate | boolean; autoRotate chỉ hiệu lực khi enabled | true / false |
+| camera.distance | 5–500 world units | 30 |
 
-Code thực tế: src/presets/preset.ts. Module src/ui/app.ts giữ composition tạm; template, controls, notifications và overlay đã tách riêng. TV1/TV2/TV3 cần review ranges và tên biến trước khi chốt interface chung.
+Các số ngoài particleCount có precision 0.001. Speed nhân clamped delta đúng
+một lần; lifetime là simulated time, wall-clock xấp xỉ lifetime/speed.
+Spawn radius dùng cho init/respawn. Không có vortexRadius hoặc flow mode.
+Defaults deep-frozen; `cloneConfig` tạo snapshot độc lập.
 
-### View-model UI hiện có
+## 3. Port, backend và metrics
 
-UiRuntimeState trong src/ui/state/runtimeState.ts chỉ thuộc lớp UI. Nó mô tả initializing, ready, fallback, unsupported và error, cùng actual backend/metrics nullable. Đây không phải interface engine đã được nhóm chốt.
+`RendererPort` có `init`, optional `resize`, synchronous `applyConfig`, `start`,
+`pause`, `reset`, `getStatus`, `dispose`. Count change có thể rebuild/reseed
+buffers; không cần gọi reset thêm cho count change. UI được inject port và
+không tự init concrete adapter.
 
-## 3. Giao tiếp tương lai được kiến nghị
+`RendererStatus` gồm requested, actual, running, gpuTimingAvailable,
+measurementAgeMs, fps và gpuTimeMs. `actual` là backend thật; requested chỉ là
+preference. Không dùng preference làm bằng chứng đã chạy backend.
+GPU timing unavailable dùng false/null, không dùng zero thay số đo.
+PR #62 đã merge: GPU age monotonic tính từ compute submission, gồm readback;
+quá 2000 ms thì timing unavailable/null, query mỗi 10 compute frames.
+Pause/reset/re-init clear timing; pending session có age/FPS/timing null.
+Collector bỏ snapshot paused và giữ FPS hợp lệ khi chỉ GPU timing stale.
+Age này không xác nhận FPS freshness (#55).
 
-```ts
-// Trích từ src/core/renderer/RendererPort.ts — contract thật, không phải pseudocode.
-interface RendererPort {
-  init(target: RendererTarget): Promise<ActualBackend>;
-  applyConfig(config: Readonly<LabConfig>): void;
-  start(): void;
-  pause(): void;
-  reset(): void;
-  getStatus(): RendererStatus;
-  dispose(): void;
-}
+Backend preference có hiệu lực ở init tiếp theo. Nút Apply gọi RendererSession
+để stage adapter/canvas, commit khi candidate sẵn sàng và rollback khi lỗi;
+config và running intent được bảo toàn. WebGPU runtime loss thử WebGL2 một lần
+trên canvas mới; WebGL2 context loss là terminal unavailable, không retry loop
+hoặc CPU fallback. UI chỉ hiển thị actual và trạng thái do port báo.
 
-interface RendererStatus {
-  requested: BackendPreference; // 'auto' | 'webgpu' | 'webgl2' — chỉ để giải thích fallback
-  actual: ActualBackend;        // 'webgpu' | 'webgl2' | 'unavailable' — backend đã chạy thật
-  running: boolean;
-  gpuTimingAvailable: boolean;
-  fps: number | null;
-  gpuTimeMs: number | null;     // null khi và chỉ khi gpuTimingAvailable = false
-}
+`PerformanceSnapshot` giữ actual, configHash, fps, gpuTimeMs,
+gpuTimingAvailable. Hash là active-workload identity: mode + simulation +
+nhóm mode đang chạy, flat/alphabetical/compact, round 3 decimals, SHA-256
+lowercase. Inactive mode, backend request, rendering/camera và metadata không
+vào hash; benchmark vẫn phải giữ full validated config bên cạnh hash.
 
-interface PerformanceSnapshot {
-  actual: 'webgpu' | 'webgl2' | 'unavailable'; // backend thật, không phải backend được yêu cầu
-  configHash: string;                          // định danh cấu hình đã sinh ra số đo
-  fps: number | null;
-  gpuTimeMs: number | null;                    // null khi và chỉ khi gpuTimingAvailable = false
-  gpuTimingAvailable: boolean;
-}
-```
+## 4. Preset JSON v2 và import/export
 
-`ParticleEnginePort` trong bản nháp trước đã bị rút: `getBackendStatus()` → `getStatus()`,
-`resume()` → `start()`, `applyConfig` là **đồng bộ** (gọi mỗi lần kéo slider, không được
-cấp phát tài nguyên GPU), và `init()` là nơi duy nhất trả về backend thật.
-
-Hai trường `actual` và `configHash` là bắt buộc, không phải tuỳ chọn:
-INV-1 (`docs/architecture.md` §3) cấm lấy backend được yêu cầu thay cho backend
-thực tế, và UC-04 (`docs/01-requirements/use-cases.md`: "Dữ liệu benchmark phải
-kèm điều kiện đo") buộc mỗi mẫu phải định danh được cấu hình đã sinh ra nó.
-`configHash` đã có trong `src/core/measurement/configHash.ts`; cách tính và
-chuẩn hoá ở `docs/architecture.md` §5.1. Shape thuộc TV1 (§4.1), TV5 sản xuất
-số đo, UI render.
-
-Khi tích hợp: chỉ UI thay đổi trạng thái mong muốn; **Core quyết định actual backend**; TV5 cung cấp số đo; UI render trạng thái theo dữ liệu do hai bên cung cấp.
-
-## 4. Preset JSON schema v1
+Ví dụ đầy đủ khớp default hiện hành:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "app": "3D-WEB-05",
   "config": {
     "mode": "attractor",
     "backendPreference": "auto",
-    "particleCount": 20000,
-    "speed": 1.2,
-    "particleSize": 2.5,
-    "particleColor": "#6ce6ff",
-    "strength": 1.5
+    "simulation": { "particleCount": 65536, "spawnRadius": 10, "particleSize": 2.5, "lifetime": 6, "speed": 1.2 },
+    "modes": {
+      "attractor": { "attractorStrength": 1.5, "attractorRadius": 6, "attractorDamping": 0.98 },
+      "vortex": { "vortexStrength": 1.5, "vortexDamping": 0.99 }
+    },
+    "rendering": { "backgroundColor": "#07111f", "particleColor": "#6ce6ff", "opacity": 1, "additiveBlend": false },
+    "camera": { "enabled": true, "autoRotate": false, "distance": 30 }
   }
 }
 ```
 
-Validation hiện có: schema/app, đúng tập field bắt buộc, không nhận field thừa, mode, backend, particleCount (1000–50000 bước 1000), speed (0.1–3), particleSize (1–8), color #RRGGBB, strength (0.2–4). File trên 1MB bị từ chối qua giao diện. JSON Schema chính thức của bản v1 nằm ở docs/02-design/preset-schema-v1.schema.json.
+- Reject v1 rõ ràng, không tự migrate hoặc điền field thiếu. Reject unknown
+  keys mọi cấp, missing fields, nonfinite/out-of-range/finer-than-0.001 values.
+  Count 65536/500000 hợp lệ; file trên 1 MB bị UI từ chối.
+- UI dùng parsePresetDocument/serializePresetDocument để giữ name và cả hai
+  mode groups. Config-only helpers dành cho caller không cần metadata.
+- Import lỗi hoặc apply lỗi giữ document/config/name cũ. Import thành công
+  cập nhật controls/config/name cùng nhau; nếu chỉ reset sau apply thất bại,
+  giữ config/name mới đã apply và báo lỗi reset.
+- Edit, mode switch, backend Apply và simulation Reset giữ name. Restore
+  defaults hoặc import document không có name xóa name cũ.
+- Serialization có thứ tự key cố định từng cấp, indent 2 và LF cuối file.
 
-## 5. Hành vi/giới hạn quan trọng
-
-- Import lỗi phải **không sửa state cũ**.
-- Import hợp lệ phải cập nhật đồng thời controls, mode, backend preference và preview.
-- FPS Canvas2D trong tuần 1 là đo preview thật, **không** được dùng làm dữ liệu benchmark WebGPU/WebGL2.
-- Số `particleCount` trong state phản ánh cấu hình mong muốn; Canvas2D minh họa chỉ vẽ tối đa **600** particle để tránh ngộ nhận về tải GPU.
-- Fallback là việc của TV3 bên trong renderer adapter; UI chỉ hiển thị `RendererStatus.actual`. Không có logic tự chọn WebGL2 trong giao diện mock hiện tại.
-
-## 6. Acceptance tests của TV4
+## 5. Acceptance paths và giới hạn bằng chứng
 
 | Case | Thao tác | Mong đợi |
 |---|---|---|
-| UI-01 | Chọn Vortex | Chế độ và label strength thay đổi |
-| UI-02 | Kéo speed, size, color | Label cập nhật, preview phản hồi |
-| UI-03 | Chọn backend WebGL2 | Preference lưu lại; backend thật vẫn “Canvas2D mock” |
-| UI-04 | Export rồi Import JSON | Cấu hình không đổi sau roundtrip |
-| UI-05 | Import JSON lỗi / schema v2 | Thông báo lỗi, không crash |
-| UI-06 | Reset defaults | Tất cả controls về giá trị mặc định |
-| UI-07 | Pause/Resume | Canvas2D dừng/tiếp tục mà không ảnh hưởng config |
-| UI-08 | Resize viewport | Canvas tự co giãn, panel vẫn truy cập được |
-| UI-09 | Xem GPU timing | “Không khả dụng” vì chưa có bộ đo GPU |
-| UI-10 | Mở từng fixture runtime | Banner/backend/control disabled đúng ma trận state |
+| UI-01 | Chọn Vortex | Mode/strength binding đổi; inactive group còn nguyên |
+| UI-02 | Sửa speed, size, color, count | Port nhận nested config; count rebuild đúng lifecycle |
+| UI-03 | Chọn backend rồi Apply | Requested tách actual; stage/rollback giữ config và pause |
+| UI-04 | Export/import v2 có name | Full document round-trip, ổn định serialization |
+| UI-05 | Import v1/unknown/missing/invalid | Báo lỗi, không sửa document cũ |
+| UI-06 | Restore defaults | Controls về defaults, name được xóa |
+| UI-07 | Pause/resume/reset | Port nhận lifecycle tương ứng; config/name được giữ |
+| UI-08 | Desktop/mobile resize | Canvas/panel truy cập được, resize theo stable host |
+| UI-09 | Timing stale/unavailable | false/null timing; giữ FPS hợp lệ nếu chỉ GPU stale |
+| UI-10 | Fixture state và production loss | Fixture kiểm tra UI; production WebGL2 loss báo unavailable |
 
-## 7. Bàn giao cho thành viên khác
+FakeRenderer/fixtures chỉ chứng minh caller behavior. Production WebGL2 chạy
+trong Chromium software rendering không phải physical GPU/WebGPU acceptance.
+Physical WebGPU/parity/timestamp freshness và v2-default fair benchmark vẫn
+cần bằng chứng riêng; xem [project status](../PROJECT_STATUS.md).
 
-- **TV1:** đã chốt API đồng bộ config và lifecycle renderer trong `RendererPort`; việc còn lại là thay bootstrap tạm `src/main.ts` và inject port vào UI.
-- **TV2:** xác nhận mode, hệ số vật lý, giới hạn particle count và cách apply config WebGPU.
-- **TV3:** xác nhận backend preference, lỗi fallback và actual backend status.
-- **TV5:** xác nhận shape của perf snapshot, nhịp cập nhật FPS/timing, các trạng thái unavailable.
+## 6. Historical / Superseded
+
+Prototype v0.2 từng dùng flat LabConfig, schemaVersion 1, 1000–50000 particles
+bước 1000 và Canvas2D giới hạn 600 particles. Những mô tả và acceptance mock đó
+đã bị thay thế; không phải runtime hiện hành. [Schema v1](preset-schema-v1.schema.json)
+chỉ giữ làm tham chiếu lịch sử, parser hiện hành từ chối nó. Canvas2D mock đã
+được gỡ; UI dùng initialized real adapter qua port. `?uiState` trong regression
+test kiểm tra production bỏ qua query cũ, không tạo production fixture state.

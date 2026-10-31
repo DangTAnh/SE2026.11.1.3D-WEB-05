@@ -1,10 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MAX_GPU_MEASUREMENT_AGE_MS } from '../../src/core/renderer/RendererPort.ts';
 import { ThreeRendererAdapter } from '../../src/simulations/rendererAdapter.ts';
-import { DEFAULT_CONFIG } from '../../src/presets/preset.ts';
+import type { Scene, PerspectiveCamera } from 'three/webgpu';
+import type { ParticleBuffers } from '../../src/simulations/shared/particleBuffers.ts';
+import { DEFAULT_CONFIG, cloneConfig } from '../../src/presets/preset.ts';
 
 const harness = vi.hoisted(() => ({
   scenario: '' as string,
+  buffers: [] as ParticleBuffers[],
+  scene: null as Scene | null,
+  camera: null as PerspectiveCamera | null,
+  controls: [] as Array<{ enabled: boolean; autoRotate: boolean; target: import('three').Vector3; update: ReturnType<typeof vi.fn>; dispose: ReturnType<typeof vi.fn> }>,
   error: null as Error | null,
   deferNextCompute: false,
   deferTimestamps: false,
@@ -29,6 +35,28 @@ const harness = vi.hoisted(() => ({
     triggerDeviceLost: () => void;
   }>,
 }));
+
+vi.mock('three/addons/controls/OrbitControls.js', async () => {
+  const { Vector3 } = await import('three/webgpu');
+  class OrbitControls {
+    enabled = true;
+    autoRotate = false;
+    target = new Vector3();
+    update = vi.fn();
+    dispose = vi.fn();
+    constructor() { harness.controls.push(this); }
+  }
+  return { OrbitControls };
+});
+
+vi.mock('../../src/simulations/shared/particleBuffers.ts', async () => {
+  const actual = await vi.importActual<typeof import('../../src/simulations/shared/particleBuffers.ts')>('../../src/simulations/shared/particleBuffers.ts');
+  return { ...actual, createParticleBuffers: (count: number) => {
+    const buffers = actual.createParticleBuffers(count);
+    harness.buffers.push(buffers);
+    return buffers;
+  } };
+});
 
 vi.mock('three/webgpu', async () => {
   const actual = await vi.importActual<typeof import('three/webgpu')>('three/webgpu');
@@ -126,7 +154,7 @@ vi.mock('three/webgpu', async () => {
       }
       return Promise.resolve(harness.timestampValue);
     }
-    render(): void {}
+    render(scene: Scene, camera: PerspectiveCamera): void { harness.scene = scene; harness.camera = camera; }
     dispose(): void { this.record.disposed = true; }
   }
 
@@ -143,6 +171,7 @@ function makeCanvas(context: WebGL2RenderingContext | null = {} as WebGL2Renderi
       parentNode: { configurable: true, get: () => host },
     });
     Object.assign(canvas, {
+      getRootNode: () => canvas,
       getContext: vi.fn((type: string) => {
         if (contextMode !== null && contextMode !== type) return null;
         contextMode = type;
@@ -173,6 +202,10 @@ async function expectDisposed(record: (typeof harness.instances)[number], initia
 describe('ThreeRendererAdapter initialization error classification', () => {
   beforeEach(() => {
     harness.scenario = '';
+    harness.buffers.length = 0;
+    harness.controls.length = 0;
+    harness.scene = null;
+    harness.camera = null;
     harness.error = null;
     harness.deferNextCompute = false;
     harness.deferTimestamps = false;
@@ -578,4 +611,134 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     await expectDisposed(harness.instances[0]!);
     adapter.dispose();
   });
+
+  it('maps every nested runtime field into the shared pipeline, material, scene and camera', async () => {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    Object.assign(config.simulation, { particleCount: 1000, speed: 2, spawnRadius: 37, lifetime: 11, particleSize: 7 });
+    Object.assign(config.modes.attractor, { attractorStrength: 3, attractorRadius: 27, attractorDamping: 0.91 });
+    Object.assign(config.rendering, { particleColor: '#123456', backgroundColor: '#234567', opacity: 0.4, additiveBlend: false });
+    Object.assign(config.camera, { enabled: true, autoRotate: true, distance: 500 });
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const frame = harness.instances[0]!.animationLoopValues.at(-1) as (time: number) => void;
+    frame(1000);
+    const buffers = harness.buffers[0]!;
+    expect(buffers.count).toBe(1000);
+    expect(buffers.uniforms.spawnRadius.value).toBe(37);
+    expect(buffers.uniforms.lifetime.value).toBe(11);
+    expect(buffers.uniforms.strength.value).toBe(3);
+    expect(buffers.uniforms.radius.value).toBe(27);
+    expect(buffers.uniforms.damping.value).toBe(0.91);
+    const material = (harness.scene!.children[0] as import('three').Sprite).material as unknown as import('three/webgpu').PointsNodeMaterial;
+    expect(material.color.getHexString()).toBe('123456');
+    expect(material.size).toBe(7);
+    expect(material.opacity).toBe(0.4);
+    expect(material.transparent).toBe(true);
+    expect(material.blending).toBe(1); // Three NormalBlending
+    expect((harness.scene!.background as import('three').Color).getHexString()).toBe('234567');
+    expect(harness.camera!.position.length()).toBe(500);
+    expect(harness.camera!.far).toBeGreaterThan(500 + 37);
+    expect(harness.controls[0]).toMatchObject({ enabled: true, autoRotate: true });
+
+    // The caller's later mutation must not affect the adapter's snapshot.
+    config.simulation.speed = 3;
+    adapter.start();
+    frame(1100);
+    frame(2100);
+    expect(buffers.uniforms.delta.value).toBeCloseTo(0.05 * 2); // clamp then multiply once
+    adapter.dispose();
+  });
+
+  it('preserves inactive groups, selects the new group, and rebuilds/init-disposes only for count changes', async () => {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const buffers = harness.buffers[0]!;
+    const dispose = vi.spyOn(buffers.positions.value, 'dispose');
+    const next = cloneConfig(config);
+    Object.assign(next.modes.vortex, { vortexStrength: 3.7, vortexDamping: 0.84 });
+    adapter.applyConfig(next);
+    expect(buffers.uniforms.strength.value).toBe(config.modes.attractor.attractorStrength);
+    expect(harness.buffers).toHaveLength(1);
+    next.mode = 'vortex';
+    adapter.applyConfig(next);
+    expect(buffers.uniforms.strength.value).toBe(3.7);
+    expect(buffers.uniforms.vortexDamping.value).toBe(0.84);
+    next.modes.attractor.attractorRadius = 39;
+    adapter.applyConfig(next);
+    expect(buffers.uniforms.radius.value).toBe(config.modes.attractor.attractorRadius);
+    next.mode = 'attractor';
+    adapter.applyConfig(next);
+    expect(buffers.uniforms.radius.value).toBe(39);
+    next.simulation.particleCount = 2000;
+    adapter.applyConfig(next);
+    expect(harness.buffers).toHaveLength(2);
+    expect(harness.buffers[1]!.count).toBe(2000);
+    expect(dispose).toHaveBeenCalledOnce();
+    adapter.dispose();
+  });
+
+  it('updates material program state and camera radius without losing the orbit target/direction', async () => {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    config.rendering.opacity = 1;
+    config.rendering.additiveBlend = false;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const frame = harness.instances[0]!.animationLoopValues.at(-1) as (time: number) => void;
+    frame(1000);
+    const material = (harness.scene!.children[0] as import('three').Sprite).material;
+    const version = material.version;
+    const controls = harness.controls[0]!;
+    controls.target.set(10, 3, 2);
+    harness.camera!.position.set(40, 3, 2);
+    const next = cloneConfig(config);
+    next.camera = { enabled: false, autoRotate: true, distance: 5 };
+    next.rendering.additiveBlend = true;
+    next.rendering.opacity = 0.7;
+    adapter.applyConfig(next);
+    expect(material.blending).toBe(2); // Three AdditiveBlending
+    expect(material.transparent).toBe(true);
+    expect(material.opacity).toBe(0.7);
+    expect(material.version).toBeGreaterThan(version);
+    expect(controls).toMatchObject({ enabled: false, autoRotate: false });
+    expect(controls.target.toArray()).toEqual([10, 3, 2]);
+    expect(harness.camera!.position.toArray()).toEqual([15, 3, 2]);
+    next.simulation.speed = 2;
+    adapter.applyConfig(next);
+    expect(harness.camera!.position.toArray()).toEqual([15, 3, 2]);
+    adapter.dispose();
+    adapter.dispose();
+    expect(controls.dispose).toHaveBeenCalledOnce();
+  });
+
+  it('recovers with the latest nested config and disposes the old controls before replacing them', async () => {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const canvas = makeCanvas();
+    const remove = vi.spyOn(canvas, 'removeEventListener');
+    const adapter = new ThreeRendererAdapter(canvas, config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const controls = harness.controls[0]!;
+    const next = cloneConfig(config);
+    next.mode = 'vortex';
+    next.modes.vortex.vortexStrength = 2.9;
+    next.modes.vortex.vortexDamping = 0.85;
+    next.simulation.spawnRadius = 44;
+    next.camera.distance = 450;
+    adapter.applyConfig(next);
+    adapter.pause();
+    harness.instances[0]!.triggerDeviceLost();
+    await vi.waitFor(() => expect(adapter.getStatus()).toMatchObject({ actual: 'webgl2', running: false }));
+    expect(controls.dispose).toHaveBeenCalledOnce();
+    expect(remove).toHaveBeenCalledWith('webglcontextlost', expect.any(Function));
+    expect(harness.controls).toHaveLength(2);
+    expect(harness.buffers.at(-1)!.uniforms.strength.value).toBe(2.9);
+    expect(harness.buffers.at(-1)!.uniforms.vortexDamping.value).toBe(0.85);
+    expect(harness.buffers.at(-1)!.uniforms.spawnRadius.value).toBe(44);
+    adapter.dispose();
+    expect(harness.controls[1]!.dispose).toHaveBeenCalledOnce();
+  });
+
 });
