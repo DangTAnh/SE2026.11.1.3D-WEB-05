@@ -23,9 +23,10 @@ The new artifacts are promoted runner output without editing the numbers or
 limitations. Interpretation and verification are recorded separately in the
 [v2 integration handoff](../04-testing/benchmark-v2-integration-2026-10-31.md).
 The headed FPS medians remain near 60; backend order is fixed and no performance
-advantage is claimed. Its positive GPU durations do not establish freshness when
-timestamp resolution fails: the inherited #62 cached-value finding needs a
-separate TV1/TV3 follow-up. Physical-GPU numerical parity remains NOT_RUN.
+advantage is claimed. Its positive GPU durations describe the original measured
+source. Issue #79 adds cached-readback rejection with real-query-pool regressions;
+it does not retroactively prove error-path freshness in those older sessions.
+Physical-GPU numerical parity remains NOT_RUN.
 
 ## Runner
 

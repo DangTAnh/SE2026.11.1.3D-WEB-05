@@ -20,6 +20,7 @@ const harness = vi.hoisted(() => ({
   rejectWebGLInit: null as ((error: Error) => void) | null,
   timestampSupported: false,
   timestampValue: 4,
+  cachedTimestamp: false,
   noticeInsertions: 0,
   instances: [] as Array<{
     forceWebGL: boolean;
@@ -62,7 +63,14 @@ vi.mock('three/webgpu', async () => {
   const actual = await vi.importActual<typeof import('three/webgpu')>('three/webgpu');
 
   class MockWebGPURenderer {
-    readonly backend: { isWebGPUBackend?: boolean; isWebGLBackend?: boolean; dispose?: () => Promise<void> };
+    readonly backend: {
+      isWebGPUBackend?: boolean; isWebGLBackend?: boolean; dispose?: () => Promise<void>;
+      timestampQueryPool: { compute: {
+        lastValue: number; pendingResolve: boolean; frames: number[];
+        getTimestampFrames(): number[];
+      } };
+    };
+    readonly info = { frame: 0 };
     readonly record: (typeof harness.instances)[number];
     _getFallback: ((error: unknown) => void) | null;
     onDeviceLost: (info: { api: string; message: string; reason: string | null; originalEvent: unknown }) => void = () => {};
@@ -82,9 +90,13 @@ vi.mock('three/webgpu', async () => {
         triggerDeviceLost: () => this.onDeviceLost({ api: 'WebGPU', message: 'Device removed', reason: 'unknown', originalEvent: null }),
       };
       harness.instances.push(this.record);
-      this.backend = this.record.forceWebGL
+      const backend = this.record.forceWebGL
         ? { isWebGLBackend: true, dispose: async () => { this.record.backendDisposed = true; } }
         : { isWebGPUBackend: true, dispose: async () => { this.record.backendDisposed = true; } };
+      this.backend = { ...backend, timestampQueryPool: { compute: {
+        lastValue: 0, pendingResolve: false, frames: [],
+        getTimestampFrames() { return this.frames; },
+      } } };
       this._getFallback = this.record.forceWebGL
         ? null
         : () => {
@@ -149,12 +161,22 @@ vi.mock('three/webgpu', async () => {
     hasFeature(): boolean { return harness.timestampSupported; }
     resolveTimestampsAsync(): Promise<number> {
       this.record.timestampResolveCalls += 1;
+      const pool = this.backend.timestampQueryPool.compute;
+      const frame = this.info.frame;
+      if (harness.cachedTimestamp) return Promise.resolve(pool.lastValue);
+      const resolved = (duration: number): number => {
+        pool.frames = [frame];
+        pool.lastValue = duration;
+        return duration;
+      };
       if (harness.deferTimestamps) {
-        return new Promise((resolve) => { this.record.resolveTimestamp = resolve; });
+        return new Promise((resolve) => { this.record.resolveTimestamp = value => resolve(resolved(value)); });
       }
-      return Promise.resolve(harness.timestampValue);
+      return Promise.resolve(resolved(harness.timestampValue));
     }
-    render(scene: Scene, camera: PerspectiveCamera): void { harness.scene = scene; harness.camera = camera; }
+    render(scene: Scene, camera: PerspectiveCamera): void {
+      harness.scene = scene; harness.camera = camera; this.info.frame += 1;
+    }
     dispose(): void { this.record.disposed = true; }
   }
 
@@ -215,6 +237,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     harness.rejectWebGLInit = null;
     harness.timestampSupported = false;
     harness.timestampValue = 4;
+    harness.cachedTimestamp = false;
     harness.noticeInsertions = 0;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
@@ -392,6 +415,27 @@ describe('ThreeRendererAdapter initialization error classification', () => {
       if (action !== 'dispose') adapter.dispose();
     },
   );
+
+  it.each(['webgpu', 'webgl2'] as const)('does not renew stale cached timing on %s', async backendPreference => {
+    harness.timestampSupported = true;
+    vi.useFakeTimers();
+    const adapter = new ThreeRendererAdapter(makeCanvas(), { ...DEFAULT_CONFIG, backendPreference });
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopCallback!;
+    for (let index = 1; index <= 10; index += 1) frame(index * 16);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 4 });
+    await vi.advanceTimersByTimeAsync(MAX_GPU_MEASUREMENT_AGE_MS + 1);
+    expect(adapter.getStatus().gpuTimingAvailable).toBe(false);
+
+    harness.cachedTimestamp = true;
+    for (let index = 11; index <= 20; index += 1) frame(index * 16);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, gpuTimeMs: null });
+    expect(adapter.getStatus().measurementAgeMs).not.toBe(0);
+    adapter.dispose();
+  });
 
   it('ages a GPU sample from compute submission, including delayed timestamp readback', async () => {
     harness.timestampSupported = true;

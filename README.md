@@ -20,9 +20,10 @@ WebGPU cases are skipped.
 AMD Radeon, 100 samples each) at `d6ee6e3` in
 [`the 31/10 benchmark`](docs/06-benchmark/2026-10-31-amd-radeon-chromium-v2.md).
 Both FPS medians are about 59.92; these fixed-order measurements establish no
-backend performance advantage. Positive GPU timing is adapter-reported and does
-not verify timestamp freshness under readback errors; that inherited #62 finding
-remains a separate follow-up. The earlier 28/10 and 29/10 artifacts are historical
+backend performance advantage. The Issue #79 timestamp fix rejects cached
+readbacks and is tested with injected read errors on both real backends; physical
+GPU failure acceptance remains separate. The measured artifacts retain their
+original source/limitations. The earlier 28/10 and 29/10 artifacts are historical
 v1/20,000-particle sessions, retained in the
 [benchmark index](docs/06-benchmark/README.md).
 #50's WebGL2 readback parity is software-rendered (SwiftShader), not physical-GPU

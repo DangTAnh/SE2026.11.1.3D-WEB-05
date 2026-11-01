@@ -30,7 +30,7 @@ test('forced WebGL2 initializes a renderer on the application canvas when suppor
 
     const timingLabel = page.locator('#gpu-timing');
     if (capabilities.timestampQuery) {
-      // Timing is sampled every 30 compute frames; software WebGL can need
+      // Timing is sampled every 10 compute frames; software WebGL can need
       // several seconds to produce that first sample, so allow a slow-device window.
       await expect(timingLabel).not.toHaveText('Không khả dụng', { timeout: 25_000 });
       const timingMs = Number((await timingLabel.innerText()).replace(' ms', ''));
