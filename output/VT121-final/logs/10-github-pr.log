@@ -1,0 +1,23 @@
+UTC: 2026-11-02T07:00:53.9747285Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: git status --short; git rev-parse HEAD origin/main origin/dev; npm --version; & ../gh-official/bin/gh.exe auth status --json hosts; Write-Output "auth status exit=$LASTEXITCODE"; & ../gh-official/bin/gh.exe api /user; Write-Output "user API exit=$LASTEXITCODE"; & ../gh-official/bin/gh.exe repo view DangTAnh/SE2026.11.1.3D-WEB-05 --json nameWithOwner,defaultBranchRef,viewerPermission; Write-Output "repo view exit=$LASTEXITCODE"; git ls-remote origin refs/heads/main refs/heads/dev; Write-Output "ls-remote exit=$LASTEXITCODE"; curl.exe -I --connect-timeout 5 --max-time 10 https://api.github.com; Write-Output "curl exit=$LASTEXITCODE"; exit $LASTEXITCODE
+?? debug.log
+e808d70a792ffb377c8b310f8f9e0bb441ba5dc0
+f37b3acf4783ef873d0a9fac043e9bcc42c1a087
+2389f0f550b33899801e1ab07c6312baea0c9faf
+11.10.1
+{"hosts":{"github.com":[{"state":"error","error":"Get \"https://api.github.com/\": dial tcp: lookup api.github.com: no such host","active":true,"host":"github.com","login":"duyanhtr130905","tokenSource":"default","gitProtocol":"https"}]}}
+auth status exit=0
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+user API exit=1
+error connecting to api.github.com
+check your internet connection or https://githubstatus.com
+repo view exit=1
+fatal: unable to access 'https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05.git/': getaddrinfo() thread failed to start
+ls-remote exit=128
+curl: (6) Could not resolve host: api.github.com
+curl exit=6
+EXIT: 6

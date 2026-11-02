@@ -1,0 +1,660 @@
+diff --git a/bench/importUndo200-v2.mjs b/bench/importUndo200-v2.mjs
+new file mode 100644
+index 0000000..e762f9e
+--- /dev/null
++++ b/bench/importUndo200-v2.mjs
+@@ -0,0 +1,16 @@
++import { performance } from 'node:perf_hooks';
++import os from 'node:os';
++import assert from 'node:assert/strict';
++import { createImportUndo } from '../src/presets/importUndo.ts';
++import {A,json,makeDocument} from '../tests/support/vt121Data.ts';
++const quantile=(sorted,p)=>sorted[Math.ceil(sorted.length*p)-1];
++function operation(){let state=makeDocument();const before=structuredClone(state);const owner=Symbol();const c=createImportUndo(owner,()=>state,next=>{state=next;});c.importText(owner,json(A));assert.deepEqual(state,A);assert.equal(c.undo(owner),true);assert.deepEqual(state,before);}
++for(let i=0;i<1000;i++)operation();
++console.log(JSON.stringify({type:'environment',timestamp:new Date().toISOString(),node:process.version,os:`${os.platform()} ${os.release()}`,cpu:os.cpus()[0]?.model,logicalCpus:os.cpus().length,totalMemory:os.totalmem(),warmup:1000,rounds:5,workload:'200 Promise sessions submitted together; each real schema-v2 import + Undo + exact document assertions; latency includes queue delay; one Node event loop',inputBytes:Buffer.byteLength(json(A)),targetMs:5000,realUserSlo:'NOT_VERIFIED'}));
++for(let round=1;round<=5;round++){
++ const start=performance.now();let errors=0;
++ const raw=await Promise.all(Array.from({length:200},(_,id)=>{const submitted=performance.now();return Promise.resolve().then(()=>{const begin=performance.now();let error;try{operation();}catch(e){errors++;error=String(e);}const end=performance.now();return{id,latencyMs:end-submitted,serviceMs:end-begin,error};});}));
++ const durationMs=performance.now()-start;const sorted=raw.map(v=>v.latencyMs).sort((a,b)=>a-b);
++ console.log(JSON.stringify({type:'round',round,ops:200,errors,durationMs,p50Ms:quantile(sorted,.5),p95Ms:quantile(sorted,.95),p99Ms:quantile(sorted,.99),throughputOpsSec:200/(durationMs/1000),scope:'synthetic Node controller only',raw}));
++ if(errors)process.exitCode=1;
++}
+diff --git a/playwright.config.ts b/playwright.config.ts
+index 31ca6a8..a493958 100644
+--- a/playwright.config.ts
++++ b/playwright.config.ts
+@@ -19,7 +19,7 @@ export default defineConfig({
+     screenshot: 'only-on-failure',
+     video: 'retain-on-failure',
+   },
+-  webServer: {
++  webServer: process.env.VT121_VITE_TRANSPORT ? undefined : {
+     command: 'npm run dev -- --host 127.0.0.1 --port 4173',
+     url: baseURL,
+     reuseExistingServer: !process.env.CI,
+diff --git a/playwright.vt121.config.ts b/playwright.vt121.config.ts
+index b0e7bf5..96b7f2b 100644
+--- a/playwright.vt121.config.ts
++++ b/playwright.vt121.config.ts
+@@ -1,3 +1,3 @@
+ import { defineConfig } from '@playwright/test';
+ import original from './playwright.config.ts';
+-export default defineConfig({ ...original, webServer: undefined, testMatch: 'undoImportV2.spec.ts', retries: 0 });
++export default defineConfig({ ...original, webServer: undefined, testMatch: ['undoImportV2.spec.ts', 'vt121-load.spec.ts'], retries: 0 });
+diff --git a/src/presets/importUndo.ts b/src/presets/importUndo.ts
+new file mode 100644
+index 0000000..49b21a2
+--- /dev/null
++++ b/src/presets/importUndo.ts
+@@ -0,0 +1,51 @@
++import { parsePresetDocument, type PresetDocument } from './preset.ts';
++
++/** Config committed, but a subsequent simulation reset failed. Not apply rejection. */
++export class CommittedPresetError extends Error {}
++
++/** Client-module ownership capability only: no server/accounts authorization. */
++export function createImportUndo(owner: symbol, getDocument: () => PresetDocument, apply: (document: PresetDocument) => void) {
++  let previous: PresetDocument | undefined;
++  const assertAuthorized = (actor: symbol): void => {
++    if (actor !== owner) throw new Error('Unauthorized preset session.');
++  };
++  const applyRecoverably = (next: PresetDocument, before: PresetDocument): void => {
++    try { apply(structuredClone(next)); }
++    catch (error) {
++      if (error instanceof CommittedPresetError) throw error;
++      try { apply(structuredClone(before)); }
++      catch (rollbackError) {
++        throw new AggregateError([error, rollbackError], 'Không thể áp dụng hoặc khôi phục preset; cấu hình renderer có thể không nhất quán.');
++      }
++      throw error;
++    }
++  };
++  return {
++    importText(actor: symbol, text: string): void {
++      assertAuthorized(actor);
++      const next = parsePresetDocument(text);
++      // Validate the snapshot too: Undo must never restore malformed state.
++      const snapshot = parsePresetDocument(JSON.stringify(getDocument()));
++      try { applyRecoverably(next, snapshot); }
++      catch (error) {
++        if (error instanceof CommittedPresetError) previous = snapshot;
++        throw error;
++      }
++      previous = snapshot;
++    },
++    undo(actor: symbol): boolean {
++      assertAuthorized(actor);
++      if (!previous) return false;
++      const before = parsePresetDocument(JSON.stringify(getDocument()));
++      try { applyRecoverably(previous, before); }
++      catch (error) {
++        if (error instanceof CommittedPresetError) previous = undefined;
++        throw error;
++      }
++      previous = undefined;
++      return true;
++    },
++    canUndo(actor: symbol): boolean { assertAuthorized(actor); return previous !== undefined; },
++    invalidate(actor: symbol): void { assertAuthorized(actor); previous = undefined; },
++  };
++}
+diff --git a/src/ui/app.ts b/src/ui/app.ts
+index 2a77992..fc008d4 100644
+--- a/src/ui/app.ts
++++ b/src/ui/app.ts
+@@ -1,3 +1,4 @@
++import { CommittedPresetError } from '../presets/importUndo.ts';
+ import { cloneConfig, DEFAULT_CONFIG } from '../presets/preset.ts';
+ import type { LabConfig } from '../presets/preset.ts';
+ import type { RendererPort } from '../core/renderer/RendererPort.ts';
+@@ -93,7 +94,7 @@ export function mountLabUI(
+       try { resetSimulation(); }
+       catch {
+         refreshStatus();
+-        throw new Error('Cấu hình đã được áp dụng. Không thể khởi tạo lại mô phỏng; vui lòng thử Reset.');
++        throw new CommittedPresetError('Cấu hình đã được áp dụng. Không thể khởi tạo lại mô phỏng; vui lòng thử Reset.');
+       }
+     }
+     refreshStatus();
+diff --git a/src/ui/controls/controlBindings.ts b/src/ui/controls/controlBindings.ts
+index eb82392..2dbcdd0 100644
+--- a/src/ui/controls/controlBindings.ts
++++ b/src/ui/controls/controlBindings.ts
+@@ -1,7 +1,8 @@
++import { createImportUndo } from '../../presets/importUndo.ts';
++import { createPresetFileReader } from './presetFile.ts';
+ import {
+   cloneConfig,
+   downloadPresetDocument,
+-  parsePresetDocument,
+   type LabConfig,
+   type PresetDocument,
+ } from '../../presets/preset.ts';
+@@ -54,6 +55,23 @@ export function renderLabControls(config: LabConfig): void {
+ }
+ 
+ export function bindLabControls(callbacks: ControlCallbacks): () => void {
++  const owner = Symbol('preset session');
++  const session = createImportUndo(owner, callbacks.getPresetDocument, callbacks.importPresetDocument);
++  const undoButton = byId<HTMLButtonElement>('undo-import');
++  const syncUndo = (): void => { undoButton.disabled = !session.canUndo(owner); };
++  const reader = createPresetFileReader(text => {
++    try { session.importText(owner, text); } finally { syncUndo(); }
++  }, callbacks.notify);
++  const invalidate = (): void => {
++    reader.invalidate();
++    session.invalidate(owner);
++    syncUndo();
++  };
++  const updateConfig: ControlCallbacks['updateConfig'] = (next, resetSimulation) => {
++    invalidate();
++    callbacks.updateConfig(next, resetSimulation);
++  };
++  syncUndo();
+   const disposers: Array<() => void> = [];
+   let disposed = false;
+   const listen = (
+@@ -79,7 +97,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
+       const value = Number((event.target as HTMLInputElement).value);
+       const next = cloneConfig(callbacks.getConfig());
+       next.simulation[numericFields[id]] = value;
+-      callbacks.updateConfig(next);
++      updateConfig(next);
+     });
+   });
+ 
+@@ -88,27 +106,28 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
+     const value = Number((event.target as HTMLInputElement).value);
+     if (next.mode === 'attractor') next.modes.attractor.attractorStrength = value;
+     else next.modes.vortex.vortexStrength = value;
+-    callbacks.updateConfig(next);
++    updateConfig(next);
+   });
+ 
+   listen(byId<HTMLInputElement>('particle-count'), 'input', (event) => {
+     const value = Number((event.target as HTMLInputElement).value);
++    invalidate();
+     byId<HTMLOutputElement>('particle-count-value').textContent = formatNumber(value);
+   });
+   listen(byId<HTMLInputElement>('particle-count'), 'change', (event) => {
+     const value = Number((event.target as HTMLInputElement).value);
+     const next = cloneConfig(callbacks.getConfig());
+     next.simulation.particleCount = value;
+-    callbacks.updateConfig(next, true);
++    updateConfig(next, true);
+   });
+   listen(byId<HTMLInputElement>('particle-color'), 'input', (event) => {
+     const next = cloneConfig(callbacks.getConfig());
+     next.rendering.particleColor = (event.target as HTMLInputElement).value;
+-    callbacks.updateConfig(next);
++    updateConfig(next);
+   });
+ 
+   listen(byId<HTMLSelectElement>('backend'), 'change', (event) => {
+-    callbacks.updateConfig({
++    updateConfig({
+       ...callbacks.getConfig(),
+       backendPreference: (event.target as HTMLSelectElement).value as LabConfig['backendPreference'],
+     });
+@@ -116,12 +135,13 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
+   });
+ 
+   listen(byId<HTMLButtonElement>('apply-backend'), 'click', () => {
++    invalidate();
+     callbacks.applyBackend();
+   });
+ 
+   (['attractor', 'vortex'] as const).forEach((mode) => {
+     listen(byId<HTMLButtonElement>(`mode-${mode}`), 'click', () => {
+-      callbacks.updateConfig({ ...callbacks.getConfig(), mode }, true);
++      updateConfig({ ...callbacks.getConfig(), mode }, true);
+     });
+   });
+ 
+@@ -147,24 +167,24 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
+     byId<HTMLInputElement>('preset-file').click();
+   });
+ 
++  listen(undoButton, 'click', () => {
++    reader.invalidate();
++    try {
++      if (session.undo(owner)) callbacks.notify('Đã hoàn tác import preset.');
++    } catch (error) {
++      callbacks.notify(error instanceof Error ? error.message : 'Không thể hoàn tác preset.', 'error');
++    } finally { syncUndo(); }
++  });
++
+   listen(byId<HTMLInputElement>('preset-file'), 'change', async (event) => {
+     const input = event.target as HTMLInputElement;
+     const file = input.files?.[0];
+     if (!file) return;
+-    try {
+-      if (file.size > 1_000_000) throw new Error('Tệp preset vượt quá giới hạn 1 MB.');
+-      const next = parsePresetDocument(await file.text());
+-      if (disposed) return;
+-      callbacks.importPresetDocument(next);
+-      callbacks.notify('Đã nhập preset hợp lệ.');
+-    } catch (error) {
+-      if (!disposed) callbacks.notify(error instanceof Error ? error.message : 'Không thể đọc preset.', 'error');
+-    } finally {
+-      input.value = '';
+-    }
++    if (await reader.read(file)) input.value = '';
+   });
+ 
+   listen(byId<HTMLButtonElement>('restore-defaults'), 'click', () => {
++    invalidate();
+     callbacks.restoreDefaults();
+     callbacks.notify('Đã khôi phục cấu hình mặc định.');
+   });
+@@ -172,6 +192,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
+   return () => {
+     if (disposed) return;
+     disposed = true;
++    reader.invalidate();
+     disposers.forEach((dispose) => dispose());
+   };
+ }
+diff --git a/src/ui/controls/presetFile.ts b/src/ui/controls/presetFile.ts
+new file mode 100644
+index 0000000..5eb0a03
+--- /dev/null
++++ b/src/ui/controls/presetFile.ts
+@@ -0,0 +1,25 @@
++/** Shared by the actual file input and controlled deferred-promise tests. */
++export function createPresetFileReader(
++  importText: (text: string) => void,
++  notify: (message: string, tone?: 'error') => void,
++) {
++  let request = 0;
++  return {
++    invalidate(): void { request++; },
++    async read(file: Pick<File, 'size' | 'text'>): Promise<boolean> {
++      const id = ++request;
++      try {
++        if (file.size === 0) throw new Error('Tệp preset rỗng.');
++        if (file.size > 1_000_000) throw new Error('Tệp preset vượt quá giới hạn 1 MB.');
++        const text = await file.text();
++        if (id !== request) return false;
++        importText(text);
++        notify('Đã nhập preset hợp lệ.');
++      } catch (error) {
++        if (id !== request) return false;
++        notify(error instanceof Error ? error.message : 'Không thể đọc preset.', 'error');
++      }
++      return id === request;
++    },
++  };
++}
+diff --git a/src/ui/template.ts b/src/ui/template.ts
+index c1944a4..1df0ca0 100644
+--- a/src/ui/template.ts
++++ b/src/ui/template.ts
+@@ -84,6 +84,7 @@ export function createLabMarkup(): string {
+               <section class="control-section preset-section">
+                 <div class="section-title"><span>05</span><h3>Preset configuration</h3></div>
+                 <div class="preset-actions"><button type="button" id="export-preset" class="button primary">↓ Export JSON</button><button type="button" id="import-preset" class="button secondary">↑ Import</button></div>
++                <button type="button" id="undo-import" class="button secondary" disabled>Undo import</button>
+                 <input type="file" id="preset-file" accept=".json,application/json" hidden>
+                 <button type="button" id="restore-defaults" class="link-button">↻ Khôi phục mặc định</button>
+               </section>
+diff --git a/tests/e2e/backend-reinit.spec.ts b/tests/e2e/backend-reinit.spec.ts
+index 36ca56d..9739ee9 100644
+--- a/tests/e2e/backend-reinit.spec.ts
++++ b/tests/e2e/backend-reinit.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ 
+ const fixture = '/tests/e2e/fixtures/backend-session.html';
+ 
+diff --git a/tests/e2e/backend.spec.ts b/tests/e2e/backend.spec.ts
+index 8ad260a..61bbf9c 100644
+--- a/tests/e2e/backend.spec.ts
++++ b/tests/e2e/backend.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ import { probeCapabilities } from './support/capabilities';
+ 
+ // A real renderer under software GL is heavy; run one page at a time per project.
+diff --git a/tests/e2e/renderer-adapter-webgpu.spec.ts b/tests/e2e/renderer-adapter-webgpu.spec.ts
+index 2767de9..549dc4f 100644
+--- a/tests/e2e/renderer-adapter-webgpu.spec.ts
++++ b/tests/e2e/renderer-adapter-webgpu.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ import { probeCapabilities } from './support/capabilities';
+ 
+ test('WebGPU adapter initializes and renders on the application canvas when available', async ({ page }) => {
+diff --git a/tests/e2e/renderer-adapter.spec.ts b/tests/e2e/renderer-adapter.spec.ts
+index c64962e..06d44b5 100644
+--- a/tests/e2e/renderer-adapter.spec.ts
++++ b/tests/e2e/renderer-adapter.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ 
+ test('forced WebGL2 initializes a renderer on the application canvas when supported', async ({ page }) => {
+   // v2 default 65536 is kept here; software rendering needs a startup budget.
+diff --git a/tests/e2e/renderer-runtime-context-loss.spec.ts b/tests/e2e/renderer-runtime-context-loss.spec.ts
+index 2517326..2cae338 100644
+--- a/tests/e2e/renderer-runtime-context-loss.spec.ts
++++ b/tests/e2e/renderer-runtime-context-loss.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ 
+ test('a lost WebGL2 context after initialization is reported as unavailable', async ({ page }) => {
+   // Keep the production v2 default (65,536 particles). Software WebGL2 needs
+diff --git a/tests/e2e/simulation-parity.spec.ts b/tests/e2e/simulation-parity.spec.ts
+index 9ddd6f2..99d773b 100644
+--- a/tests/e2e/simulation-parity.spec.ts
++++ b/tests/e2e/simulation-parity.spec.ts
+@@ -11,7 +11,7 @@
+  * status is inside the attached `gpu-kernel-parity.json`, not a Playwright
+  * skip for the WebGPU subcases.
+  */
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ import type { ParityOptions, ParityResult } from './fixtures/simulation-parity.ts';
+ 
+ const CASES: ParityOptions[] = [
+diff --git a/tests/e2e/ui-live-status.spec.ts b/tests/e2e/ui-live-status.spec.ts
+index ee7c499..048f13b 100644
+--- a/tests/e2e/ui-live-status.spec.ts
++++ b/tests/e2e/ui-live-status.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ 
+ const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
+ 
+diff --git a/tests/e2e/ui-port.spec.ts b/tests/e2e/ui-port.spec.ts
+index 324899c..c5e52ce 100644
+--- a/tests/e2e/ui-port.spec.ts
++++ b/tests/e2e/ui-port.spec.ts
+@@ -1,4 +1,4 @@
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ import { cloneConfig, DEFAULT_CONFIG } from '../../src/presets/preset.ts';
+ 
+ const fixturePage = '/tests/e2e/fixtures/renderer-port.html';
+diff --git a/tests/e2e/ui.spec.ts b/tests/e2e/ui.spec.ts
+index f3488d8..1f14285 100644
+--- a/tests/e2e/ui.spec.ts
++++ b/tests/e2e/ui.spec.ts
+@@ -1,6 +1,6 @@
+ import { cloneConfig, DEFAULT_CONFIG } from '../../src/presets/preset.ts';
+ import AxeBuilder from '@axe-core/playwright';
+-import { expect, test } from '@playwright/test';
++import { expect, test } from './vt121Transport.ts';
+ import { readFile } from 'node:fs/promises';
+ import path from 'node:path';
+ 
+diff --git a/tests/e2e/undoImportV2.spec.ts b/tests/e2e/undoImportV2.spec.ts
+index 634d610..a86d4bc 100644
+--- a/tests/e2e/undoImportV2.spec.ts
++++ b/tests/e2e/undoImportV2.spec.ts
+@@ -29,3 +29,57 @@ test('VT121-V2-E1 import and Undo restore complete nested document and port conf
+   expect(await page.evaluate(() => window.uiTest.port.calls.filter(c => c.type === 'applyConfig').at(-1))).toMatchObject({config: before.config});
+   await expect(undo).toBeDisabled();
+ });
++
++test('VT121-V2-E2 1MB import and byte/JSON rejections preserve complete document/history', async ({page})=>{
++ await page.goto(fixture); const before=await exported(page);const after=documentA();
++ const raw=JSON.stringify(after).padEnd(1000000,' ');expect(Buffer.byteLength(raw)).toBe(1000000);
++ await page.locator('#preset-file').setInputFiles({name:'valid.json',mimeType:'application/json',buffer:Buffer.from(raw)});
++ await expect(page.locator('#toast')).toContainText('Đã nhập preset hợp lệ');
++ for(const [raw,message] of [['','rỗng'],['0','định dạng'],['{}','thiếu'],['{bad','JSON'],[' '.repeat(1000001),'1 MB']]){
++  await page.locator('#preset-file').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(raw)});
++  await expect(page.locator('#toast')).toContainText(message);expect(await exported(page)).toEqual(after);
++  await expect(page.getByRole('button',{name:'Undo import',exact:true})).toBeEnabled();
++ }
++ await page.getByRole('button',{name:'Undo import',exact:true}).click();expect(await exported(page)).toEqual(before);
++});
++test('VT121-V2-E3 manual edit clears history; actual deferred File.text uses latest request wins',async({page})=>{
++ await page.goto(fixture);const after=documentA();
++ await page.locator('#preset-file').setInputFiles({name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(after))});
++ const undo=page.getByRole('button',{name:'Undo import',exact:true});await expect(undo).toBeEnabled();
++ await page.locator('#speed').fill('1.8');await expect(undo).toBeDisabled();
++ for(const stale of [JSON.stringify(after),'{invalid']){
++  await page.goto(fixture);const before=await exported(page);
++  await page.evaluate(stale=>{
++   const original=File.prototype.text;
++   File.prototype.text=function(){if(this.name==='slow.json')return new Promise<string>(resolve=>{(window as unknown as {vt121Release:()=>void}).vt121Release=()=>resolve(stale);});return original.call(this);};
++  },stale);
++  await page.locator('#preset-file').setInputFiles({name:'slow.json',mimeType:'application/json',buffer:Buffer.from('{}')});
++  await expect.poll(()=>page.evaluate(()=>typeof(window as unknown as {vt121Release?:()=>void}).vt121Release)).toBe('function');
++  const latest={...after,name:'Latest request'};
++  await page.locator('#preset-file').setInputFiles({name:'latest.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(latest))});
++  await expect(page.locator('#toast')).toContainText('Đã nhập preset hợp lệ');
++  await page.evaluate(async()=>{(window as unknown as {vt121Release:()=>void}).vt121Release();await Promise.resolve();await Promise.resolve();});
++  await expect(page.locator('#toast')).toHaveText('Đã nhập preset hợp lệ.');
++  expect(await exported(page)).toEqual(latest);
++  await page.getByRole('button',{name:'Undo import',exact:true}).click();expect(await exported(page)).toEqual(before);
++ }
++});
++test('VT121-V2-E4 partial renderer apply and failed Undo recover UI/port and preserve history',async({page})=>{
++ await page.goto(fixture);const before=await exported(page);const after=documentA();
++ const failNext=async()=>page.evaluate(()=>{
++  const original=window.uiTest.port.applyConfig.bind(window.uiTest.port);let once=true;
++  window.uiTest.port.applyConfig=config=>{original(config);if(once){once=false;throw new Error('sensitive partial failure');}};
++ });
++ await failNext();
++ await page.locator('#preset-file').setInputFiles({name:'partial.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(after))});
++ await expect(page.locator('#toast')).toContainText('Không thể áp dụng cấu hình');
++ expect(await exported(page)).toEqual(before);
++ expect(await page.evaluate(()=>window.uiTest.port.calls.filter(c=>c.type==='applyConfig').at(-1))).toMatchObject({config:before.config});
++ const undo=page.getByRole('button',{name:'Undo import',exact:true});await expect(undo).toBeDisabled();
++ await page.locator('#preset-file').setInputFiles({name:'ok.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(after))});
++ await expect(undo).toBeEnabled();await failNext();await undo.click();
++ await expect(page.locator('#toast')).toContainText('Không thể áp dụng cấu hình');
++ expect(await exported(page)).toEqual(after);
++ expect(await page.evaluate(()=>window.uiTest.port.calls.filter(c=>c.type==='applyConfig').at(-1))).toMatchObject({config:after.config});
++ await expect(undo).toBeEnabled();await undo.click();expect(await exported(page)).toEqual(before);await expect(undo).toBeDisabled();
++});
+diff --git a/tests/e2e/vt121-load.spec.ts b/tests/e2e/vt121-load.spec.ts
+new file mode 100644
+index 0000000..f739882
+--- /dev/null
++++ b/tests/e2e/vt121-load.spec.ts
+@@ -0,0 +1,33 @@
++import { test, expect } from './vt121Transport.ts';
++import { cloneConfig, DEFAULT_CONFIG } from '../../src/presets/preset.ts';
++
++test('VT121 browser/port integration 200 submitted tasks, pool10 @evidence @vt121load',async({browser})=>{
++ test.setTimeout(240000);
++ const contexts=await Promise.all(Array.from({length:10},()=>browser.newContext({viewport:{width:1440,height:1000}})));
++ try {
++  const pages=await Promise.all(contexts.map(c=>c.newPage()));
++  await Promise.all(pages.map(async p=>{await p.goto('/tests/e2e/fixtures/renderer-port.html');await expect(p.locator('#speed')).toHaveValue('1.2');}));
++  const document={schemaVersion:2,app:'3D-WEB-05',name:'browser load',config:cloneConfig(DEFAULT_CONFIG)};
++  document.config.simulation.speed=2;document.config.mode='vortex';
++  const raw=Buffer.from(JSON.stringify(document));
++  const operation=async(page:typeof pages[number])=>{
++   await page.locator('#preset-file').setInputFiles({name:'load.json',mimeType:'application/json',buffer:raw});
++   await expect(page.locator('#speed')).toHaveValue('2');
++   const undo=page.getByRole('button',{name:'Undo import',exact:true});await undo.click();
++   await expect(page.locator('#speed')).toHaveValue('1.2');await expect(undo).toBeDisabled();
++  };
++  await Promise.all(pages.map(operation)); // one warmup per page
++  const started=performance.now();let next=0;
++  const results:Array<{id:number;latencyMs:number;serviceMs:number;error?:string}>=[];
++  await Promise.all(pages.map(async page=>{
++   while(next<200){const id=next++;const begin=performance.now();let error:string|undefined;
++    try{await operation(page);}catch(e){error=e instanceof Error?e.message:String(e);}
++    const end=performance.now();results.push({id,latencyMs:end-started,serviceMs:end-begin,error});
++   }
++  }));
++  const durationMs=performance.now()-started;const sorted=results.map(r=>r.latencyMs).sort((a,b)=>a-b);
++  const q=(p:number)=>sorted[Math.ceil(sorted.length*p)-1];const errors=results.filter(r=>r.error).length;
++  console.log(JSON.stringify({type:'browser-round',timestamp:new Date().toISOString(),browser:browser.version(),ops:200,pool:10,rounds:1,warmup:10,errors,durationMs,p50Ms:q(.5),p95Ms:q(.95),p99Ms:q(.99),throughputOpsSec:200/(durationMs/1000),scope:'200 submitted UI import/Undo tasks, max10 browser contexts active, real UI and FakeRenderer over intercepted Vite; not 200 simultaneous real users, not HTTP/GPU SLO',realUserSlo:'NOT_VERIFIED',raw:results}));
++  expect(results).toHaveLength(200);expect(errors).toBe(0);
++ }finally{await Promise.all(contexts.map(c=>c.close()));}
++});
+diff --git a/tests/e2e/vt121Transport.ts b/tests/e2e/vt121Transport.ts
+index dea20dd..14f3f4b 100644
+--- a/tests/e2e/vt121Transport.ts
++++ b/tests/e2e/vt121Transport.ts
+@@ -4,6 +4,11 @@ import { readFile } from 'node:fs/promises';
+ import path from 'node:path';
+ 
+ async function routeVite(context: BrowserContext, server: ViteDevServer): Promise<void> {
++  // Vite's dev client opens HMR even in middleware mode. Terminate only that
++  // local development-tool connection in transport, rather than filtering app errors.
++  await context.routeWebSocket(/^ws:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//, socket => {
++    socket.onMessage(() => {});
++  });
+   await context.route('**/*', async route => {
+     const url = new URL(route.request().url());
+     if (url.origin !== 'http://127.0.0.1:4173') {
+@@ -32,7 +37,19 @@ async function routeVite(context: BrowserContext, server: ViteDevServer): Promis
+ export const test = base.extend<{}, { transportServer: ViteDevServer | undefined }>({
+   transportServer: [async ({}, use) => {
+     if (!process.env.VT121_VITE_TRANSPORT) { await use(undefined); return; }
+-    const server = await createServer({ configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom' });
++    const sourceRoot = process.env.VT121_SOURCE_BASELINE;
++    const root = process.cwd();
++    const server = await createServer({ configFile: false, cacheDir: sourceRoot ? "node_modules/.vite-vt121-baseline" : "node_modules/.vite-vt121",
++      plugins: sourceRoot ? [{ name: 'vt121-immutable-baseline-source', enforce: 'pre',
++        async load(id) {
++          const clean = id.split('?')[0];
++          const relative = path.relative(root, clean);
++          if (!relative.startsWith(`src${path.sep}`)) return null;
++          // Read original tracked source from the separate baseline checkout; no app stub.
++          return await readFile(path.join(sourceRoot, relative), 'utf8');
++        },
++      }] : [],
++      server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
+     try { await use(server); } finally { await server.close(); }
+   }, { scope: 'worker' }],
+   browser: [async ({ browser, transportServer }, use) => {
+diff --git a/tests/support/vt121Data.ts b/tests/support/vt121Data.ts
+new file mode 100644
+index 0000000..f023120
+--- /dev/null
++++ b/tests/support/vt121Data.ts
+@@ -0,0 +1,18 @@
++import { cloneConfig, DEFAULT_CONFIG, type PresetDocument } from '../../src/presets/preset.ts';
++export const makeDocument = (name?: string): PresetDocument => ({ schemaVersion: 2, app: '3D-WEB-05', ...(name === undefined ? {} : {name}), config: cloneConfig(DEFAULT_CONFIG) });
++export const A = makeDocument('A'); A.config.mode = 'vortex'; A.config.simulation.speed = 2.2; A.config.camera.distance = 45;
++export const B = makeDocument('B'); B.config.simulation.speed = 3; B.config.rendering.particleColor = '#abcdef'; B.config.modes.vortex.vortexStrength = 4;
++export const json = (value: unknown): string => JSON.stringify(value);
++export function candidate(path: string, value: unknown): PresetDocument {
++  const doc = makeDocument(); let node = doc as unknown as Record<string, unknown>;
++  const keys = path.split('.'); const last = keys.pop()!;
++  for (const key of keys) node = node[key] as Record<string, unknown>;
++  node[last] = value; return doc;
++}
++// Explicit expected values from preset-schema-v2.schema.json, not controller logic.
++export const boundaries: Array<[string, string, number, boolean]> = [];
++function cases(id: string, path: string, data: Array<[number,boolean]>) { for (const [value, accepted] of data) boundaries.push([id,path,value,accepted]); }
++cases('B1','config.simulation.particleCount',[[999,false],[1000,true],[1001,true],[1500,true],[65536,true],[499999,true],[500000,true],[500001,false],[1000.5,false]]);
++cases('B2','config.simulation.speed',[[.099,false],[.1,true],[.101,true],[2.999,true],[3,true],[3.001,false],[1.0001,false]]);
++cases('B3','config.simulation.particleSize',[[.999,false],[1,true],[1.001,true],[7.999,true],[8,true],[8.001,false],[2.5001,false]]);
++for(const [id,path] of [['B4','config.modes.attractor.attractorStrength'],['B5','config.modes.vortex.vortexStrength']]) cases(id,path,[[.199,false],[.2,true],[.201,true],[3.999,true],[4,true],[4.001,false],[1.5001,false]]);
+diff --git a/tests/unit/importUndoV2.node.test.mjs b/tests/unit/importUndoV2.node.test.mjs
+new file mode 100644
+index 0000000..1dbd968
+--- /dev/null
++++ b/tests/unit/importUndoV2.node.test.mjs
+@@ -0,0 +1,28 @@
++import { test } from 'node:test';
++import assert from 'node:assert/strict';
++import { createImportUndo, CommittedPresetError } from '../../src/presets/importUndo.ts';
++import { createPresetFileReader } from '../../src/ui/controls/presetFile.ts';
++import { A, B, json, makeDocument } from '../support/vt121Data.ts';
++test('source controller paths with real v2 parser', () => {
++ let state=makeDocument();const before=structuredClone(state);const owner=Symbol();let failures=0;let committed=false;
++ const c=createImportUndo(owner,()=>state,next=>{state=next;if(committed){committed=false;throw new CommittedPresetError('reset');}if(failures){failures--;throw new Error('apply');}});
++ assert.equal(c.canUndo(owner),false);assert.equal(c.undo(owner),false);
++ for(const fn of [()=>c.importText(Symbol(),json(A)),()=>c.undo(Symbol()),()=>c.canUndo(Symbol()),()=>c.invalidate(Symbol())])assert.throws(fn,/Unauthorized/);
++ assert.throws(()=>c.importText(owner,'{}'));c.importText(owner,json(A));assert.deepEqual(state,A);
++ failures=1;assert.throws(()=>c.importText(owner,json(B)),/apply/);assert.deepEqual(state,A);
++ failures=1;assert.throws(()=>c.undo(owner),/apply/);assert.deepEqual(state,A);assert.equal(c.canUndo(owner),true);
++ failures=2;assert.throws(()=>c.importText(owner,json(B)),AggregateError);assert.equal(c.canUndo(owner),true);
++ c.undo(owner);assert.deepEqual(state,before);
++ committed=true;assert.throws(()=>c.importText(owner,json(A)),CommittedPresetError);assert.equal(c.canUndo(owner),true);
++ committed=true;assert.throws(()=>c.undo(owner),CommittedPresetError);assert.equal(c.canUndo(owner),false);
++ c.importText(owner,json(A));c.invalidate(owner);assert.equal(c.canUndo(owner),false);
++});
++test('source reader paths',async()=>{
++ const notifications=[];const r=createPresetFileReader(t=>{if(t==='bad')throw new Error('bad');},(...args)=>notifications.push(args));
++ await r.read({size:0,text:async()=>''});await r.read({size:1000001,text:async()=>''});
++ await r.read({size:1,text:async()=> 'ok'});await r.read({size:1,text:async()=> 'bad'});
++ await r.read({size:1,text:async()=>{throw 'non-error';}});
++ let resolve;const pending=r.read({size:1,text:()=>new Promise(ok=>{resolve=ok;})});r.invalidate();resolve('ok');assert.equal(await pending,false);
++ let reject;const stale=r.read({size:1,text:()=>new Promise((_ok,fail)=>{reject=fail;})});r.invalidate();reject(new Error('stale'));assert.equal(await stale,false);
++ assert.equal(notifications.length,5);
++});
+diff --git a/tests/unit/importUndoV2.test.ts b/tests/unit/importUndoV2.test.ts
+new file mode 100644
+index 0000000..ced4cab
+--- /dev/null
++++ b/tests/unit/importUndoV2.test.ts
+@@ -0,0 +1,46 @@
++import { expect, test } from 'vitest';
++import { createImportUndo, CommittedPresetError } from '../../src/presets/importUndo.ts';
++import { parsePresetDocument, type PresetDocument } from '../../src/presets/preset.ts';
++import { A, B, boundaries, candidate, json, makeDocument } from '../support/vt121Data.ts';
++function fixture() {
++  const owner = Symbol(); let state = makeDocument('original'); let failure: 'none'|'before'|'partial'|'always'|'committed' = 'none';
++  const apply = (next: PresetDocument) => {
++    const kind = failure; if(kind !== 'always') failure = 'none';
++    if(kind === 'before') throw new Error('before');
++    if(kind === 'partial' || kind === 'always') {
++      state.config.simulation.speed = next.config.simulation.speed; state.name = next.name;
++      throw new Error('partial');
++    }
++    state = next;
++    if(kind === 'committed') throw new CommittedPresetError('config committed, reset failed');
++  };
++  return {owner, session: createImportUndo(owner,()=>state,apply), get:()=>state, fail:(kind:typeof failure)=>{failure=kind;}};
++}
++test('S1 deep document snapshot restores name, inactive mode, camera, rendering exactly once',()=>{
++ const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));
++ f.get().config.camera.distance=100;f.get().config.modes.attractor.attractorStrength=4;
++ expect(f.session.undo(f.owner)).toBe(true);expect(f.get()).toEqual(before);
++ expect(f.session.undo(f.owner)).toBe(false);expect(f.get()).toEqual(before);
++});
++test.each(boundaries)('%s real v2 schema %s=%s expected=%s',(_id,path,value,accepted)=>{
++ const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));const input=candidate(path,value);
++ if(accepted){expect(parsePresetDocument(json(input))).toEqual(input);f.session.importText(f.owner,json(input));expect(f.get()).toEqual(input);f.session.undo(f.owner);expect(f.get()).toEqual(A);}
++ else{expect(()=>parsePresetDocument(json(input))).toThrow();expect(()=>f.session.importText(f.owner,json(input))).toThrow();expect(f.get()).toEqual(A);expect(f.session.canUndo(f.owner)).toBe(true);f.session.undo(f.owner);expect(f.get()).toEqual(before);}
++});
++const missing = makeDocument(); delete (missing.config.simulation as Partial<typeof missing.config.simulation>).speed;
++test.each(['','""','0','{}','{bad',json(missing),json({...makeDocument(),schemaVersion:1}),json({...makeDocument(),schemaVersion:3}),json({...makeDocument(),name:''}),json({...makeDocument(),name:'a'.repeat(81)})])('B6 malformed/version/name %s preserves exact state/history',input=>{
++ const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));
++ expect(()=>f.session.importText(f.owner,input)).toThrow();expect(f.get()).toEqual(A);
++ f.session.undo(f.owner);expect(f.get()).toEqual(before);
++});
++test.each([1,80])('B7 name length %s accepted',length=>{const f=fixture();const doc=makeDocument('a'.repeat(length));f.session.importText(f.owner,json(doc));expect(f.get()).toEqual(doc);});
++test('S2 consecutive imports undo to immediate predecessor; absent name restored',()=>{const f=fixture();f.session.importText(f.owner,json(makeDocument()));f.session.importText(f.owner,json(B));f.session.undo(f.owner);expect(f.get()).toEqual(makeDocument());expect('name' in f.get()).toBe(false);});
++test('S3 manual edit invalidates history',()=>{const f=fixture();f.session.importText(f.owner,json(A));f.session.invalidate(f.owner);expect(f.session.undo(f.owner)).toBe(false);expect(f.get()).toEqual(A);});
++test('S4 snapshot validation prevents Undo bypass via malformed current config',()=>{const f=fixture();f.get().config.simulation.speed=99;const before=structuredClone(f.get());expect(()=>f.session.importText(f.owner,json(A))).toThrow();expect(f.get()).toEqual(before);expect(f.session.canUndo(f.owner)).toBe(false);});
++test('AUTH1 unauthorized import preserves state and history',()=>{const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));expect(()=>f.session.importText(Symbol(),json(B))).toThrow(/Unauthorized/);expect(f.get()).toEqual(A);expect(f.session.canUndo(f.owner)).toBe(true);f.session.undo(f.owner);expect(f.get()).toEqual(before);});
++test('AUTH2 unauthorized undo preserves state and history',()=>{const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));expect(()=>f.session.undo(Symbol())).toThrow(/Unauthorized/);expect(f.get()).toEqual(A);expect(f.session.canUndo(f.owner)).toBe(true);f.session.undo(f.owner);expect(f.get()).toEqual(before);});
++test('AUTH3 wrong owner cannot inspect or invalidate history',()=>{const f=fixture();f.session.importText(f.owner,json(A));expect(()=>f.session.canUndo(Symbol())).toThrow(/Unauthorized/);expect(()=>f.session.invalidate(Symbol())).toThrow(/Unauthorized/);expect(f.session.canUndo(f.owner)).toBe(true);expect(f.get()).toEqual(A);});
++test.each(['before','partial'] as const)('FAIL1/2 %s import recovers state and prior history',kind=>{const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));f.fail(kind);expect(()=>f.session.importText(f.owner,json(B))).toThrow();expect(f.get()).toEqual(A);expect(f.session.canUndo(f.owner)).toBe(true);f.session.undo(f.owner);expect(f.get()).toEqual(before);});
++test('FAIL3 partial Undo failure retains history and recovers imported state',()=>{const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));f.fail('partial');expect(()=>f.session.undo(f.owner)).toThrow(/partial/);expect(f.get()).toEqual(A);expect(f.session.canUndo(f.owner)).toBe(true);f.session.undo(f.owner);expect(f.get()).toEqual(before);});
++test('FAIL4 apply and rollback throw: both errors exposed, no universal atomicity claim',()=>{const f=fixture();f.session.importText(f.owner,json(A));f.fail('always');let error:unknown;try{f.session.importText(f.owner,json(B));}catch(e){error=e;}expect(error).toBeInstanceOf(AggregateError);expect((error as AggregateError).errors).toHaveLength(2);expect(f.session.canUndo(f.owner)).toBe(true);});
++test('FAIL5 committed config with reset warning retains Undo; committed Undo consumes it',()=>{const f=fixture();const before=structuredClone(f.get());f.fail('committed');expect(()=>f.session.importText(f.owner,json(A))).toThrow(CommittedPresetError);expect(f.get()).toEqual(A);expect(f.session.canUndo(f.owner)).toBe(true);f.fail('committed');expect(()=>f.session.undo(f.owner)).toThrow(CommittedPresetError);expect(f.get()).toEqual(before);expect(f.session.canUndo(f.owner)).toBe(false);});
+diff --git a/tests/unit/presetFileV2.test.ts b/tests/unit/presetFileV2.test.ts
+new file mode 100644
+index 0000000..2a7266f
+--- /dev/null
++++ b/tests/unit/presetFileV2.test.ts
+@@ -0,0 +1,10 @@
++import { expect, test, vi } from 'vitest';
++import { createPresetFileReader } from '../../src/ui/controls/presetFile.ts';
++import { createImportUndo } from '../../src/presets/importUndo.ts';
++import {A,B,json,makeDocument} from '../support/vt121Data.ts';
++function fixture(){const owner=Symbol();let state=makeDocument();const session=createImportUndo(owner,()=>state,next=>{state=next;});const notify=vi.fn();const reader=createPresetFileReader(text=>session.importText(owner,text),notify);return {owner,session,notify,reader,get:()=>state};}
++function deferred(){let resolve!:(s:string)=>void;let reject!:(e:Error)=>void;const promise=new Promise<string>((ok,fail)=>{resolve=ok;reject=fail;});return {promise,resolve,reject};}
++test.each([0,1,999999,1000000,1000001])('FILE1 size %s uses real parser, state/history invariant',async size=>{const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));const raw=size===0?'':size===1?'0':json(B).padEnd(size,' ');expect(Buffer.byteLength(raw)).toBe(size);const read=vi.fn(async()=>raw);await f.reader.read({size,text:read});if(size===999999||size===1000000){expect(f.get()).toEqual(B);f.session.undo(f.owner);expect(f.get()).toEqual(A);}else{expect(f.get()).toEqual(A);expect(f.notify).toHaveBeenLastCalledWith(expect.any(String),'error');if(size!==1)expect(read).not.toHaveBeenCalled();f.session.undo(f.owner);expect(f.get()).toEqual(before);}});
++test.each(['valid','invalid','rejected'] as const)('RACE1 stale %s never overwrites latest or reports stale error',async kind=>{const f=fixture();const before=structuredClone(f.get());const slow=deferred();const pending=f.reader.read({size:100,text:()=>slow.promise});await f.reader.read({size:json(B).length,text:async()=>json(B)});if(kind==='rejected')slow.reject(new Error('stale error'));else slow.resolve(kind==='valid'?json(A):'{bad');expect(await pending).toBe(false);expect(f.get()).toEqual(B);expect(f.notify).toHaveBeenCalledTimes(1);f.session.undo(f.owner);expect(f.get()).toEqual(before);});
++test('RACE2 manual edit/dispose cancels pending request deterministically',async()=>{const f=fixture();const before=structuredClone(f.get());const slow=deferred();const pending=f.reader.read({size:100,text:()=>slow.promise});f.reader.invalidate();slow.resolve(json(A));expect(await pending).toBe(false);expect(f.get()).toEqual(before);expect(f.notify).not.toHaveBeenCalled();});
++test('FILE2 latest I/O failure preserves prior history',async()=>{const f=fixture();const before=structuredClone(f.get());f.session.importText(f.owner,json(A));await f.reader.read({size:100,text:async()=>{throw new Error('read failed');}});expect(f.get()).toEqual(A);expect(f.notify).toHaveBeenCalledWith('read failed','error');f.session.undo(f.owner);expect(f.get()).toEqual(before);});

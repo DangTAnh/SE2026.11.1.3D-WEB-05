@@ -1,0 +1,57 @@
+UTC: 2026-11-02T06:31:00.5117121Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: npx --no-install playwright test tests/e2e/undoImportV2.spec.ts --config=playwright.vt121.config.ts --project=desktop-chromium --workers=1 --retries=0
+
+Running 1 test using 1 worker
+
+(node:25436) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:15:1 › VT121-V2-E1 import and Undo restore complete nested document and port config once (30.6s)
+
+
+  1) [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:15:1 › VT121-V2-E1 import and Undo restore complete nested document and port config once 
+
+    Error: expect(locator).toBeEnabled() failed
+
+    Locator: getByRole('button', { name: 'Undo import', exact: true })
+    Expected: enabled
+    Timeout: 3000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeEnabled" getByRole('button', { name: 'Undo import', exact: true }) with timeout 3000ms
+      - waiting for getByRole('button', { name: 'Undo import', exact: true })
+
+
+      23 |   expect(await exported(page)).toEqual(after);
+      24 |   const undo = page.getByRole('button', { name: 'Undo import', exact: true });
+    > 25 |   await expect(undo).toBeEnabled({ timeout: 3000 });
+         |                      ^
+      26 |   await undo.click();
+      27 |   expect(await exported(page)).toEqual(before);
+      28 |   await expect(page.locator('#speed')).toHaveValue('1.8');
+        at C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2\tests\e2e\undoImportV2.spec.ts:25:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\undoImportV2-VT121-V2-E1-i-bf7e1-cument-and-port-config-once-desktop-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\undoImportV2-VT121-V2-E1-i-bf7e1-cument-and-port-config-once-desktop-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\undoImportV2-VT121-V2-E1-i-bf7e1-cument-and-port-config-once-desktop-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\undoImportV2-VT121-V2-E1-i-bf7e1-cument-and-port-config-once-desktop-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\undoImportV2-VT121-V2-E1-i-bf7e1-cument-and-port-config-once-desktop-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:15:1 › VT121-V2-E1 import and Undo restore complete nested document and port config once 
+EXIT: 1

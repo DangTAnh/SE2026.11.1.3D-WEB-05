@@ -1,0 +1,51 @@
+UTC: 2026-11-02T07:15:46.8481188Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: node --experimental-strip-types --experimental-test-coverage --test --test-coverage-include=src/presets/importUndo.ts --test-coverage-include=src/ui/controls/presetFile.ts tests/unit/importUndoV2.node.test.mjs
+VT121_TEST_OUTPUT: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\output\VT121-final\tmp\artifacts-07-coverage-final
+VT121_SOURCE_BASELINE: 
+VT121_VITE_TRANSPORT: 1
+PLAYWRIGHT_BROWSERS_PATH: C:/Users/PC/AppData/Local/ms-playwright
+e7b72e7b169de05617a99508e310bdf7c8f59df0
+TAP version 13
+# (node:3788) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: source controller paths with real v2 parser
+ok 1 - source controller paths with real v2 parser
+  ---
+  duration_ms: 9.3918
+  type: 'test'
+  ...
+# Subtest: source reader paths
+ok 2 - source reader paths
+  ---
+  duration_ms: 0.7702
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+(node:20552) ExperimentalWarning: glob is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 778.5313
+# start of coverage report
+# -----------------------------------------------------------------
+# file             | line % | branch % | funcs % | uncovered lines
+# -----------------------------------------------------------------
+# src              |        |          |         | 
+#  presets         |        |          |         | 
+#   importUndo.ts  | 100.00 |   100.00 |  100.00 | 
+#  ui              |        |          |         | 
+#   controls       |        |          |         | 
+#    presetFile.ts | 100.00 |   100.00 |  100.00 | 
+# -----------------------------------------------------------------
+# all files        | 100.00 |   100.00 |  100.00 | 
+# -----------------------------------------------------------------
+# end of coverage report
+EXIT: 0

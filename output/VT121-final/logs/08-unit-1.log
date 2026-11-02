@@ -1,0 +1,19 @@
+UTC: 2026-11-02T06:54:55.2923091Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: npx vitest run --sequence.shuffle --sequence.seed=121
+
+ RUN  v5.0.3 C:/Users/PC/.codex/.chatgpt-projects/g-p-6ac74c56e7fc8191bf607f753ba39a29/work/vt121-undo-import-v2
+      Running tests with seed "121"
+
+
+ Test Files  24 passed (24)
+      Tests  312 passed (312)
+   Start at  13:55:19
+   Duration  21.33s (import 67%, transform 18%, tests 9%, worker 6%)
+
+    Isolate  24 workers spawned · ~2.96s startup each (spawn + environment, per file)
+             at least ~3.50s faster with isolate: false — reuses workers across files instead of one per file
+
+EXIT: 0

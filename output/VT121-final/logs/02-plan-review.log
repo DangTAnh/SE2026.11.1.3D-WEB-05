@@ -1,0 +1,509 @@
+UTC: 2026-11-02T06:45:20.9623979Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: Get-Content ../../output/VT121-final/VT121-initial-plan-original.md; Get-Content ../../output/VT121-final/VT121-plan-review.md; git diff origin/main..origin/dev -- src/presets/preset.ts src/ui/app.ts src/core/renderer/RendererPort.ts
+# Original v2 initial implementation plan — before source edits
+
+2026-11-02. Codex, continuing the user's "CODEX MASTER PROMPT — HOÀN THIỆN BT3 VT-121". Preserve all original v1 commits and logs. This file is the actual first plan for this run, not reconstructed after implementation.
+
+Problem: successful preset import overwrites current edits without a recovery action. Vertical slice: one-step Undo across preset parser/session and UI import controls; no engine/backend changes.
+
+Initial proposed design: reuse v1 session controller with structuredClone of LabConfig for nested v2 values. Treat apply as synchronous and attempt rollback by reapplying pre-operation config on failure. Keep one prior config, not a redo stack. Bind owner Symbol privately in controls and invalidate history on manual edits. Reuse latest-request-wins reader.
+
+Assumptions to verify: LabConfig alone represents all imported UI state; synchronous apply is sufficient to characterize UI/renderer consistency; existing UI edits all pass through controls. These are provisional, not proven guarantees. Inspect metadata and renderer lifecycle before implementation.
+
+AC1 validated import commits an independent prior snapshot only after successful apply. AC2 Undo restores complete import-related UI state once. AC3 invalid/boundary/empty/oversize imports preserve state/history. AC4 wrong capability denied on import/Undo/history inspection. AC5 manual edits invalidate history and pending reads; stale reads are silent; partial failures recover according to the actual apply contract, with explicit rollback-fails limitations.
+
+NFR: no dependencies/framework/renderer contract changes; accessible Undo and reproducible tests. Performance target 200 tasks/users p95<=5s, measured scopes distinguished.
+
+Invariant: no rejected/unauthorized operation changes current snapshot or history; successful Undo consumes exactly one previous snapshot. Atomicity is conditional on actual rollback behavior.
+
+Expected files: src/presets/importUndo.ts, UI controls/template (and minimal app wiring only if required), new unit/E2E tests, benchmark, VT121 documents/evidence. Never edit schemas, GPU/simulation/backend, shared RendererPort or dependency versions. New branch from locally verified dev if remote unavailable; label cached SHA explicitly, not latest remote.
+
+Test strategy: initial real baseline E2E RED via actual built application if Vite loopback blocked; schema-v2 BVA using real parser, deep snapshot, document metadata, capability, partial apply, rollback failure, deferred reads, manual edit and duplicate Undo. Full existing regression, exact guard mutation in a temporary worktree, coverage without new packages, 3 shuffled unit and 3 no-retry browser rounds, 5x200 synthetic tasks with p50/p95/p99/throughput/errors.
+
+Rollback: close unmerged draft or revert v2 feature commit; preserve v1 history. Review source evidence and refine at least two assumptions before source changes. Human approval remains pending; no merge.
+# v1/v2 comparison and revised plan
+
+Verified local baseline: cached origin/dev 2389f0f550b33899801e1ab07c6312baea0c9faf; target proposal dev per AGENTS.md and CONTRIBUTING.md. Network fetch and ls-remote failed before HTTP; supplied newer dev 8f7c3ee object absent. Therefore this port is a cached-dev candidate, not verified latest-dev integration. Original v1 commits/bundle remain unchanged.
+
+Initial plan is preserved verbatim in VT121-initial-plan-original.md before production edits.
+
+Revision 1 — initial "snapshot LabConfig only": rejected. src/presets/preset.ts lines 20–27 defines PresetDocument.name; src/ui/app.ts lines 34–37 and 105–111 retain document name separately from renderer config. Revised controller snapshots/validates the complete PresetDocument with structuredClone, including absent/present metadata. Undo tests export document equality and nested inactive mode/camera/rendering fields, not only sliders.
+
+Revision 2 — initial "synchronous apply plus reapply rollback characterizes consistency": too broad. RendererPort.ts declares applyConfig:void, but app.ts updateConfig applies renderer, then commits UI config/name, then calls reset; reset may throw after config is already committed (app.ts lines 81–103). Existing ui-port.spec.ts "renderer reset errors during import" explicitly expects new config remains applied. Revised design distinguishes a committed configuration + reset warning from a failed configuration apply. A domain CommittedPresetError marker records that defined phase; controller commits history and rethrows warning when config committed, while generic partial apply failures trigger rollback. Undo similarly consumes history only if config restore committed. This retains existing reset behavior rather than silently changing it to rollback. Renderer internal resources/time are not a transactional system; rollback-fails remains explicit, not a universal guarantee.
+
+Revision 3 — v1 BVA cannot be reused: schema-v2.json simulation.particleCount min1000 max500000 integer, NO multipleOf (65536 default). Thus 1500 accepts and 50001 accepts. Numeric speed/size/strength now multipleOf .001. Schema version1 is explicitly rejected, version2 required. File size policy remains 1000000 bytes; add 999999 case missing from v1 matrix.
+
+Revision 4 — existing browser fixture tests injected RendererPort, distinct from real GPU tests. Ported Undo E2E will use existing renderer-port.html plus actual app.ts/controls/parser and FakeRenderer; label this UI/port integration, NOT GPU performance. Terminal and Chromium both deny loopback, so browser tests need in-process Vite transformation + Playwright transport interception. No backend/engine changes, no altered old assertions. Default runner failures will remain reported if full regression cannot execute.
+
+Authorization remains client capability/harness-only. No accounts/server or API exists. Branch name follows explicit user-requested VT121 name; issue assignment cannot be created/verified while GitHub is unreachable, so issue/owner/human approval remains PENDING. No fabricated closing issue.
+diff --git a/src/core/renderer/RendererPort.ts b/src/core/renderer/RendererPort.ts
+new file mode 100644
+index 0000000..ac3a957
+--- /dev/null
++++ b/src/core/renderer/RendererPort.ts
+@@ -0,0 +1,69 @@
++/**
++ * Contract every renderer implementation must satisfy.
++ *
++ * Two callers depend on this and nothing else:
++ *  - `src/ui/` drives the simulation through it (start/pause/reset/applyConfig);
++ *  - `src/perf/` reads measurements through `getStatus()`.
++ *
++ * Deliberately DOM-free and `three`-free: a canvas, an OffscreenCanvas or a
++ * test double can all be passed as `RendererTarget`. This is what lets the UI
++ * and the perf collector be tested without a GPU.
++ *
++ * Known coupling: `LabConfig` still lives in `src/presets/preset.ts`, so this
++ * module depends on the preset domain for a type. Moving the config types into
++ * `src/core/types/` is tracked as D-06 in docs/architecture.md.
++ */
++import type { ActualBackend, BackendPreference } from '../types/backend.ts';
++import type { LabConfig } from '../../presets/preset.ts';
++
++/** GPU timing older than this is stale and must not be reported as available. */
++export const MAX_GPU_MEASUREMENT_AGE_MS = 2_000;
++
++export interface RendererTarget {
++  width: number;
++  height: number;
++  /** Device pixel ratio to render at, already clamped by the caller. */
++  pixelRatio: number;
++}
++
++/**
++ * Snapshot returned to the UI and the perf collector.
++ *
++ * `actual` is authoritative and comes from the engine after init; `requested`
++ * is kept only so the UI can explain a fallback. `gpuTimeMs` is null whenever
++ * `gpuTimingAvailable` is false — never 0. `measurementAgeMs` is the monotonic
++ * age of the latest GPU timing measurement, or null when no sample exists.
++ */
++export interface RendererStatus {
++  requested: BackendPreference;
++  actual: ActualBackend;
++  running: boolean;
++  gpuTimingAvailable: boolean;
++  measurementAgeMs: number | null;
++  fps: number | null;
++  gpuTimeMs: number | null;
++}
++
++export interface RendererPort {
++  /**
++   * Creates the backend and resolves with the backend actually in use.
++   * Resolves with `unavailable` instead of throwing when neither backend can
++   * start, so the UI can show a fallback state rather than a blank canvas.
++   */
++  init(target: RendererTarget): Promise<ActualBackend>;
++
++  /** Updates the drawing buffer and projection when the host canvas changes size. */
++  resize?(target: RendererTarget): void;
++
++  /** Applies simulation parameters. Count changes rebuild and reseed particle buffers, so callers need not also reset. Safe to call while dragging. */
++  applyConfig(config: Readonly<LabConfig>): void;
++
++  start(): void;
++  pause(): void;
++  reset(): void;
++
++  getStatus(): RendererStatus;
++
++  /** Releases GPU resources. Subsequent calls are no-ops. */
++  dispose(): void;
++}
+diff --git a/src/presets/preset.ts b/src/presets/preset.ts
+index e5a17c4..afc876c 100644
+--- a/src/presets/preset.ts
++++ b/src/presets/preset.ts
+@@ -1,106 +1,116 @@
+ import Ajv2020 from 'ajv/dist/2020.js';
+ import type { ErrorObject } from 'ajv';
+-import presetSchema from '../../docs/02-design/preset-schema-v1.schema.json';
++import presetSchema from '../../docs/02-design/preset-schema-v2.schema.json' with { type: 'json' };
+ 
+-/** Hợp đồng cấu hình đề xuất bởi TV4; cần TV1/TV2/TV3 review trước khi tích hợp engine. */
+ export type SimulationMode = 'attractor' | 'vortex';
+ export type BackendPreference = 'auto' | 'webgpu' | 'webgl2';
+-
+ export interface LabConfig {
+   mode: SimulationMode;
+   backendPreference: BackendPreference;
+-  particleCount: number;
+-  speed: number;
+-  particleSize: number;
+-  particleColor: string;
+-  strength: number;
++  simulation: { particleCount: number; spawnRadius: number; particleSize: number; lifetime: number; speed: number };
++  modes: {
++    attractor: { attractorStrength: number; attractorRadius: number; attractorDamping: number };
++    vortex: { vortexStrength: number; vortexDamping: number };
++  };
++  rendering: { backgroundColor: string; particleColor: string; opacity: number; additiveBlend: boolean };
++  camera: { enabled: boolean; autoRotate: boolean; distance: number };
+ }
+-
+-export interface LabPreset {
+-  schemaVersion: 1;
++/** Metadata belongs to the document, never to RendererPort or configHash. */
++export interface PresetDocument {
++  schemaVersion: 2;
+   app: '3D-WEB-05';
++  name?: string;
+   config: LabConfig;
+ }
++export type LabPreset = PresetDocument;
+ 
++/** Frozen at every level; cloneConfig returns independent mutable defaults. */
+ export const DEFAULT_CONFIG: Readonly<LabConfig> = Object.freeze({
+-  mode: 'attractor',
+-  backendPreference: 'auto',
+-  particleCount: 20000,
+-  speed: 1.2,
+-  particleSize: 2.5,
+-  particleColor: '#6ce6ff',
+-  strength: 1.5,
++  mode: 'attractor', backendPreference: 'auto',
++  simulation: Object.freeze({ particleCount: 65536, spawnRadius: 10, particleSize: 2.5, lifetime: 6, speed: 1.2 }),
++  modes: Object.freeze({
++    attractor: Object.freeze({ attractorStrength: 1.5, attractorRadius: 6, attractorDamping: 0.98 }),
++    vortex: Object.freeze({ vortexStrength: 1.5, vortexDamping: 0.99 }),
++  }),
++  rendering: Object.freeze({ backgroundColor: '#07111f', particleColor: '#6ce6ff', opacity: 1, additiveBlend: false }),
++  camera: Object.freeze({ enabled: true, autoRotate: false, distance: 30 }),
+ });
++export function cloneConfig(config: Readonly<LabConfig>): LabConfig { return structuredClone(config); }
+ 
+-const validatePreset = new Ajv2020({ allErrors: true, strict: true }).compile<LabPreset>(presetSchema);
+-
++const validatePreset = new Ajv2020({ allErrors: true, strict: true, multipleOfPrecision: 8 })
++  .compile<PresetDocument>(presetSchema);
+ function errorPath(error: ErrorObject): string {
+-  if (error.keyword === 'required') {
+-    return `${error.instancePath}/${String(error.params.missingProperty)}`;
+-  }
+-  if (error.keyword === 'additionalProperties') {
+-    return `${error.instancePath}/${String(error.params.additionalProperty)}`;
+-  }
++  if (error.keyword === 'required') return `${error.instancePath}/${String(error.params.missingProperty)}`;
++  if (error.keyword === 'additionalProperties') return `${error.instancePath}/${String(error.params.additionalProperty)}`;
+   return error.instancePath;
+ }
+-
+-/** Giữ thông báo thân thiện trong UI, trong khi JSON Schema là nguồn validation duy nhất. */
+-function formatValidationError(errors: ErrorObject[] | null | undefined): string {
+-  if (!errors?.length) return 'Sai định dạng preset hoặc phiên bản chưa được hỗ trợ.';
+-
+-  if (errors.some(error => error.keyword === 'required' || error.keyword === 'additionalProperties')) {
++function validationError(errors: ErrorObject[] | null | undefined): string {
++  if (errors?.some(e => e.keyword === 'required' || e.keyword === 'additionalProperties')) {
+     return 'Preset chứa trường không được hỗ trợ hoặc thiếu trường bắt buộc.';
+   }
+-
+-  const paths = new Set(errors.map(errorPath));
+-  if (paths.has('/config/mode')) return 'Simulation mode không hợp lệ.';
+-  if (paths.has('/config/backendPreference')) return 'Tùy chọn backend không hợp lệ.';
+-  if (paths.has('/config/particleCount')) return 'Số particle phải từ 1.000 đến 50.000, theo bước 1.000.';
+-  if (paths.has('/config/speed')) return 'Tốc độ nằm ngoài khoảng 0.1–3.';
+-  if (paths.has('/config/particleSize')) return 'Kích thước particle nằm ngoài khoảng 1–8.';
+-  if (paths.has('/config/strength')) return 'Cường độ nằm ngoài khoảng 0.2–4.';
+-  if (paths.has('/config/particleColor')) return 'Màu phải ở dạng #RRGGBB.';
+-
+-  return 'Sai định dạng preset hoặc phiên bản chưa được hỗ trợ.';
++  const paths = errors?.map(errorPath) ?? [];
++  if (paths.includes('/config/mode')) return 'Simulation mode không hợp lệ.';
++  if (paths.includes('/config/backendPreference')) return 'Tùy chọn backend không hợp lệ.';
++  if (paths.includes('/config/simulation/particleCount')) return 'Số particle phải là số nguyên từ 1.000 đến 500.000.';
++  if (paths.includes('/config/simulation/speed')) return 'Tốc độ nằm ngoài khoảng 0.1–3 hoặc vượt precision 0.001.';
++  if (paths.includes('/config/simulation/particleSize')) return 'Kích thước particle nằm ngoài khoảng 1–8 hoặc vượt precision 0.001.';
++  if (paths.some(p => /Strength$/.test(p))) return 'Cường độ nằm ngoài khoảng 0.2–4 hoặc vượt precision 0.001.';
++  if (paths.some(p => /Color$/.test(p))) return 'Màu phải ở dạng #RRGGBB.';
++  return `Sai định dạng preset v2: ${paths.join(', ')} (kiểm tra range và precision 0.001).`;
+ }
+-
+-/** Chỉ nhận cấu hình hợp lệ, không tự động tin tưởng dữ liệu JSON do người dùng tải lên. */
+-export function parsePreset(text: string): LabConfig {
+-  let value: unknown;
+-  try {
+-    value = JSON.parse(text) as unknown;
+-  } catch {
+-    throw new Error('Tệp không phải JSON hợp lệ.');
++function assertDocument(value: unknown): asserts value is PresetDocument {
++  if (typeof value === 'object' && value !== null && 'schemaVersion' in value && value.schemaVersion === 1) {
++    throw new Error('Preset v1 không được hỗ trợ. Vui lòng cung cấp preset schemaVersion: 2; không tự động chuyển đổi.');
+   }
++  if (!validatePreset(value)) throw new Error(validationError(validatePreset.errors));
++}
++export function parsePresetDocument(text: string): PresetDocument {
++  let value: unknown;
++  try { value = JSON.parse(text) as unknown; }
++  catch { throw new Error('Tệp không phải JSON hợp lệ.'); }
++  assertDocument(value);
++  return structuredClone(value);
++}
++/** Config-only helper for engine callers; UI uses the document API to retain name. */
++export function parsePreset(text: string): LabConfig { return parsePresetDocument(text).config; }
+ 
+-  if (!validatePreset(value)) throw new Error(formatValidationError(validatePreset.errors));
+-
+-  return {
+-    mode: value.config.mode,
+-    backendPreference: value.config.backendPreference,
+-    particleCount: value.config.particleCount,
+-    speed: value.config.speed,
+-    particleSize: value.config.particleSize,
+-    particleColor: value.config.particleColor,
+-    strength: value.config.strength,
++/** Explicit ordering at every level, independent of input object insertion order. */
++export function serializePresetDocument(document: PresetDocument): string {
++  assertDocument(document);
++  const c = document.config;
++  const preset: PresetDocument = {
++    schemaVersion: 2, app: '3D-WEB-05',
++    ...(document.name === undefined ? {} : { name: document.name }),
++    config: {
++      mode: c.mode, backendPreference: c.backendPreference,
++      simulation: { particleCount: c.simulation.particleCount, spawnRadius: c.simulation.spawnRadius,
++        particleSize: c.simulation.particleSize, lifetime: c.simulation.lifetime, speed: c.simulation.speed },
++      modes: {
++        attractor: { attractorStrength: c.modes.attractor.attractorStrength,
++          attractorRadius: c.modes.attractor.attractorRadius, attractorDamping: c.modes.attractor.attractorDamping },
++        vortex: { vortexStrength: c.modes.vortex.vortexStrength, vortexDamping: c.modes.vortex.vortexDamping },
++      },
++      rendering: { backgroundColor: c.rendering.backgroundColor, particleColor: c.rendering.particleColor,
++        opacity: c.rendering.opacity, additiveBlend: c.rendering.additiveBlend },
++      camera: { enabled: c.camera.enabled, autoRotate: c.camera.autoRotate, distance: c.camera.distance },
++    },
+   };
++  return `${JSON.stringify(preset, null, 2)}\n`;
+ }
+-
+ export function serializePreset(config: LabConfig): string {
+-  const preset: LabPreset = { schemaVersion: 1, app: '3D-WEB-05', config: { ...config } };
+-  // Validate chính dữ liệu xuất ra để tránh preset hỏng khi state thay đổi ở tương lai.
+-  parsePreset(JSON.stringify(preset));
+-  return `${JSON.stringify(preset, null, 2)}\n`;
++  return serializePresetDocument({ schemaVersion: 2, app: '3D-WEB-05', config });
+ }
+-
+-export function downloadPreset(config: LabConfig): void {
+-  const blob = new Blob([serializePreset(config)], { type: 'application/json;charset=utf-8' });
++export function downloadPresetDocument(preset: PresetDocument): void {
++  const blob = new Blob([serializePresetDocument(preset)], { type: 'application/json;charset=utf-8' });
+   const url = URL.createObjectURL(blob);
+   const link = document.createElement('a');
+   link.href = url;
+-  link.download = `particle-lab-${config.mode}-preset.json`;
++  link.download = `particle-lab-${preset.config.mode}-preset.json`;
+   document.body.append(link);
+   link.click();
+   link.remove();
+   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+ }
++export function downloadPreset(config: LabConfig): void {
++  downloadPresetDocument({ schemaVersion: 2, app: '3D-WEB-05', config });
++}
+diff --git a/src/ui/app.ts b/src/ui/app.ts
+index cc21490..2a77992 100644
+--- a/src/ui/app.ts
++++ b/src/ui/app.ts
+@@ -1,56 +1,162 @@
+-import { DEFAULT_CONFIG } from '../presets/preset.ts';
++import { cloneConfig, DEFAULT_CONFIG } from '../presets/preset.ts';
+ import type { LabConfig } from '../presets/preset.ts';
++import type { RendererPort } from '../core/renderer/RendererPort.ts';
++import type { BackendSwitchResult } from '../composition/backendSwitch.ts';
+ import { bindLabControls, renderLabControls } from './controls/controlBindings.ts';
+ import { byId } from './dom.ts';
+-import { createParticlePreview } from './mock/particlePreview.ts';
+ import { createToastController } from './notifications.ts';
+ import { renderRuntimeStatus } from './overlays/statusOverlay.ts';
+-import {
+-  createRuntimeState,
+-  resolveRuntimeFixture,
+-  withPreviewFps,
+-} from './state/runtimeState.ts';
++import { createInitializingRuntimeState, createRendererRuntimeState } from './state/runtimeState.ts';
+ import { createLabMarkup } from './template.ts';
++import { measureRendererTarget } from './rendererTarget.ts';
+ 
+-export function mountLabUI(root: HTMLElement): void {
+-  let config: LabConfig = { ...DEFAULT_CONFIG };
+-  let runtimeState = createRuntimeState(resolveRuntimeFixture(window.location.search));
+-
++/** The composition root owns init/canvas binding; UI only consumes the injected port. */
++export function prepareLabUI(root: HTMLElement): HTMLCanvasElement {
+   root.innerHTML = createLabMarkup();
++  renderRuntimeStatus(createInitializingRuntimeState());
++  const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
++  if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
++  return canvas;
++}
++export function mountLabUI(
++  root: HTMLElement,
++  port?: RendererPort,
++  options: {
++    initialConfig?: Readonly<LabConfig>;
++    isInitializing?: () => boolean;
++    reinitializeBackend?: () => Promise<BackendSwitchResult>;
++  } = {},
++): () => void {
++  let config: LabConfig = cloneConfig(options.initialConfig ?? DEFAULT_CONFIG);
++  // Metadata belongs to the preset document, never to RendererPort parameters.
++  // Ordinary edits and simulation reset retain it; restoring defaults clears it.
++  let presetName: string | undefined;
++  let disposed = false;
++  let configApplied = !port;
++
++  if (!root.querySelector('#preview-canvas')) prepareLabUI(root);
++
++  const canvas = root.querySelector<HTMLCanvasElement>('#preview-canvas');
++  if (!canvas) throw new Error('Không tìm thấy canvas xem trước');
++  const rendererPort = port;
++  const canvasHost = canvas.parentElement ?? canvas;
++  const getRendererTarget = () => measureRendererTarget(canvasHost);
++  const resizeObserver = rendererPort?.resize
++    ? new ResizeObserver(() => rendererPort.resize?.(getRendererTarget()))
++    : null;
++  if (resizeObserver) resizeObserver.observe(canvasHost);
+ 
+-  const preview = createParticlePreview(byId<HTMLCanvasElement>('preview-canvas'), () => config);
+   const toast = createToastController();
++  let backendRequest = 0;
++
++  const refreshStatus = (): void => {
++    if (disposed) return;
++    if (options.isInitializing?.()) {
++      renderRuntimeStatus(createInitializingRuntimeState());
++      return;
++    }
++    if (!configApplied) {
++      renderRuntimeStatus(createRendererRuntimeState(undefined, true));
++      return;
++    }
++    try {
++      const status = rendererPort?.getStatus();
++      renderRuntimeStatus(createRendererRuntimeState(status));
++      const running = status?.running ?? false;
++      const toggle = byId<HTMLButtonElement>('toggle-preview');
++      toggle.textContent = running ? 'Ⅱ' : '▶';
++      toggle.setAttribute('aria-label', running ? 'Tạm dừng xem trước' : 'Tiếp tục xem trước');
++    } catch {
++      renderRuntimeStatus(createRendererRuntimeState(undefined, true));
++    }
++  };
++
++  const resetSimulation = (): void => {
++    try { rendererPort?.reset(); }
++    catch { throw new Error('Không thể khởi tạo lại mô phỏng. Vui lòng thử lại.'); }
++  };
+ 
+-  const updateConfig = (next: LabConfig, resetPreview = false): void => {
+-    config = next;
++  const updateConfig = (next: LabConfig, shouldReset = false, metadata?: { name?: string }): void => {
++    if (disposed) return;
++    const countChanged = next.simulation.particleCount !== config.simulation.particleCount;
++    try {
++      rendererPort?.applyConfig(cloneConfig(next));
++    } catch {
++      renderLabControls(config);
++      throw new Error('Không thể áp dụng cấu hình. Cấu hình trước vẫn được giữ trong UI.');
++    }
++    configApplied = true;
++    config = cloneConfig(next);
++    if (metadata) presetName = metadata.name;
+     renderLabControls(config);
+-    if (resetPreview) preview.reset();
++    if (shouldReset && !countChanged) {
++      try { resetSimulation(); }
++      catch {
++        refreshStatus();
++        throw new Error('Cấu hình đã được áp dụng. Không thể khởi tạo lại mô phỏng; vui lòng thử Reset.');
++      }
++    }
++    refreshStatus();
+   };
+ 
+   const disposeControls = bindLabControls({
+     getConfig: () => config,
+     updateConfig,
+-    resetPreview: preview.reset,
+-    togglePreview: preview.toggle,
++    getPresetDocument: () => ({ schemaVersion: 2, app: '3D-WEB-05',
++      ...(presetName === undefined ? {} : { name: presetName }), config: cloneConfig(config) }),
++    importPresetDocument: document => updateConfig(document.config, true,
++      document.name === undefined ? {} : { name: document.name }),
++    restoreDefaults: () => updateConfig(cloneConfig(DEFAULT_CONFIG), true, {}),
++    resetSimulation: () => { resetSimulation(); refreshStatus(); },
++    toggleSimulation: () => {
++      if (!rendererPort) return;
++      if (rendererPort.getStatus().running) rendererPort.pause();
++      else rendererPort.start();
++      refreshStatus();
++    },
++    applyBackend: () => {
++      if (!options.reinitializeBackend) return;
++      const request = ++backendRequest;
++      const task = options.reinitializeBackend();
++      refreshStatus();
++      void task.then(result => {
++        if (disposed || request !== backendRequest || result.outcome === 'superseded') return;
++        const backend = result.actual === 'webgpu' ? 'WebGPU' : 'WebGL2';
++        if (result.outcome === 'failed' || result.actual === 'unavailable') {
++          toast.notify(result.retainedPrevious
++            ? `Không thể áp dụng backend. Vẫn sử dụng ${backend} trước đó.`
++            : 'Không thể áp dụng backend. Không có renderer khả dụng; vui lòng thử lại.', 'error');
++        } else if (result.actual === 'webgl2' && result.requested !== 'webgl2') {
++          toast.notify('Đã áp dụng backend: WebGL2 fallback thay cho WebGPU.', 'info');
++        } else {
++          toast.notify(`Đã áp dụng backend: ${backend}.`);
++        }
++      }).catch(() => {
++        if (!disposed && request === backendRequest) toast.notify('Không thể áp dụng backend. Vui lòng thử lại.', 'error');
++      }).finally(() => { if (!disposed) refreshStatus(); });
++    },
+     notify: toast.notify,
+   });
+ 
++  byId<HTMLButtonElement>('apply-backend').disabled = !options.reinitializeBackend;
++
+   renderLabControls(config);
+-  renderRuntimeStatus(runtimeState);
+-
+-  const fpsTimer = window.setInterval(() => {
+-    runtimeState = withPreviewFps(runtimeState, preview.getFps());
+-    renderRuntimeStatus(runtimeState);
+-  }, 500);
+-
+-  window.addEventListener(
+-    'beforeunload',
+-    () => {
+-      window.clearInterval(fpsTimer);
+-      disposeControls();
+-      toast.dispose();
+-      preview.dispose();
+-    },
+-    { once: true },
+-  );
++  try {
++    rendererPort?.applyConfig(cloneConfig(config));
++    if (port) configApplied = true;
++    refreshStatus();
++  } catch {
++    renderRuntimeStatus(createRendererRuntimeState(undefined, true));
++  }
++
++  const statusTimer = window.setInterval(refreshStatus, 500);
++  const dispose = (): void => {
++    if (disposed) return;
++    disposed = true;
++    window.clearInterval(statusTimer);
++    disposeControls();
++    toast.dispose();
++    resizeObserver?.disconnect();
++  };
++  return dispose;
+ }
+EXIT: 0

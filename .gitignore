@@ -8,3 +8,6 @@ test-results/
 !.env.example
 .DS_Store
 *.local
+
+# VT121 reproducible evidence scratch directories
+output/VT121-final/tmp/

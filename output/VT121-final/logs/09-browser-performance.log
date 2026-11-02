@@ -1,0 +1,12 @@
+UTC: 2026-11-02T07:15:50.4437441Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: npx playwright test tests/e2e/vt121-load.spec.ts --config=playwright.vt121.config.ts --project=desktop-chromium --workers=1 --retries=0 --grep @vt121load
+VT121_TEST_OUTPUT: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\output\VT121-final\tmp\artifacts-09-browser-performance
+VT121_SOURCE_BASELINE: 
+VT121_VITE_TRANSPORT: 1
+PLAYWRIGHT_BROWSERS_PATH: C:/Users/PC/AppData/Local/ms-playwright
+e7b72e7b169de05617a99508e310bdf7c8f59df0
+error: option '-g, --grep <grep>' argument missing
+EXIT: 1

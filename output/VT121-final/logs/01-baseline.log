@@ -1,0 +1,78 @@
+UTC: 2026-11-02T06:26:29.4366849Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: git bundle verify output/VT121-evidence/VT121-local.bundle; Write-Output "bundle exit: $LASTEXITCODE"; git cat-file -t 8f7c3eeb74c7a9501332b265fa16a6aa552aa2b3; Write-Output "supplied dev object exit: $LASTEXITCODE"; git fetch origin --prune; Write-Output "fetch exit: $LASTEXITCODE"; git ls-remote origin refs/heads/main refs/heads/dev; Write-Output "ls-remote exit: $LASTEXITCODE"; git diff --stat origin/main..origin/dev -- src/presets src/ui src/core tests; exit $LASTEXITCODE
+The bundle contains this ref:
+2f8bc2cd6650476d15d8a72ba206f237378296dc refs/heads/feat/tv4-bt3-vt121-undo-import
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+output/VT121-evidence/VT121-local.bundle is okay
+bundle exit: 0
+fatal: git cat-file: could not get object info
+supplied dev object exit: 128
+fatal: unable to access 'https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05.git/': getaddrinfo() thread failed to start
+fetch exit: 128
+fatal: unable to access 'https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05.git/': getaddrinfo() thread failed to start
+ls-remote exit: 128
+ src/core/measurement/aggregate.ts                  | 125 ++++
+ src/core/measurement/configHash.ts                 |  26 +
+ src/core/measurement/result.ts                     | 118 ++++
+ src/core/renderer/RendererPort.ts                  |  69 ++
+ src/core/types/backend.ts                          |  14 +
+ src/core/types/measurement.ts                      |  20 +
+ src/presets/preset.ts                              | 150 +++--
+ src/ui/app.ts                                      | 174 ++++-
+ src/ui/controls/README.md                          |  15 +-
+ src/ui/controls/controlBindings.ts                 | 119 ++--
+ src/ui/mock/particlePreview.ts                     | 101 ---
+ src/ui/overlays/README.md                          |   4 +-
+ src/ui/overlays/statusOverlay.ts                   |   8 +-
+ src/ui/rendererTarget.ts                           |  11 +
+ src/ui/state/runtimeState.ts                       | 135 ++--
+ src/ui/styles/tokens.css                           |  15 +
+ src/ui/template.ts                                 |  33 +-
+ tests/e2e/backend-reinit.spec.ts                   | 233 +++++++
+ tests/e2e/backend.spec.ts                          | 107 +++
+ tests/e2e/fixtures/backend-session.html            |   9 +
+ tests/e2e/fixtures/backend-session.ts              | 105 +++
+ tests/e2e/fixtures/capability-probe.html           |   8 +
+ tests/e2e/fixtures/parityValidation.ts             | 150 +++++
+ tests/e2e/fixtures/renderer-port.html              |   9 +
+ tests/e2e/fixtures/renderer-port.ts                |  59 ++
+ tests/e2e/fixtures/simulation-parity.html          |   8 +
+ tests/e2e/fixtures/simulation-parity.ts            | 463 +++++++++++++
+ tests/e2e/renderer-adapter-webgpu.spec.ts          |  38 ++
+ tests/e2e/renderer-adapter.spec.ts                 |  43 ++
+ tests/e2e/renderer-runtime-context-loss.spec.ts    |  34 +
+ tests/e2e/simulation-parity.spec.ts                | 135 ++++
+ tests/e2e/support/capabilities.ts                  |  29 +
+ tests/e2e/ui-live-status.spec.ts                   | 113 ++++
+ tests/e2e/ui-port.spec.ts                          | 200 ++++++
+ tests/e2e/ui.spec.ts                               | 144 +++-
+ tests/fitness/imports.ts                           |  91 +++
+ tests/integration/composition.test.ts              |  93 +++
+ .../renderer-adapter-three-cleanup.test.ts         |  85 +++
+ tests/integration/renderer-orbit-controls.test.ts  |  66 ++
+ tests/integration/renderer-session.test.ts         | 302 +++++++++
+ tests/support/fakeRenderer.ts                      | 124 ++++
+ tests/unit/aggregate-groups.test.ts                |  84 +++
+ tests/unit/aggregate.test.ts                       |  51 ++
+ tests/unit/attractor-kernel.test.ts                |  36 +
+ tests/unit/backend-fallback.test.ts                |  60 ++
+ tests/unit/benchmark-result.test.ts                | 120 ++++
+ tests/unit/benchmark.test.ts                       | 271 ++++++++
+ tests/unit/fitness-architecture.test.ts            |  95 +++
+ tests/unit/kernel-contract.test.ts                 | 112 ++++
+ tests/unit/measurement.contract.test.ts            |  76 +++
+ tests/unit/parity-validation.test.ts               | 101 +++
+ tests/unit/perf-collector.test.ts                  | 236 +++++++
+ tests/unit/preset.contract.test.ts                 |  41 ++
+ tests/unit/preset.test.ts                          | 147 ++--
+ tests/unit/renderer-adapter-errors.test.ts         | 744 +++++++++++++++++++++
+ tests/unit/renderer-port.test.ts                   | 105 +++
+ tests/unit/runtimeState.test.ts                    | 124 +++-
+ tests/unit/simulation.test.ts                      | 260 +++++++
+ tests/unit/vortex-kernel.test.ts                   |  40 ++
+ 59 files changed, 6003 insertions(+), 485 deletions(-)
+EXIT: 0

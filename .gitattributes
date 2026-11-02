@@ -1,1 +1,4 @@
 public/examples/*-preset.json text eol=lf
+# Preserve raw CLI evidence bytes and reporter spacing.
+output/VT121-final/logs/*.log -text -whitespace
+output/VT121-final/*.patch -text -whitespace

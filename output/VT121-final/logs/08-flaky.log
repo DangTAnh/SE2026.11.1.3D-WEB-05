@@ -1,0 +1,7 @@
+UTC: 2026-11-02T13:54:55.0770286+07:00; Node v22.16.0; OS Microsoft Windows NT 10.0.26300.0; VT121_SOURCE_BASELINE unset; intercepted Vite, browser156, retries0; per-round raw logs linked below
+unit round=1 seed=121 exit=0 wallMs=46564
+e2e round=1 exit=0 wallMs=134153
+unit round=2 seed=122 exit=0 wallMs=10849
+e2e round=2 exit=0 wallMs=77832
+unit round=3 seed=123 exit=0 wallMs=23471
+e2e round=3 exit=0 wallMs=77053

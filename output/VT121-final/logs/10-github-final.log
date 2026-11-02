@@ -1,0 +1,13 @@
+UTC: 2026-11-02T07:23:03.6193859Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: curl.exe -I --connect-timeout 5 --max-time 10 https://api.github.com; Write-Output "curl exit=$LASTEXITCODE"; exit $LASTEXITCODE
+VT121_TEST_OUTPUT: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\output\VT121-final\tmp\artifacts-10-github-final
+VT121_SOURCE_BASELINE: 
+VT121_VITE_TRANSPORT: 
+PLAYWRIGHT_BROWSERS_PATH: 
+e7b72e7b169de05617a99508e310bdf7c8f59df0
+curl: (6) Could not resolve host: api.github.com
+curl exit=6
+EXIT: 6

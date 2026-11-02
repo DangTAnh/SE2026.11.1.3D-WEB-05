@@ -1,0 +1,25 @@
+ bench/importUndo200-v2.mjs                      | 16 +++++++
+ playwright.config.ts                            |  2 +-
+ playwright.vt121.config.ts                      |  2 +-
+ src/presets/importUndo.ts                       | 51 ++++++++++++++++++++++
+ src/ui/app.ts                                   |  3 +-
+ src/ui/controls/controlBindings.ts              | 57 +++++++++++++++++--------
+ src/ui/controls/presetFile.ts                   | 25 +++++++++++
+ src/ui/template.ts                              |  1 +
+ tests/e2e/backend-reinit.spec.ts                |  2 +-
+ tests/e2e/backend.spec.ts                       |  2 +-
+ tests/e2e/renderer-adapter-webgpu.spec.ts       |  2 +-
+ tests/e2e/renderer-adapter.spec.ts              |  2 +-
+ tests/e2e/renderer-runtime-context-loss.spec.ts |  2 +-
+ tests/e2e/simulation-parity.spec.ts             |  2 +-
+ tests/e2e/ui-live-status.spec.ts                |  2 +-
+ tests/e2e/ui-port.spec.ts                       |  2 +-
+ tests/e2e/ui.spec.ts                            |  2 +-
+ tests/e2e/undoImportV2.spec.ts                  | 54 +++++++++++++++++++++++
+ tests/e2e/vt121-load.spec.ts                    | 33 ++++++++++++++
+ tests/e2e/vt121Transport.ts                     | 19 ++++++++-
+ tests/support/vt121Data.ts                      | 18 ++++++++
+ tests/unit/importUndoV2.node.test.mjs           | 28 ++++++++++++
+ tests/unit/importUndoV2.test.ts                 | 46 ++++++++++++++++++++
+ tests/unit/presetFileV2.test.ts                 | 10 +++++
+ 24 files changed, 352 insertions(+), 31 deletions(-)

@@ -1,0 +1,147 @@
+UTC: 2026-11-02T06:45:33.3768025Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: npx playwright test tests/e2e/renderer-adapter.spec.ts tests/e2e/renderer-runtime-context-loss.spec.ts tests/e2e/simulation-parity.spec.ts --workers=1 --retries=0
+
+Running 8 tests using 1 worker
+
+(node:19584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+1:45:42 PM [vite] (client) Re-optimizing dependencies because vite config has changed
+  x  1 [desktop-chromium] › tests\e2e\renderer-adapter.spec.ts:3:1 › forced WebGL2 initializes a renderer on the application canvas when supported (1.1m)
+(node:1692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [desktop-chromium] › tests\e2e\renderer-runtime-context-loss.spec.ts:3:1 › a lost WebGL2 context after initialization is reported as unavailable (27.2s)
+(node:16416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [desktop-chromium] › tests\e2e\simulation-parity.spec.ts:55:1 › GPU kernels match the CPU reference through readback (3.4s)
+(node:7208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [desktop-chromium] › tests\e2e\simulation-parity.spec.ts:109:1 › corrupt GPU readback fails instead of claiming parity (6.0s)
+(node:6280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [mobile-chromium] › tests\e2e\renderer-adapter.spec.ts:3:1 › forced WebGL2 initializes a renderer on the application canvas when supported (57.3s)
+  ok 6 [mobile-chromium] › tests\e2e\renderer-runtime-context-loss.spec.ts:3:1 › a lost WebGL2 context after initialization is reported as unavailable (22.3s)
+  -  7 [mobile-chromium] › tests\e2e\simulation-parity.spec.ts:55:1 › GPU kernels match the CPU reference through readback
+  -  8 [mobile-chromium] › tests\e2e\simulation-parity.spec.ts:109:1 › corrupt GPU readback fails instead of claiming parity
+
+
+  1) [desktop-chromium] › tests\e2e\renderer-adapter.spec.ts:3:1 › forced WebGL2 initializes a renderer on the application canvas when supported 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "WebSocket closed without opened.",
+    + ]
+
+      40 |     }
+      41 |   }
+    > 42 |   expect(pageErrors).toEqual([]);
+         |                      ^
+      43 | });
+      44 |
+        at C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2\tests\e2e\renderer-adapter.spec.ts:42:22
+
+    attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\renderer-adapter-forced-We-5c356-ation-canvas-when-supported-desktop-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\renderer-adapter-forced-We-5c356-ation-canvas-when-supported-desktop-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\renderer-adapter-forced-We-5c356-ation-canvas-when-supported-desktop-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\renderer-adapter-forced-We-5c356-ation-canvas-when-supported-desktop-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop-chromium] › tests\e2e\renderer-runtime-context-loss.spec.ts:3:1 › a lost WebGL2 context after initialization is reported as unavailable 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "WebSocket closed without opened.",
+    + ]
+
+      31 |   await expect(page.locator('#runtime-phase-label')).toHaveText('UNSUPPORTED', { timeout: 10000 });
+      32 |   await expect(page.locator('.renderer-unavailable')).toBeVisible();
+    > 33 |   expect(pageErrors).toEqual([]);
+         |                      ^
+      34 | });
+      35 |
+        at C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2\tests\e2e\renderer-runtime-context-loss.spec.ts:33:22
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\renderer-runtime-context-l-41631--is-reported-as-unavailable-desktop-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\renderer-runtime-context-l-41631--is-reported-as-unavailable-desktop-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\renderer-runtime-context-l-41631--is-reported-as-unavailable-desktop-chromium\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\renderer-runtime-context-l-41631--is-reported-as-unavailable-desktop-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\renderer-runtime-context-l-41631--is-reported-as-unavailable-desktop-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop-chromium] › tests\e2e\simulation-parity.spec.ts:55:1 › GPU kernels match the CPU reference through readback 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "WebSocket closed without opened.",
+    + ]
+
+       98 |   // Any other page error is a failure.
+       99 |   const unexpectedErrors = pageErrors.filter((message) => !message.includes('Unable to create WebGPU adapter'));
+    > 100 |   expect(unexpectedErrors).toEqual([]);
+          |                            ^
+      101 | });
+      102 |
+      103 | const FAULT_CASES: ParityOptions[] = [
+        at C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-undo-import-v2\tests\e2e\simulation-parity.spec.ts:100:28
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\simulation-parity-GPU-kern-8760c--reference-through-readback-desktop-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\simulation-parity-GPU-kern-8760c--reference-through-readback-desktop-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\simulation-parity-GPU-kern-8760c--reference-through-readback-desktop-chromium\error-context.md
+
+    attachment #5: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\simulation-parity-GPU-kern-8760c--reference-through-readback-desktop-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\simulation-parity-GPU-kern-8760c--reference-through-readback-desktop-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    [desktop-chromium] › tests\e2e\renderer-adapter.spec.ts:3:1 › forced WebGL2 initializes a renderer on the application canvas when supported 
+    [desktop-chromium] › tests\e2e\renderer-runtime-context-loss.spec.ts:3:1 › a lost WebGL2 context after initialization is reported as unavailable 
+    [desktop-chromium] › tests\e2e\simulation-parity.spec.ts:55:1 › GPU kernels match the CPU reference through readback 
+  2 skipped
+  3 passed (3.3m)
+EXIT: 1

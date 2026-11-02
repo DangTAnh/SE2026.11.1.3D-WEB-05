@@ -1,0 +1,36 @@
+UTC: 2026-11-02T06:51:32.7326145Z
+PWD: C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-v2-mutation
+OS: Microsoft Windows NT 10.0.26300.0
+Node: v22.16.0
+Command: npm ci --offline --no-audit --no-fund; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; npx vitest run tests/unit/importUndoV2.test.ts -t "AUTH2 unauthorized undo"
+
+added 54 packages in 47s
+
+ RUN  v5.0.3 C:/Users/PC/.codex/.chatgpt-projects/g-p-6ac74c56e7fc8191bf607f753ba39a29/work/vt121-v2-mutation
+
+ ❯ tests/unit/importUndoV2.test.ts (61 tests | 1 failed | 60 skipped) 26ms
+   × AUTH2 unauthorized undo preserves state and history 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/importUndoV2.test.ts > AUTH2 unauthorized undo preserves state and history
+AssertionError: expected [Function] to throw an error
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ tests/unit/importUndoV2.test.ts:41:196
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 60 skipped (61)
+   Start at  13:52:33
+   Duration  2.40s (import 74%, transform 23%, tests 2%, worker 1%)
+
+EXIT: 1
