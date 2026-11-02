@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './vt121Transport.ts';
 import { probeCapabilities } from './support/capabilities';
 
 // A real renderer under software GL is heavy; run one page at a time per project.

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './vt121Transport.ts';
 import { probeCapabilities } from './support/capabilities';
 
 test('WebGPU adapter initializes and renders on the application canvas when available', async ({ page }) => {

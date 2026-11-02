@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './vt121Transport.ts';
 
 test('a lost WebGL2 context after initialization is reported as unavailable', async ({ page }) => {
   // Keep the production v2 default (65,536 particles). Software WebGL2 needs

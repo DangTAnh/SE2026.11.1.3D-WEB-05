@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './vt121Transport.ts';
 
 test('forced WebGL2 initializes a renderer on the application canvas when supported', async ({ page }) => {
   // v2 default 65536 is kept here; software rendering needs a startup budget.

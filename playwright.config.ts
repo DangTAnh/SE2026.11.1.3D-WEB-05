@@ -19,7 +19,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
-  webServer: {
+  webServer: process.env.VT121_VITE_TRANSPORT ? undefined : {
     command: 'npm run dev -- --host 127.0.0.1 --port 4173',
     url: baseURL,
     reuseExistingServer: !process.env.CI,

@@ -4,6 +4,11 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 async function routeVite(context: BrowserContext, server: ViteDevServer): Promise<void> {
+  // Vite's dev client opens HMR even in middleware mode. Terminate only that
+  // local development-tool connection in transport, rather than filtering app errors.
+  await context.routeWebSocket(/^ws:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//, socket => {
+    socket.onMessage(() => {});
+  });
   await context.route('**/*', async route => {
     const url = new URL(route.request().url());
     if (url.origin !== 'http://127.0.0.1:4173') {
@@ -32,7 +37,19 @@ async function routeVite(context: BrowserContext, server: ViteDevServer): Promis
 export const test = base.extend<{}, { transportServer: ViteDevServer | undefined }>({
   transportServer: [async ({}, use) => {
     if (!process.env.VT121_VITE_TRANSPORT) { await use(undefined); return; }
-    const server = await createServer({ configFile: false, server: { middlewareMode: true, hmr: false }, appType: 'custom' });
+    const sourceRoot = process.env.VT121_SOURCE_BASELINE;
+    const root = process.cwd();
+    const server = await createServer({ configFile: false, cacheDir: sourceRoot ? "node_modules/.vite-vt121-baseline" : "node_modules/.vite-vt121",
+      plugins: sourceRoot ? [{ name: 'vt121-immutable-baseline-source', enforce: 'pre',
+        async load(id) {
+          const clean = id.split('?')[0];
+          const relative = path.relative(root, clean);
+          if (!relative.startsWith(`src${path.sep}`)) return null;
+          // Read original tracked source from the separate baseline checkout; no app stub.
+          return await readFile(path.join(sourceRoot, relative), 'utf8');
+        },
+      }] : [],
+      server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' });
     try { await use(server); } finally { await server.close(); }
   }, { scope: 'worker' }],
   browser: [async ({ browser, transportServer }, use) => {

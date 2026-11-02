@@ -1,7 +1,8 @@
+import { createImportUndo } from '../../presets/importUndo.ts';
+import { createPresetFileReader } from './presetFile.ts';
 import {
   cloneConfig,
   downloadPresetDocument,
-  parsePresetDocument,
   type LabConfig,
   type PresetDocument,
 } from '../../presets/preset.ts';
@@ -54,6 +55,23 @@ export function renderLabControls(config: LabConfig): void {
 }
 
 export function bindLabControls(callbacks: ControlCallbacks): () => void {
+  const owner = Symbol('preset session');
+  const session = createImportUndo(owner, callbacks.getPresetDocument, callbacks.importPresetDocument);
+  const undoButton = byId<HTMLButtonElement>('undo-import');
+  const syncUndo = (): void => { undoButton.disabled = !session.canUndo(owner); };
+  const reader = createPresetFileReader(text => {
+    try { session.importText(owner, text); } finally { syncUndo(); }
+  }, callbacks.notify);
+  const invalidate = (): void => {
+    reader.invalidate();
+    session.invalidate(owner);
+    syncUndo();
+  };
+  const updateConfig: ControlCallbacks['updateConfig'] = (next, resetSimulation) => {
+    invalidate();
+    callbacks.updateConfig(next, resetSimulation);
+  };
+  syncUndo();
   const disposers: Array<() => void> = [];
   let disposed = false;
   const listen = (
@@ -79,7 +97,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
       const value = Number((event.target as HTMLInputElement).value);
       const next = cloneConfig(callbacks.getConfig());
       next.simulation[numericFields[id]] = value;
-      callbacks.updateConfig(next);
+      updateConfig(next);
     });
   });
 
@@ -88,27 +106,28 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
     const value = Number((event.target as HTMLInputElement).value);
     if (next.mode === 'attractor') next.modes.attractor.attractorStrength = value;
     else next.modes.vortex.vortexStrength = value;
-    callbacks.updateConfig(next);
+    updateConfig(next);
   });
 
   listen(byId<HTMLInputElement>('particle-count'), 'input', (event) => {
     const value = Number((event.target as HTMLInputElement).value);
+    invalidate();
     byId<HTMLOutputElement>('particle-count-value').textContent = formatNumber(value);
   });
   listen(byId<HTMLInputElement>('particle-count'), 'change', (event) => {
     const value = Number((event.target as HTMLInputElement).value);
     const next = cloneConfig(callbacks.getConfig());
     next.simulation.particleCount = value;
-    callbacks.updateConfig(next, true);
+    updateConfig(next, true);
   });
   listen(byId<HTMLInputElement>('particle-color'), 'input', (event) => {
     const next = cloneConfig(callbacks.getConfig());
     next.rendering.particleColor = (event.target as HTMLInputElement).value;
-    callbacks.updateConfig(next);
+    updateConfig(next);
   });
 
   listen(byId<HTMLSelectElement>('backend'), 'change', (event) => {
-    callbacks.updateConfig({
+    updateConfig({
       ...callbacks.getConfig(),
       backendPreference: (event.target as HTMLSelectElement).value as LabConfig['backendPreference'],
     });
@@ -116,12 +135,13 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   });
 
   listen(byId<HTMLButtonElement>('apply-backend'), 'click', () => {
+    invalidate();
     callbacks.applyBackend();
   });
 
   (['attractor', 'vortex'] as const).forEach((mode) => {
     listen(byId<HTMLButtonElement>(`mode-${mode}`), 'click', () => {
-      callbacks.updateConfig({ ...callbacks.getConfig(), mode }, true);
+      updateConfig({ ...callbacks.getConfig(), mode }, true);
     });
   });
 
@@ -147,24 +167,24 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
     byId<HTMLInputElement>('preset-file').click();
   });
 
+  listen(undoButton, 'click', () => {
+    reader.invalidate();
+    try {
+      if (session.undo(owner)) callbacks.notify('Đã hoàn tác import preset.');
+    } catch (error) {
+      callbacks.notify(error instanceof Error ? error.message : 'Không thể hoàn tác preset.', 'error');
+    } finally { syncUndo(); }
+  });
+
   listen(byId<HTMLInputElement>('preset-file'), 'change', async (event) => {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    try {
-      if (file.size > 1_000_000) throw new Error('Tệp preset vượt quá giới hạn 1 MB.');
-      const next = parsePresetDocument(await file.text());
-      if (disposed) return;
-      callbacks.importPresetDocument(next);
-      callbacks.notify('Đã nhập preset hợp lệ.');
-    } catch (error) {
-      if (!disposed) callbacks.notify(error instanceof Error ? error.message : 'Không thể đọc preset.', 'error');
-    } finally {
-      input.value = '';
-    }
+    if (await reader.read(file)) input.value = '';
   });
 
   listen(byId<HTMLButtonElement>('restore-defaults'), 'click', () => {
+    invalidate();
     callbacks.restoreDefaults();
     callbacks.notify('Đã khôi phục cấu hình mặc định.');
   });
@@ -172,6 +192,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   return () => {
     if (disposed) return;
     disposed = true;
+    reader.invalidate();
     disposers.forEach((dispose) => dispose());
   };
 }

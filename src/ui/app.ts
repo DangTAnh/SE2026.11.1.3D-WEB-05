@@ -1,3 +1,4 @@
+import { CommittedPresetError } from '../presets/importUndo.ts';
 import { cloneConfig, DEFAULT_CONFIG } from '../presets/preset.ts';
 import type { LabConfig } from '../presets/preset.ts';
 import type { RendererPort } from '../core/renderer/RendererPort.ts';
@@ -93,7 +94,7 @@ export function mountLabUI(
       try { resetSimulation(); }
       catch {
         refreshStatus();
-        throw new Error('Cấu hình đã được áp dụng. Không thể khởi tạo lại mô phỏng; vui lòng thử Reset.');
+        throw new CommittedPresetError('Cấu hình đã được áp dụng. Không thể khởi tạo lại mô phỏng; vui lòng thử Reset.');
       }
     }
     refreshStatus();

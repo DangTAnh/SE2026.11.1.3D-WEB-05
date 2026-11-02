@@ -84,6 +84,7 @@ export function createLabMarkup(): string {
               <section class="control-section preset-section">
                 <div class="section-title"><span>05</span><h3>Preset configuration</h3></div>
                 <div class="preset-actions"><button type="button" id="export-preset" class="button primary">↓ Export JSON</button><button type="button" id="import-preset" class="button secondary">↑ Import</button></div>
+                <button type="button" id="undo-import" class="button secondary" disabled>Undo import</button>
                 <input type="file" id="preset-file" accept=".json,application/json" hidden>
                 <button type="button" id="restore-defaults" class="link-button">↻ Khôi phục mặc định</button>
               </section>

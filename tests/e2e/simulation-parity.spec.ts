@@ -11,7 +11,7 @@
  * status is inside the attached `gpu-kernel-parity.json`, not a Playwright
  * skip for the WebGPU subcases.
  */
-import { expect, test } from '@playwright/test';
+import { expect, test } from './vt121Transport.ts';
 import type { ParityOptions, ParityResult } from './fixtures/simulation-parity.ts';
 
 const CASES: ParityOptions[] = [

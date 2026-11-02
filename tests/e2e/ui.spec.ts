@@ -1,6 +1,6 @@
 import { cloneConfig, DEFAULT_CONFIG } from '../../src/presets/preset.ts';
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './vt121Transport.ts';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
