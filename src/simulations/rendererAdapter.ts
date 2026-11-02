@@ -16,6 +16,7 @@ import { createAttractorKernel } from './shared/attractorKernel.ts';
 import { createVortexKernel } from './shared/vortexKernel.ts';
 import { createParticleBuffers, type ParticleBuffers } from './shared/particleBuffers.ts';
 import { BackendUnavailableError, startBackend, type InitializedBackend } from './backend/fallback.ts';
+import { resolveFreshComputeTime } from './backend/gpuTiming.ts';
 
 const MAX_FRAME_DELTA = 0.05;
 // At 60 FPS this samples about 6 times/second; the 2 s freshness window
@@ -303,6 +304,7 @@ export class ThreeRendererAdapter implements RendererPort {
   ): boolean {
     const measurementGeneration = this.#measurementGeneration;
     const sampledAt = sampleGpuTime ? performance.now() : null;
+    const submittedFrame = sampleGpuTime && this.#gpuTimingSupported ? renderer.info.frame : null;
     let task: Promise<unknown> | undefined;
     try {
       task = run();
@@ -312,14 +314,14 @@ export class ThreeRendererAdapter implements RendererPort {
     }
     if (task) {
       void task.then(() => {
-        if (sampleGpuTime && sampledAt !== null) {
-          this.#resolveGpuTime(renderer, measurementGeneration, sampledAt);
+        if (sampleGpuTime && sampledAt !== null && submittedFrame !== null) {
+          this.#resolveGpuTime(renderer, measurementGeneration, sampledAt, submittedFrame);
         }
       }).catch(() => this.#handleComputeFailure(renderer));
-    } else if (sampleGpuTime && sampledAt !== null) {
+    } else if (sampleGpuTime && sampledAt !== null && submittedFrame !== null) {
       // Three r186's initialized compute() submits synchronously and returns
       // undefined; resolve its timestamp query after that submission too.
-      this.#resolveGpuTime(renderer, measurementGeneration, sampledAt);
+      this.#resolveGpuTime(renderer, measurementGeneration, sampledAt, submittedFrame);
     }
     return this.#renderer === renderer && !this.#disposed;
   }
@@ -328,6 +330,7 @@ export class ThreeRendererAdapter implements RendererPort {
     renderer: WebGPURenderer,
     measurementGeneration: number,
     sampledAt: number,
+    submittedFrame: number,
   ): void {
     if (!this.#gpuTimingSupported
       || this.#gpuTimingInFlight
@@ -337,7 +340,7 @@ export class ThreeRendererAdapter implements RendererPort {
       || this.#disposed) return;
     this.#gpuTimingInFlight = true;
     const requestId = ++this.#gpuTimingRequestId;
-    void renderer.resolveTimestampsAsync('compute')
+    void resolveFreshComputeTime(renderer, submittedFrame)
       .then((durationMs) => {
         if (this.#renderer !== renderer || this.#disposed || !this.#running
           || measurementGeneration !== this.#measurementGeneration) return;

@@ -136,6 +136,51 @@ test('build: a partial group cannot claim the fixed protocol', async () => {
   );
 });
 
+test('build: a blocked backend is recorded without fabricating samples', async () => {
+  const hash = await configHash(DEFAULT_CONFIG);
+  const result = await buildBenchmarkResult({
+    environment: ENVIRONMENT,
+    config: DEFAULT_CONFIG,
+    samples: Array.from({ length: BENCHMARK_PROTOCOL.sampleCount }, () =>
+      snapshot(hash, { actual: 'webgl2' }),
+    ),
+    blockedBackends: ['webgpu'],
+    limitations: ['No WebGPU adapter was available'],
+  });
+
+  assert.deepEqual(result.blockedBackends, ['webgpu']);
+  assert.deepEqual(result.groups.map((group) => group.actual), ['webgl2']);
+});
+
+test('build: a blocked backend needs a stated limitation', async () => {
+  const hash = await configHash(DEFAULT_CONFIG);
+  await assert.rejects(
+    buildBenchmarkResult({
+      environment: ENVIRONMENT,
+      config: DEFAULT_CONFIG,
+      samples: Array.from({ length: BENCHMARK_PROTOCOL.sampleCount }, () =>
+        snapshot(hash, { actual: 'webgl2' }),
+      ),
+      blockedBackends: ['webgpu'],
+    }),
+    /a blocked backend needs a stated limitation/,
+  );
+});
+
+test('build: a measured backend cannot also be blocked', async () => {
+  const hash = await configHash(DEFAULT_CONFIG);
+  await assert.rejects(
+    buildBenchmarkResult({
+      environment: ENVIRONMENT,
+      config: DEFAULT_CONFIG,
+      samples: Array.from({ length: BENCHMARK_PROTOCOL.sampleCount }, () => snapshot(hash)),
+      blockedBackends: ['webgpu'],
+      limitations: ['contradiction'],
+    }),
+    /backend "webgpu" cannot be both measured and blocked/,
+  );
+});
+
 test('build: groups by (configHash, actual) and records the fixed protocol', async () => {
   const hash = await configHash(DEFAULT_CONFIG);
   const count = BENCHMARK_PROTOCOL.sampleCount;
