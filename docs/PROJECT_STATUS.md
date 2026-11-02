@@ -605,19 +605,12 @@
 2. TV1/TV2/TV3/TV5 review contract; sau khi có engine, mở rộng E2E/benchmark thật.
 3. Chỉ mở rộng Firefox/WebKit hoặc Storybook khi có nhu cầu tích hợp cụ thể; không đổi kiến trúc UI hiện tại.
 
-## 02/11/2026 — VT121 cached-dev Undo candidate (not merged)
+## 02/11/2026 — VT121 published Draft PR #81
 
-Personal branch feat/tv4-bt3-vt121-undo-import-v2 is based on cached dev2389f0f,
-not a verified latest remote. Full-document Undo preserves nested config/name,
-real schema-v2 BVA, internal capability guard, partial failure recovery and
-latest-request File.text behavior. FeatureGREENe808d70, verificatione7b72e7:
-312 unit/integration and84 E2E PASS/8 capability SKIP; typechecks/build PASS.
-Mutation removing only Undo guard was killed; temporary worktree removed.
-Selected source modules have100% line/branch coverage, not whole-project.
-Node200 tasks synthetic p95=32.678–36.323ms; browser200 queued jobs/pool10
-p95=13.347999s exceeds5s. Real200-user SLO NOT_VERIFIED. Prior HMR/artifact
-failures remain in evidence; final isolated verify passed without retries.
-GitHub DNS blocks fetch/push/PR/latest-dev reconciliation. Human review and
-issue assignment remain pending. No engine/schema/dependency change, merge,
-release/deploy/tag or PDF edit. See [handoff](04-testing/VT121-final-handoff.md),
-[traceability](04-testing/VT121-traceability.md) and output/VT121-final/logs.
+## Publication verification — 02/11/2026
+
+VERIFIED: [PR #81](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/81) OPEN, isDraft=true, base=dev, published HEAD 247781de4c90df52f54a6e0327e3dfaf7931a0d0. Fetch succeeded; merge-base with current origin/dev is 8f7c3eeb74c7a9501332b265fa16a6aa552aa2b3. Dev synchronization completed in merge commit 247781de4c90df52f54a6e0327e3dfaf7931a0d0. No rebase/force-push/merge of PR.
+
+VERIFIED historical post-publication execution at that merge: 336 unit/integration PASS; 84 E2E PASS, 12 capability SKIP; 8 focused Undo PASS retries=0; typechecks/build PASS. Commands and exit0 are preserved in external handoff logs/publication-result.json and publication-original.log. These are not new executions in finalization.
+
+VERIFIED CI on published merge: CI verify SUCCESS [run 41412349557](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/actions/runs/41412349557); CodeQL SUCCESS. Finalization HEAD checks must be read separately from external VT121-pr-ci-status.md; do not transfer this PASS to a later SHA. Human review PENDING: reviews=[], reviewRequests=[] at API inspection. New finalization verification is logged separately. Overall REVIEW_PENDING; real-user SLO NOT_VERIFIED.

@@ -24,3 +24,5 @@ All current root logs are freshly executed on the v2 candidate unless explicitly
 -10-github-pr /10-github-final: live DNS/network errors before HTTP; auth unresolved, no push/PR/CI action taken.
 
 Raw embedded trace/video paths from old failed runs are reporter outputs; some ephemeral artifacts were deleted by concurrent runners. Saved logs and RED screenshot are available, not every ephemeral attachment. Code commit mapping and final packaging integrity checks are in handoff/results/manifest.
+
+Finalization update: original00–10 logs above are historical pre-publication evidence, not current GitHub status. PR #81 exists OPEN Draft into dev; merge247781d integrates8f7c3ee. Canonical docs moved to docs/04-testing; duplicated copies archived before removal.11-finalization-focused.log is the new8-case transport rerun, exit0. External submission handoff holds publication-result.json and current CI/API logs.

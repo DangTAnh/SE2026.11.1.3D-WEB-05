@@ -1,36 +1,33 @@
-# feat(tv4/vt121): safe one-step undo for v2 preset import
+## Student / scope
+Trần Duy Anh · 23001828 · TV4 · SE2026-T30 · VT-121.
+Adds one-step Undo for validated schema-v2 preset import, preserving the complete document and optional name. No schema, dependency, framework or GPU/backend change.
 
-Valid preset import overwrites current edits. This v2 slice adds a one-step Undo that restores the complete validated PresetDocument (nested config and optional name), not only visible slider values.
+## Acceptance criteria and invariants
+- Valid import captures a deep validated predecessor; Undo restores it once.
+- Invalid JSON/schema/file boundaries preserve state and history.
+- Internal ownership guard protects import/Undo/history; no account authorization claim.
+- Manual edits and stale async file reads cannot resurrect obsolete history.
+- Apply failures attempt recovery; committed reset warnings preserve existing app semantics.
+Accessible native control/live-region feedback. Recovery is conditional if rollback fails or GPU side effects are asynchronous. NFR target:200 tasks/users p95≤5s, with measured scopes separated.
 
-## Scope / acceptance criteria
-
-1. Successful validated import saves an independent prior document after config commit.
-2. Undo restores the document through the existing UI/RendererPort path exactly once.
-3. Invalid/missing/empty/oversize input preserves state/history; v2 BVA uses actual schema ranges and precision.
-4. Client session capability guards import/Undo/history; unauthorized callers cannot consume snapshots.
-5. Manual edits invalidate old history/pending reads; latest file request wins; partial apply is recoverable if rollback works. Post-commit reset warning keeps existing applied-config behavior and correct history.
-
-Tested base: cached dev2389f0f550b33899801e1ab07c6312baea0c9faf. Target proposal dev per AGENTS/CONTRIBUTING. Latest remote dev is unverified because network/DNS fails; this draft must be reconciled with live dev before merge. No fabricated linked/closing issue; assignment/owner review PENDING. Original v1 history remains on its own branch, not merged into dev.
-
-REDbfd124749412e93d32b4048d0fd6173bb4f58cb9 contains only plan/test/transport. Real pre-patch E1 imported/exported v2 successfully then failed on missing Undo. FeatureGREENe808d70a792ffb377c8b310f8f9e0bb441ba5dc0 adds the implementation; verification follow-up e7b72e7 isolates outputDir. No engine/RendererPort/schema/dependency/framework changes.
+## History / implementation
+Baseline `2389f0f550b33899801e1ab07c6312baea0c9faf`.
+RED `bfd124749412e93d32b4048d0fd6173bb4f58cb9`; GREEN `e808d70a792ffb377c8b310f8f9e0bb441ba5dc0`.
+Published integration HEAD `247781de4c90df52f54a6e0327e3dfaf7931a0d0` merges dev `8f7c3ee`; current HEAD is shown by GitHub above.
+Controller, async reader, control bindings, native button and reset-phase marker implement the change. Finalization preserves history, removes14 archived identical document copies and makes optional transport continue external requests rather than synthesize success. Nine existing spec assertions remain unchanged.
 
 ## Evidence
+Historical post-integration:336 unit/integration PASS;84 E2E PASS/12 capability SKIP;8 focused Undo PASS retries0; typechecks/build PASS. Finalization: build including source/test typechecks PASS exit0; focused Undo8/8 PASS retries0 exit0 after transport correction. Normal HTTP full regression is running separately; current GitHub checks above remain authoritative. Initial published-head CI/CodeQL succeeded; that result is not transferred to a later SHA.
+- [Test-first RED log](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/output/VT121-final/logs/03-red.log): expected exit1, missing Undo after valid import/export.
+- [Mutation log](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/output/VT121-final/logs/06-mutation.log): Undo-only guard removal KILLED by AUTH2; final guard retained.
+- [Coverage log](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/output/VT121-final/logs/07-coverage-final.log):100% line/branch/function only importUndo.ts/presetFile.ts; whole-app NOT_MEASURED.
+- [Flaky review](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/output/VT121-final/logs/08-flaky.log):3 shuffled unit rounds and3 focused E2E rounds; HMR timing and shared artifact collisions documented, failed logs retained.
 
-- 312 Vitest unit/integration tests PASS;8 focused desktop/mobile browser tests PASS; typechecks/build PASS (logs04-green and04-green-final-feature).
-- Full final regression result is recorded in VT121-final-handoff.md and logs05-regression-isolated.log. Prior runs and their failures are preserved: HMR transport caused5 errors; simultaneous campaigns caused4 artifact ENOENT teardown errors. No assertion/retry masking.
-- Undo guard mutation only: AUTH2 FAILS as expected, exit1; KILLED. No mutation commit; temporary worktree/branch removed. Safe-code tests repeated afterwards.
-- Source-only Node coverage: importUndo.ts and presetFile.ts100% line/branch/function; not whole-project coverage, no Ajv inflation.
-- Three shuffled312-test unit rounds and three focused8-test browser rounds PASS, retries0. Deferred File.text unit and real DOM tests cover stale valid/invalid/error outcomes.
-- Performance tables and raw200-operation samples in handoff/logs09. Node experiment has5 rounds; browser integration is a separate capped-context experiment. Neither verifies200 real-user end-to-end p95<=5s.
+## Performance / limitations
+Node synthetic5×200 jobs p9532.678–36.323ms. Browser200 jobs/pool10 queue p9513.347999s **exceeds5s**; service-only .894348s. Real200-user concurrent SLO **NOT_VERIFIED**. FakeRenderer proves UI/port behavior, not physical GPU recovery/performance. Optional transformed transport is distinct from normal HTTP testing.
 
-Reproduction: docs/04-testing/BT3-VT121-README.md. Traceability, original plan, revisions, AI usage and self/independent AI review are retained in docs/04-testing and output/VT121-final. Browser tests use optional intercepted Vite transport due network restrictions; actual app/fixtures/schema execute, old assertions unchanged, local HMR handled as dev tooling. This is not live TCP deployment evidence.
+## Review / AI disclosure
+Codex assisted planning, implementation, tests and finalization; plan assumptions were corrected for full-document metadata and post-commit reset failures. Student owns the submission and must confirm the reflection. Human review **PENDING**; no self-approval, no merge before independent review.
+[README](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/docs/04-testing/BT3-VT121-README.md) · [Traceability](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/docs/04-testing/VT121-traceability.md) · [AI Usage Log](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/docs/04-testing/VT121-ai-usage-log.md) · [Risks](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/docs/04-testing/VT121-remaining-risks.md).
 
-## Limits / rollback / approval
-
-Capability is module/harness ownership, not account/server authorization. Conditional rollback cannot prove physical GPU resource atomicity or arbitrary async recovery. FakeRenderer partial-write tests verify UI/port requests. Reset warning means config committed, not a rejected import. Physical GPU/200 real users/latest-dev integration remain unverified.
-
-Rollback by reverting feature/verification commits or closing the unmerged draft. HUMAN_REVIEW_PENDING; independent AI review is supplementary. Do not merge, deploy, tag or mark human-approved automatically.
-
-AI disclosure: Codex drafted the initial plan, patch and tests. Actual metadata/reset assumptions were revised from source evidence; independent AI review corrected the stale-toast oracle. Shared artifact mistakes and failed runs are preserved. See VT121-ai-usage-log.md and VT121-diff-review.md. Student reflection is a301-word draft for personal review.
-
-Final isolated verification:312 unit/integration +84 E2E PASS/8 capability SKIP, exit0. Node p95 32.678–36.323ms; browser pool10 queue p95 13.347999s exceeds5s. Real200-user SLO NOT_VERIFIED.
+[Finalization build log](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/output/VT121-final/logs/11-finalization-build.log) · [Focused Undo log](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/blob/feat/tv4-bt3-vt121-undo-import-v2/output/VT121-final/logs/11-finalization-focused.log).

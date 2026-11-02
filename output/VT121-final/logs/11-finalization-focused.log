@@ -1,0 +1,19 @@
+COMMAND: npx playwright test tests/e2e/undoImportV2.spec.ts --config=playwright.vt121.config.ts --workers=1 --retries=0 (transport enabled; unique artifacts)
+
+Running 8 tests using 1 worker
+
+(node:11668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:15:1 › VT121-V2-E1 import and Undo restore complete nested document and port config once (21.7s)
+  ok 2 [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:33:1 › VT121-V2-E2 1MB import and byte/JSON rejections preserve complete document/history (23.4s)
+  ok 3 [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:45:1 › VT121-V2-E3 manual edit clears history; actual deferred File.text uses latest request wins (29.8s)
+  ok 4 [desktop-chromium] › tests\e2e\undoImportV2.spec.ts:67:1 › VT121-V2-E4 partial renderer apply and failed Undo recover UI/port and preserve history (11.6s)
+(node:25488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [mobile-chromium] › tests\e2e\undoImportV2.spec.ts:15:1 › VT121-V2-E1 import and Undo restore complete nested document and port config once (22.0s)
+  ok 6 [mobile-chromium] › tests\e2e\undoImportV2.spec.ts:33:1 › VT121-V2-E2 1MB import and byte/JSON rejections preserve complete document/history (21.6s)
+  ok 7 [mobile-chromium] › tests\e2e\undoImportV2.spec.ts:45:1 › VT121-V2-E3 manual edit clears history; actual deferred File.text uses latest request wins (29.1s)
+  ok 8 [mobile-chromium] › tests\e2e\undoImportV2.spec.ts:67:1 › VT121-V2-E4 partial renderer apply and failed Undo recover UI/port and preserve history (9.4s)
+
+  8 passed (3.4m)
+EXIT: 0

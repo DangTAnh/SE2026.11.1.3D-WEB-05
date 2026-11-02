@@ -1,6 +1,7 @@
+> Historical design/execution narrative below refers to the pre-publication campaign; current publication status is recorded at the end.
+
 # VT121 v2 test strategy and matrix
 
-Baseline: cached dev 2389f0f550b33899801e1ab07c6312baea0c9faf. Current remote HEAD is not verified. Proposed target dev, per repository workflow; no claim of integration into supplied newer 8f7c3ee. Original v1 history remains a separate reference, never PASS evidence for v2.
 
 AC1: validated import stores independent complete document snapshot only after config apply commits. AC2: Undo restores nested config and optional name once; unavailable initially/after consumption. AC3: parser/file rejection preserves state/history. AC4: client capability required on import, Undo, inspection, invalidation. AC5: edits/backend apply attempts invalidate history and pending reads; stale results/errors are silent; partial apply recovers conditionally. A post-commit reset warning retains applied config and Undo opportunity, preserving existing app contract; committed Undo with reset warning consumes the snapshot because config restoration succeeded.
 
@@ -37,3 +38,11 @@ Constraints: no schema/RendererPort/GPU/dependency/framework changes; accessible
 Primary oracles: explicit schema-v2 values and before-operation deep documents, not duplicated controller logic. E4 is port/config evidence, not physical GPU resource rollback. Selected Node coverage tests import actual .ts source using built-in type stripping; percentages do not cover app/bindings or whole project. Regression includes all original assertions; optional transport changes only their fixture import.
 
 Flaky review: controlled microtasks/deferred reads (no arbitrary sleeps in new tests), fresh controller/document per test, shuffled seeds121–123, no external-font/network assertions, explicit Vite/Chromium transport, retries0. Existing GPU timing waits remain untouched. HMR transport failures are preserved rather than filtered from pageErrors.
+
+## Publication verification — 02/11/2026
+
+VERIFIED: [PR #81](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/81) OPEN, isDraft=true, base=dev, published HEAD 247781de4c90df52f54a6e0327e3dfaf7931a0d0. Fetch succeeded; merge-base with current origin/dev is 8f7c3eeb74c7a9501332b265fa16a6aa552aa2b3. Dev synchronization completed in merge commit 247781de4c90df52f54a6e0327e3dfaf7931a0d0. No rebase/force-push/merge of PR.
+
+VERIFIED historical post-publication execution at that merge: 336 unit/integration PASS; 84 E2E PASS, 12 capability SKIP; 8 focused Undo PASS retries=0; typechecks/build PASS. Commands and exit0 are preserved in external handoff output/VT121-final/logs/publication-result.json and publication-original.log. These are not new executions in finalization.
+
+VERIFIED CI on published merge: CI verify SUCCESS [run 41412349557](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/actions/runs/41412349557); CodeQL SUCCESS. Finalization HEAD checks must be read separately from external VT121-pr-ci-status.md; do not transfer this PASS to a later SHA. Human review PENDING: reviews=[], reviewRequests=[] at API inspection. New finalization verification is logged separately. Overall REVIEW_PENDING; real-user SLO NOT_VERIFIED.

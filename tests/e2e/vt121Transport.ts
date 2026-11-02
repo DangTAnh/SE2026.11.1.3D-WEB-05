@@ -12,7 +12,8 @@ async function routeVite(context: BrowserContext, server: ViteDevServer): Promis
   await context.route('**/*', async route => {
     const url = new URL(route.request().url());
     if (url.origin !== 'http://127.0.0.1:4173') {
-      await route.fulfill({ status: 200, contentType: 'text/css', body: '' });
+      // Preserve real external failures; never synthesize success for app resources.
+      await route.continue();
       return;
     }
     try {

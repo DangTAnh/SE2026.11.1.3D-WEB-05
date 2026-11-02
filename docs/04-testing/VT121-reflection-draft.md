@@ -1,11 +1,11 @@
-# VT121 reflection draft — sinh viên cần review
+# Reflection — BẢN NHÁP, sinh viên tự xác nhận
 
-Độ tin cậy của thay đổi tăng nhờ kiểm chứng trên schema v2 thay vì suy từ kết quả v1. Test RED chạy trước production patch, nhập và xuất document thành công rồi thất bại vì thiếu Undo. Cùng luồng đó chuyển sang GREEN, so sánh toàn bộ cấu hình lồng, metadata và yêu cầu gửi tới RendererPort. Đây là bằng chứng mạnh hơn việc chỉ thấy nút xuất hiện.
+Tôi tăng mức tin cậy của thay đổi bằng bằng chứng thực thi trên schema v2. Test RED chạy trước production patch: nhập và xuất document thành công, sau đó thất bại vì thiếu Undo. GREEN kiểm tra khôi phục cấu hình lồng và tên preset. Sau đồng bộ dev, regression ghi nhận 336 unit/integration PASS, 84 E2E PASS và 12 capability SKIP; tôi phân biệt lần chạy này với các kết quả cũ.
 
-BVA dựa trên schema thật giúp loại bỏ giả định particle count phải chia hết cho một nghìn. Test negative không chỉ yêu cầu exception mà còn kiểm tra state và lịch sử trước thao tác. Mutation bỏ guard riêng tại Undo làm test unauthorized thất bại, cho thấy test phát hiện được lỗi đã chọn. Tuy vậy, Symbol chỉ kiểm tra quyền gọi nội bộ, không chứng minh bảo mật giữa tài khoản.
+Tôi dùng BVA theo schema thật, xét dưới, tại và trên biên, đồng thời kiểm tra độ chính xác số thập phân. Negative test kiểm tra cả state và history. Mutation chỉ bỏ guard tại Undo khiến AUTH2 thất bại; guard vẫn có trong branch cuối. Coverage 100% chỉ thuộc importUndo.ts và presetFile.ts, không đại diện toàn ứng dụng.
 
-AI hỗ trợ tách controller, xây dựng portfolio và rà diff, nhưng cần kiểm soát các giả định trông hợp lý. Snapshot chỉ chứa LabConfig sẽ làm mất tên preset. Rollback mọi exception cũng sai khi reset thất bại sau khi cấu hình đã commit. Review độc lập còn phát hiện assertion toast có thể bị thao tác export che khuất; test đã được bổ sung.
+AI giúp lập kế hoạch và rà soát, nhưng tôi phải sửa ít nhất hai assumptions. Snapshot chỉ chứa LabConfig sẽ mất tên preset; rollback mọi exception lại sai khi reset lỗi sau lúc cấu hình đã commit. Tôi chuyển sang snapshot toàn document và phân biệt lỗi sau commit. Assertion toast cũng được đặt trước export để tránh mất dấu kết quả cần kiểm tra.
 
-Những giới hạn phải giữ rõ gồm rollback lỗi, side effect GPU bất đồng bộ và baseline dev mới nhất chưa fetch được. Coverage nguồn chỉ áp dụng hai module được chọn. Benchmark Node và browser harness không đại diện hai trăm người dùng thật. Transport kiểm thử không chứng minh triển khai HTTP. Test tiếp theo có giá trị cao nhất là đồng bộ dev hiện hành, chạy lại integration và workload trình duyệt trên môi trường mạng hoạt động, rồi để thành viên nhóm review trước quyết định merge.
+Tôi giữ các log lỗi HMR và xung đột artifact thay vì xóa chúng. Chạy lặp không thay thế review rủi ro timing hoặc shared state. FakeRenderer chứng minh hành vi UI/port, chưa chứng minh GPU thật. Browser queue p95 khoảng 13,348 giây vượt mục tiêu 5 giây; service-only thấp hơn không xóa thời gian chờ. Real 200-user SLO chưa được chứng minh. Rollback GPU bất đồng bộ còn giới hạn vì callback phục hồi không bảo đảm mọi side effect. Human review vẫn pending; tôi cần tự xác nhận bản nháp này và nhờ thành viên khác review trước khi merge.
 
-Word count: 301 (Python whitespace split; excluding title and this note).
+Word count: 301 (Python whitespace split; body only).

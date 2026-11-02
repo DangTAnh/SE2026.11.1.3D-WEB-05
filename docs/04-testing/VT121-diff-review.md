@@ -1,3 +1,5 @@
+> Historical design/execution narrative below refers to the pre-publication campaign; current publication status is recorded at the end.
+
 # VT121 diff review — cached-dev v2 candidate
 
 Scope: base2389f0f; REDbfd1247; featureGREENe808d70; verification follow-up e7b72e7. Production change stays in five files: src/presets/importUndo.ts, src/ui/controls/presetFile.ts, src/ui/controls/controlBindings.ts, src/ui/template.ts, and two-line app.ts committed-reset-error classification. No engine/backend, RendererPort, schema, package or lockfile edits. Feature commit changes24 files/352 insertions/31 deletions, including new tests/bench and one-line imports in9 old browser specs. These import changes retain every old assertion and activate optional transport only when environment requests it. Follow-up changes only one config line to accept a unique outputDir.
@@ -18,3 +20,11 @@ Questionable claims rejected: LabConfig-only snapshot (loses name), shallow clon
 Independent AI source/transport review found no other actionable defect. It did not independently execute the full suite and is not human approval. HUMAN_REVIEW_PENDING. Latest remote dev reconciliation/issue assignment/publication are blocked by network, not silently treated as complete. Rollback: revert feature and verification commits or close unmerged draft; never merge automatically.
 
 Final outcome: isolated npm run verify exited0 with312 unit/integration,84 E2E PASS/8 capability SKIP, source/test typechecks and build PASS. No production source change after GREEN. Final browser load completed200 jobs without functional errors but queue-inclusive p95 exceeded5s; do not call the SLO PASS.
+
+## Publication verification — 02/11/2026
+
+VERIFIED: [PR #81](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/81) OPEN, isDraft=true, base=dev, published HEAD 247781de4c90df52f54a6e0327e3dfaf7931a0d0. Fetch succeeded; merge-base with current origin/dev is 8f7c3eeb74c7a9501332b265fa16a6aa552aa2b3. Dev synchronization completed in merge commit 247781de4c90df52f54a6e0327e3dfaf7931a0d0. No rebase/force-push/merge of PR.
+
+VERIFIED historical post-publication execution at that merge: 336 unit/integration PASS; 84 E2E PASS, 12 capability SKIP; 8 focused Undo PASS retries=0; typechecks/build PASS. Commands and exit0 are preserved in external handoff output/VT121-final/logs/publication-result.json and publication-original.log. These are not new executions in finalization.
+
+VERIFIED CI on published merge: CI verify SUCCESS [run 41412349557](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/actions/runs/41412349557); CodeQL SUCCESS. Finalization HEAD checks must be read separately from external VT121-pr-ci-status.md; do not transfer this PASS to a later SHA. Human review PENDING: reviews=[], reviewRequests=[] at API inspection. New finalization verification is logged separately. Overall REVIEW_PENDING; real-user SLO NOT_VERIFIED.
