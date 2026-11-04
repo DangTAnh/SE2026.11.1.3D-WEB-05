@@ -9,5 +9,5 @@ test-results/
 .DS_Store
 *.local
 
-# VT121 reproducible evidence scratch directories
-output/VT121-final/tmp/
+# Raw VT121 evidence is archived; see docs/04-testing/VT121-evidence-archive.md.
+output/VT121-final/

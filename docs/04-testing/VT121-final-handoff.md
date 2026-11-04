@@ -1,3 +1,5 @@
+> Raw output paths below identify historical archived files: [immutable evidence and SHA-256 manifest](VT121-evidence-archive.md). They are no longer tracked in the current tree.
+
 # VT121 final handoff
 
 Trần Duy Anh — MSSV23001828 — TV4 — SE2026-T30 — 3D-WEB-05 — VT-121.

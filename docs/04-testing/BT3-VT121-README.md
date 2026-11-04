@@ -1,3 +1,5 @@
+> Raw output paths below identify historical archived files: [immutable evidence and SHA-256 manifest](VT121-evidence-archive.md). They are no longer tracked in the current tree.
+
 > Historical design/execution narrative below refers to the pre-publication campaign; current publication status is recorded at the end.
 
 # VT121 README — published schema-v2 Undo, Draft PR #81

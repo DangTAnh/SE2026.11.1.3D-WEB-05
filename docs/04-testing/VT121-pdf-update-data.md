@@ -1,3 +1,5 @@
+> Raw output paths below identify historical archived files: [immutable evidence and SHA-256 manifest](VT121-evidence-archive.md). They are no longer tracked in the current tree.
+
 # PDF update data — BT3 VT-121
 
 Trang đầu:

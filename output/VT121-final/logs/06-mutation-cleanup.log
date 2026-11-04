@@ -1,7 +1,0 @@
-UTC: 2026-11-02T13:54:34.9990092+07:00
-OS: Microsoft Windows NT 10.0.26300.0
-Command: verify temporary worktree diff is only src/presets/importUndo.ts; git worktree remove --force C:\Users\PC\.codex\.chatgpt-projects\g-p-6ac74c56e7fc8191bf607f753ba39a29\work\vt121-v2-mutation; git branch -D vt121-v2-mutation-temporary
-remove EXIT: 0
-Deleted branch vt121-v2-mutation-temporary (was e808d70).
-delete branch EXIT: 0
-diff check EXIT: 0
