@@ -180,7 +180,10 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    if (await reader.read(file)) input.value = '';
+    // Keep the File before clearing: cancelled reads must allow same-file retry.
+    // Never clear after awaiting, when a newer selection may already exist.
+    input.value = '';
+    await reader.read(file);
   });
 
   listen(byId<HTMLButtonElement>('restore-defaults'), 'click', () => {
