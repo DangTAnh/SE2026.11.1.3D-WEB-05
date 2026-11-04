@@ -49,3 +49,7 @@ Environment: Windows, Node 22.16.0, Playwright 1.64.0, pinned Chromium 156.0.807
 Patch commit: `ecbbf45ed4a0682b428e9f2ba5a10deb3584ba97` (`fix(presets): allow same-file retry after cancelled import`).
 
 To reproduce RED, copy the new presetReselect spec into an isolated checkout of original 4eb31d3 and run the command above. GREEN uses the fixed head. No published history was rewritten and the original workspace was not reset or stashed.
+
+### Base comparison
+
+Base `8f7c3ee`: `npx playwright test tests/e2e/backend-reinit.spec.ts:5 tests/e2e/backend-reinit.spec.ts:204 tests/e2e/backend.spec.ts:39 tests/e2e/renderer-adapter.spec.ts:3 --retries=0`: **8/8 PASS**, both viewports, 3.4 minutes. Same browser/dependencies/normal HTTP/one worker. Corresponding original PR tests passed in the 8.6-minute full campaign. Static base/head comparison shows GPU code unchanged; old backend test assertions are identical (only optional fixture import differs, transport unset here). No introduced regression established. Original failure root cause remains unproven; separate lifecycle/clock timing and hardware responsiveness concerns remain visible.

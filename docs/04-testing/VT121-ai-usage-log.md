@@ -49,3 +49,13 @@ Finalization AI assistance: user prompt “CODEX FINALIZATION — BT3 VT-121 / P
 VERIFIED finalization rerun: `npx playwright test tests/e2e/undoImportV2.spec.ts --config=playwright.vt121.config.ts --workers=1 --retries=0`, optional transport enabled after external-request fix, 8 PASS, exit0. Raw log: `output/VT121-final/logs/11-finalization-focused.log`. Normal HTTP full verify is separate, tracked in external final-review/status; no new performance claim from this run.
 
 VERIFIED finalization G0: `npm run build` (source/test typechecks + Vite build), exit0. Raw log: `output/VT121-final/logs/11-finalization-build.log`. Existing chunk-size warning retained; no dependency/config tuning to suppress it.
+
+## 04/11/2026 — review remediation with Codex
+
+User prompt: fix PR #81 reviewer feedback in order, reproduce native same-file cancellation before fixing, preserve strict schema/history, compare Windows failures against dev, report unmet NFR honestly, preserve submission evidence, push only the existing PR branch and request re-review without AI approval.
+
+Plan: inspect live GitHub/auth and clean checkout; native Chromium RED; minimal event-handler correction; retain request generations; browser race/lifecycle and numeric reachability tests; same-environment base/head checks; archive raw generated output with hashes and immutable links; verify final head, push, and reply with limits.
+
+Accepted output: four added production lines replacing the post-await clear; new presetReselect E2E cases; evidence archive manifest and review follow-up. Rejected assumption: a speculative malformed controller fixture establishes a reachable production NaN bug. Evidence: audited UI-owned config paths and native range sanitization with the real schema. Rejected assumption: Ubuntu CI success establishes the cause of Windows failures. Evidence: retain historical failures, inspect trace, execute same-browser base/head comparison and label non-reproduction explicitly.
+
+The original assignment supplied by the user allows an explicitly scoped load harness if real load cannot run; it does not turn a queue p95 above 5 seconds into PASS. No framework/dependency/renderer/hash/schema change, no assertion weakening, no independent human approval claim.
