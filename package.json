@@ -11,7 +11,6 @@
     "typecheck:tests": "tsc --noEmit -p tsconfig.tests.json",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:load": "vitest run --config vitest.load.config.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test --grep-invert @evidence",
     "test:a11y": "playwright test --grep @a11y",
