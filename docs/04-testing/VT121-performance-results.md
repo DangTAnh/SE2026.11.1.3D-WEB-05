@@ -4,6 +4,14 @@
 
 ## Performance measured after regression
 
+Current 05/11/2026 follow-up: [accepted-workload gap, repeated measurements,
+raw evidence and owner-decision request](VT121-acceptance-2026-11-05.md), tracked
+in [Issue #84](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/84).
+Implementation HEAD c2f5f30, unchanged browser workload: queue-inclusive p95
+5155.5662 / 4803.5604 / 5154.3228ms, errors 0/600. **NFR NOT_MET; real 200-user
+SLO NOT_VERIFIED.** Historical measurements below remain unchanged. New Node
+results and pre-same-file-fix comparisons do not replace browser/user latency.
+
 Nearest-rank quantiles from monotonic timings, including queue delay. Node: five rounds ×200 Promise sessions,1000 warmup operations;506-byte preset; real v2 parser/deep snapshot/import+Undo/assertions. One event loop, NOT200 parallel users. CPU i5-12450HX,12 logical CPUs, total memory25,463,480,320 bytes; Windows10.0.26300/Node22.16.0. No concurrent verification campaign during final measurement.
 
 | Workload | Duration ms | p50 ms | p95 ms | p99 ms | Throughput ops/s | Errors |

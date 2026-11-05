@@ -59,3 +59,37 @@ Plan: inspect live GitHub/auth and clean checkout; native Chromium RED; minimal 
 Accepted output: four added production lines replacing the post-await clear; new presetReselect E2E cases; evidence archive manifest and review follow-up. Rejected assumption: a speculative malformed controller fixture establishes a reachable production NaN bug. Evidence: audited UI-owned config paths and native range sanitization with the real schema. Rejected assumption: Ubuntu CI success establishes the cause of Windows failures. Evidence: retain historical failures, inspect trace, execute same-browser base/head comparison and label non-reproduction explicitly.
 
 The original assignment supplied by the user allows an explicitly scoped load harness if real load cannot run; it does not turn a queue p95 above 5 seconds into PASS. No framework/dependency/renderer/hash/schema change, no assertion weakening, no independent human approval claim.
+
+## 05/11/2026 — NFR and traceability finalization with Codex
+
+User authorization: live-audit PR #81, address technical/workflow gaps, measure
+the unchanged NFR workload, create one nonduplicate TV4 Issue if missing,
+update docs/PR, commit/push only the existing PR branch and communicate with
+reviewers; never change acceptance or approve/merge.
+
+Codex inspected full live review/thread/Issue history and exact-head checks.
+Important corrected assumption: TV5 had already re-reviewed and resolved its
+own repaired same-file thread; its latest requested changes concern NFR.
+Created Issue #84, sole assignee duyanhtr130905, with unchecked human acceptance
+and an explicit owner-decision request. Connector write was denied by GitHub;
+existing authenticated local GitHub access completed the authorized action.
+
+Measurement: original browser script 3x200 at c2f5f30 and 3x200 with original
+4eb31d3 production source via the existing baseline override; same workload,
+browser/hardware/pool10/10 warmups/retries0; all 1200 raw samples published in
+Issue #84. Separate external timing-only diagnostic and unchanged Node 5x200
+campaign. No valid slow sample discarded. Initial missing-browser-profile
+setup failure retained; selected the installed pinned browser for rerun.
+
+Rejected conclusions: one sub-5s round establishes reproducible acceptance;
+pre-fix timing differences prove a production regression; Playwright click
+time is controller-only Undo CPU time; Node timings prove browser/GPU/real-user
+capacity; GPT/Codex can authorize an NFR waiver. No production optimization,
+new test assertion, relaxed threshold/timeout, dependency or config change.
+
+Documentation records NFR NOT_MET / real-user NOT_VERIFIED and separates
+functional, reviewer, NFR and workflow gates. Shared-harness sign-off,
+independent human acceptance and an actual authorized NFR decision remain
+external requirements. Submission artifacts and historical RED/GREEN/results
+were preserved. Actual verification/final revision belongs to the current
+PR follow-up and session report; no unrun check is implied by this log.

@@ -4,6 +4,18 @@
 
 # VT121 traceability — schema v2
 
+## 05/11/2026 current acceptance tracking
+
+[Issue #84](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/84), sole
+assignee `duyanhtr130905`, tracks PR #81's individual BTCN3 / VT-121 delivery.
+No earlier dedicated Issue was found; this restores traceability without
+rewriting branch/history or claiming retrospective Issue-first compliance.
+AC1–AC5 have functional evidence; human acceptance boxes remain open. Original
+200-task/user p95<=5s remains unwaived. Three new unchanged-harness HEAD rounds:
+5.1555662 / 4.8035604 / 5.1543228s, 0/600 errors: NFR NOT_MET, real 200 users
+NOT_VERIFIED. [Current protocol/results/owner-decision gate](VT121-acceptance-2026-11-05.md).
+All prior rows below are historical evidence, not current acceptance.
+
 Commit key: baseline cached-dev2389f0f550b33899801e1ab07c6312baea0c9faf; REDbfd124749412e93d32b4048d0fd6173bb4f58cb9; featureGREENe808d70a792ffb377c8b310f8f9e0bb441ba5dc0. Verification configuration follow-up: e7b72e7 (full SHA recorded in final handoff). Latest dev integrated; see publication verification below. Historical v1 results are separate, never substituted for v2.
 
 | AC/risk | Case IDs | Actual test file | Commit | Result | Evidence |

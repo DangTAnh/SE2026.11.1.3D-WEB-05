@@ -1,5 +1,23 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 05/11/2026 — PR #81 / VT-121 acceptance follow-up
+
+- [Issue #84](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/84), sole
+  assignee TV4 `duyanhtr130905`, now tracks AC1–AC5, original NFR and the
+  missing owner decision. Existing public branch/history and submission retained.
+- Unchanged implementation `c2f5f30`, live dev `8f7c3ee`: three unchanged
+  200-job/pool10 browser rounds, queue-inclusive p95 5.1555662 / 4.8035604 /
+  5.1543228s, 0/600 errors. **NFR NOT_MET; real 200 users NOT_VERIFIED.**
+  Pre-same-file-fix comparison and diagnostic phase profile do not establish
+  a production bottleneck; no speculative source optimization.
+- TV5 has confirmed the same-file fix and resolved its own P2 thread. TV1
+  APPROVED; TV3/TV5 CHANGES_REQUESTED for NFR. Explicit shared-harness owner
+  disposition and independent human acceptance remain separate requirements.
+- [Protocol, all-round statistics, public raw evidence and remaining gates](04-testing/VT121-acceptance-2026-11-05.md).
+  Normal verify excludes `@evidence`; CI success cannot close NFR acceptance.
+- **BLOCKED — OWNER NFR DECISION REQUIRED.** No acceptance change, self-approval,
+  merge, Issue closure, engine/schema/dependency edit, deployment or release.
+
 ## 31/10/2026 — Issue #79 cached GPU timestamp fix candidate
 
 - Branch `fix/79-cached-gpu-timestamps` starts from merged #78 at

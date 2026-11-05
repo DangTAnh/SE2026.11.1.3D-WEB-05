@@ -64,6 +64,12 @@ Record failures, retries and limitations; do not describe an unrun check as
 passed. `?webgl=1` must be checked after a real adapter/composition root exists;
 the current no-port UI and test harness do not prove GPU fallback.
 
+`test:e2e` excludes tests tagged `@evidence`, so `verify` does too. VT-121's
+explicit load campaign (`vt121-load.spec.ts`) is not a mandatory CI latency
+gate: its exit status checks completion/errors, not the 5-second NFR. Run and
+evaluate its raw latency results separately for acceptance; green CI does not
+waive unmet or unverified NFRs. See the [VT-121 protocol and current evidence](docs/04-testing/VT121-acceptance-2026-11-05.md).
+
 ## Commits and pull requests
 
 - Write small English Conventional Commits, for example
