@@ -7,8 +7,9 @@ Individual BTCN3 deliverable. **Do not merge without team review.**
 | Student | Đỗ Minh Đức — 23001864 |
 | Variant | VT-123 |
 | Team / project | SE2026-T30 / 3D-WEB-05 |
-| Repository | https://github.com/justcoffeee/SE2026.11.1.3D-WEB-05 |
+| Repository | https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05 |
 | Issue | [#85](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/85) |
+| Pull request | [#86](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/86) — **draft, do not merge** |
 | Branch | `feat/85-reviewer-role` |
 | Baseline | `dev@8f7c3eeb74c7a9501332b265fa16a6aa552aa2b3` |
 | Change request | Add a reviewer role that can read and approve but must not modify the original data. |
