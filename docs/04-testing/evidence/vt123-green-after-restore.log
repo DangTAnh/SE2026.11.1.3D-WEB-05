@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 D:/subjects/SE
+
+
+ Test Files  1 passed (1)
+      Tests  18 passed (18)
+   Start at  18:59:43
+   Duration  295ms (import 42%, transform 42%, tests 14%, worker 2%)
+
