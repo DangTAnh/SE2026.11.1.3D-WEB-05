@@ -34,3 +34,13 @@ reporting, not a new benchmark measurement or physical GPU failure. Full local
 E2E, new benchmark measurements, physical-GPU parity, deployment and release
 acceptance are NOT_RUN in this fix. Remote CI and owner review are recorded in
 the fix PR. Release #70 remains blocked until the fix lands and is re-reviewed.
+
+## 05/11/2026 — observer cancellation follow-up
+
+TV3 reproduced a sample emitted after onStatus synchronously stopped/disposed
+the collector. Both new regressions FAIL on 5c0d442 (one sample, expected zero).
+Re-checking the active generation after the callback discards cancelled captures,
+including an obsolete generation if the observer restarts. The tests wait for
+the observer after asynchronous hashing, then assert zero samples/errors/timers
+and retained caller ownership. The benchmark's throwing-observer error path is
+still covered by its existing backend-loss regressions.

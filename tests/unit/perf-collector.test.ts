@@ -32,6 +32,37 @@ function createSampleRecorder() {
   };
 }
 
+test.each(['stop', 'dispose'] as const)('onStatus can %s collection without emitting a cancelled sample', async action => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({ actual: 'webgl2', running: true, fps: 60 });
+  const onSample = vi.fn();
+  const onError = vi.fn();
+  const onStatus = vi.fn(() => collector[action]());
+  const collector = new PerformanceCollector(port, {
+    warmUpMs: 0,
+    cadenceMs: 100,
+    getConfig: () => DEFAULT_CONFIG,
+    onStatus,
+    onSample,
+    onError,
+  });
+
+  try {
+    collector.start();
+    await vi.advanceTimersByTimeAsync(0);
+    // Wait for the observer, not merely a timer: configHash is asynchronous.
+    await vi.waitFor(() => assert.equal(onStatus.mock.calls.length, 1));
+    assert.equal(onSample.mock.calls.length, 0);
+    assert.equal(onError.mock.calls.length, 0);
+    assert.equal(vi.getTimerCount(), 0);
+    await vi.advanceTimersByTimeAsync(1000);
+    assert.equal(onSample.mock.calls.length, 0);
+    assert.equal(port.disposed, false, 'port remains caller-owned');
+  } finally {
+    collector.dispose();
+  }
+});
+
 test('samples the actual backend after warm-up at a fixed cadence', async () => {
   vi.useFakeTimers();
   const port = new FakeRenderer({

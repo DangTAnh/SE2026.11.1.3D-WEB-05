@@ -97,6 +97,8 @@ export class PerformanceCollector {
 
       const status = this.port.getStatus();
       this.options.onStatus?.(status);
+      // Observers may synchronously stop, dispose or restart this collection.
+      if (!this.#isActive(generation)) return;
       if (!status.running) return;
 
       // Enforce INV-1 even if a RendererPort implementation returns an
