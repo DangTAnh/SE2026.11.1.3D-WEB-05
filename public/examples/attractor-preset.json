@@ -1,13 +1,37 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "app": "3D-WEB-05",
   "config": {
     "mode": "attractor",
     "backendPreference": "auto",
-    "particleCount": 20000,
-    "speed": 1.2,
-    "particleSize": 2.5,
-    "particleColor": "#6ce6ff",
-    "strength": 1.5
+    "simulation": {
+      "particleCount": 65536,
+      "spawnRadius": 10,
+      "particleSize": 2.5,
+      "lifetime": 6,
+      "speed": 1.2
+    },
+    "modes": {
+      "attractor": {
+        "attractorStrength": 1.5,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98
+      },
+      "vortex": {
+        "vortexStrength": 1.5,
+        "vortexDamping": 0.99
+      }
+    },
+    "rendering": {
+      "backgroundColor": "#07111f",
+      "particleColor": "#6ce6ff",
+      "opacity": 1,
+      "additiveBlend": false
+    },
+    "camera": {
+      "enabled": true,
+      "autoRotate": false,
+      "distance": 30
+    }
   }
 }

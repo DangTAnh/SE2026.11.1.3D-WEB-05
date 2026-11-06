@@ -1,0 +1,108 @@
+# Live RendererStatus UI — issue #14, 24/10/2026
+
+## Current integration — 25/10/2026
+
+Local verification on the integration candidate: `npm run typecheck`,
+`npm run typecheck:tests` and `CI=1 npm run verify` PASS. The combined run passed
+134/134 unit/integration tests, 38 desktop/mobile Chromium E2E and production
+build, with exactly two WebGPU E2E SKIPPED (no adapter). This includes the real
+Three r186.1 failed-init cleanup regression imported unchanged from dev.
+No test failure occurred in this run. Vite's existing >500 kB chunk warning
+remains non-fatal. Remote CI must independently pass the pushed head.
+
+Merged `origin/dev@04f1522` (#40) into the existing #33 branch without rebase
+or force-push. The only conflict was PROJECT_STATUS; both historical checkpoint
+sets are retained below a new current summary. Backend, composition and main
+match dev exactly. No TV1/TV2/TV3 source contract was changed.
+
+`prepareLabUI` now projects INITIALIZING while composition waits for init.
+Simulation controls are disabled, backend identity is pending and measurements
+are null. Mounting an initialized/missing/failing port then shows the matching
+live, unsupported or error state. A deferred-init Promise test covers transition
+to ready; the rest of the fixture suite covers failure and recovery.
+
+Production `/?webgl=1` is tested on the actual application canvas: backend WebGL2,
+live numeric FPS, pause clears FPS/timing and resume restores live FPS. Separate
+backend E2E checks supported timestamp values/unavailable behavior. These tests
+are distinct from FakeRenderer projection tests. Chromium software rendering is
+not evidence of physical WebGPU, numeric parity or a fair two-backend benchmark.
+
+The prior draft dependency on an unimplemented adapter is resolved by #39/#40.
+The updated #33 candidate must pass verify/CI and obtain fresh TV1 review before
+any merge; an old approval is not approval of a new head. Full WebGPU acceptance
+and the measurement-age contract remain separate, unresolved evidence limits.
+
+## Historical evidence (the draft gates below describe their original heads)
+
+Branch: `feat/14-ui-live-status`, following `type/<issue-number>-slug`.
+Initial baseline: PR #32, commit `ed914c0b5831e4e4cb67058aee014662bb9df684`.
+PR #32 merged into dev at `1c466d2b164ed9731bea9dacc125f23f0385fda1`;
+PR #33 targets dev. After #38 merged, this branch merged `dev@de6665a` and
+resolved the fixture conflict by keeping `composeLab` plus controlled status
+transitions. On 25/10 it integrated `dev@140eb41` with the real adapter from
+#39. The initial #32 baseline below is historical.
+
+## Completed UI work
+
+- Removed synthetic runtime backend values, fixture key types, query parsers and
+  preview-FPS helpers from source; removed URL-driven state from browser tests.
+- RendererStatus.actual remains the only backend identity. Requested preference
+  explains automatic fallback; it never replaces actual in the backend card.
+- Finite FPS values and strictly positive GPU timing are displayed only with
+  appropriate availability. Unavailable/invalid timing and measurements retained
+  while paused are hidden. Zero timing remains unavailable even if a producer
+  incorrectly marks it available; tiny positive values show `<0.01 ms`.
+- Existing polling now has regression coverage for ready → fallback →
+  unavailable → error → recovery and clearing old metrics/notices.
+- Tests use an explicit controlled FakeRenderer with no production query path.
+  The fake's status mutator lets `start()`/`pause()`/`dispose()` remain authoritative.
+  Shared RendererPort, collector, preset v1 and physics are unchanged; current
+  `main.ts` now comes from the #39 adapter integration.
+
+## Verification
+
+`npm run verify` after integrating #38: **119 unit/integration tests**,
+**30 desktop/mobile Chromium E2E**,
+source/test typecheck and production build PASS.
+The browser suite includes axe WCAG A/AA checks for all four runtime phases.
+TV1's requested changes on #33 led to valid-FPS detail, authoritative fake
+status mutation, and current docs. TV1 approved head `03367331`. The old query
+parser is absent from production source; one E2E deliberately passes
+`?uiState=ready-webgpu` to verify that production ignores it.
+
+On 25/10 after integrating `dev@140eb41`: `npm run typecheck` and
+`npm run build` passed, `npm test` passed 119/119, and the Chromium E2E suite
+passed 32 with 2 WebGPU skips (desktop/mobile) when run with one worker.
+The production checks observed the initialized WebGL2 backend on this machine,
+including `?webgl=1`; these checks do not prove WebGPU or GPU parity.
+
+On the later TV4 timing-projection follow-up, source/test typechecks, the
+production build and 120/120 unit/integration tests passed. The desktop/mobile
+Chromium E2E suite passed 32 with 2 WebGPU skips. The added FakeRenderer case
+rejects zero timing despite an incorrect availability flag; the unit suite also
+checks a small positive value is not displayed as zero. These tests validate UI
+projection, not a hardware GPU timestamp result.
+
+## Remaining integration gate
+
+This is a draft UI candidate, not closure of #14. #32/#9/#25, composition root
+#15 and adapter #12 are merged. Real WebGL2 initialization has been exercised
+in Chromium; WebGPU is unavailable in this browser environment. GPU parity,
+timing acceptance and the two-backend benchmark are NOT_RUN. At the original
+#33 checkpoint, RendererStatus had no measurement-age field, so UI could not
+independently detect stale timing while `running` stayed true. Issue #53 now
+proposes monotonic `measurementAgeMs`, a 2-second freshness limit, and clearing
+timing on pause/reset. TV1 review remains required; real hardware timing
+freshness is unverified.
+
+PR #33 targets dev; CI checks the final candidate head.
+Exercise the same UI with actual WebGPU and WebGL2, forced fallback and
+unavailable/error paths before marking #14 accepted. No default branch,
+release, deployment or shared preset/configHash decision is changed here.
+
+## Other TV4 work
+
+#16 (preset v2 adoption) remains blocked on the configHash field-set decision
+owned by TV1 and the public Vortex parameter/default mapping with TV2/TV3.
+The current v2 schema contains vortexStrength only, while reference kernels
+use vortexDamping too. No speculative schema/type migration was introduced.
