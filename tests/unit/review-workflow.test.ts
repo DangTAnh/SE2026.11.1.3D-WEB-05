@@ -58,7 +58,7 @@ function gatedHasher(): {
   hash: ContentHasher;
   gates: Gate[];
   gate: () => void;
-  release: (gate: Gate) => void;
+  release: (gate: Gate, digest?: string) => void;
 } {
   let gated = false;
   const gates: Gate[] = [];
@@ -72,7 +72,9 @@ function gatedHasher(): {
     hash,
     gates,
     gate: () => { gated = true; },
-    release: (gate) => { gate.resolve(`fnv1a-${fnv1a(gate.canonical)}`); },
+    release: (gate, digest) => {
+      gate.resolve(digest ?? `fnv1a-${fnv1a(gate.canonical)}`);
+    },
   };
 }
 
@@ -381,4 +383,24 @@ test('[T18] two boards do not share review state', async () => {
   expect(boardA.read()!.status).toBe('approved');
   expect(boardB.read()!.status).toBe('pending');
   expect(boardB.read()!.reviewedBy).toBeNull();
+});
+
+test('[T19] a post-await digest mismatch is refused as content-changed', async () => {
+  const gated = gatedHasher();
+  const board = new PresetReviewBoard({ hash: gated.hash });
+  const document = documentFor(100, 'digest-mismatch');
+  await board.submit(editor, document, 0);
+  const pending = board.read()!;
+
+  gated.gate();
+  const attempt = board.approve(reviewer, pending.version, pending.contentHash);
+  expect(gated.gates).toHaveLength(1);
+  gated.release(gated.gates[0]!, 'fnv1a-deadbeef');
+
+  await expect(attempt).rejects.toMatchObject({ code: 'content-changed' });
+  expect(board.read()!.status).toBe('pending');
+  expect(board.read()!.reviewedBy).toBeNull();
+  expect(board.read()!.contentHash).toBe(pending.contentHash);
+  expect(serializePresetDocument(board.read()!.document as PresetDocument))
+    .toBe(serializePresetDocument(document));
 });
