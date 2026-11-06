@@ -1,5 +1,18 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 04/11/2026 — Issue #82 benchmark backend-loss fix candidate
+
+- PR #70 change request reproduced on dev@8f7c3ee: stopped/unavailable backend
+  leaves benchmark pending. Two regressions FAIL before the fix and PASS after.
+- Optional collector status observation lets the benchmark reject unavailable
+  or replaced backends before paused snapshots are skipped. Sampling timers are
+  disposed; caller-owned adapter cleanup runs. Available pause/resume remains.
+- Both typechecks/build and 270 tests PASS; production WebGL2 context-loss smoke
+  2/2 desktop/mobile PASS, retries=0. Full local E2E/new measurements NOT_RUN.
+- [Evidence and limits](04-testing/benchmark-backend-loss-2026-11-04.md).
+  This is a candidate into dev; #70 still needs integration, final CI/re-review
+  and independent release approval. No deployment, tag or release acceptance.
+
 ## 31/10/2026 — Issue #79 cached GPU timestamp fix candidate
 
 - Branch `fix/79-cached-gpu-timestamps` starts from merged #78 at

@@ -1,5 +1,5 @@
 import type { PerformanceSnapshot } from '../core/types/measurement.ts';
-import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererPort } from '../core/renderer/RendererPort.ts';
+import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererPort, type RendererStatus } from '../core/renderer/RendererPort.ts';
 import { configHash } from '../core/measurement/configHash.ts';
 import type { LabConfig } from '../presets/preset.ts';
 
@@ -11,6 +11,8 @@ export interface PerformanceCollectorOptions {
   /** Returns the effective config at the time each sample is taken. */
   readonly getConfig: () => Readonly<LabConfig>;
   readonly onSample: (snapshot: PerformanceSnapshot) => void;
+  /** Observes status before paused snapshots are skipped; errors reach onError. */
+  readonly onStatus?: (status: Readonly<RendererStatus>) => void;
   /** Receives config/status/callback errors; defaults to `console.error`. */
   readonly onError?: (error: unknown) => void;
 }
@@ -94,6 +96,9 @@ export class PerformanceCollector {
       if (!this.#isActive(generation)) return;
 
       const status = this.port.getStatus();
+      this.options.onStatus?.(status);
+      // Observers may synchronously stop, dispose or restart this collection.
+      if (!this.#isActive(generation)) return;
       if (!status.running) return;
 
       // Enforce INV-1 even if a RendererPort implementation returns an

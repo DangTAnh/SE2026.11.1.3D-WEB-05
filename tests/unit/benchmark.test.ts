@@ -17,6 +17,54 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+test.each(['webgl2', 'webgpu'] as const)('collect: %s backend loss rejects and releases caller cleanup', async actual => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({ actual, running: true, fps: 60 });
+  let outcome = 'pending';
+  let failure: unknown;
+  const run = collectBenchmarkSamples(port, () => DEFAULT_CONFIG,
+    { warmUpMs: 0, cadenceMs: 100, sampleCount: 100 })
+    .then(() => { outcome = 'resolved'; }, error => { outcome = 'rejected'; failure = error; })
+    .finally(() => port.dispose());
+  await vi.advanceTimersByTimeAsync(200);
+  await vi.waitFor(() => assert.ok(port.calls.some(call => call.type === 'getStatus')));
+  port.setStatus({ actual: 'unavailable', running: false, fps: null,
+    gpuTimingAvailable: false, gpuTimeMs: null, measurementAgeMs: null });
+  await vi.advanceTimersByTimeAsync(60_000);
+  assert.equal(outcome, 'rejected');
+  await run;
+  assert.match(String(failure), /backend became unavailable/);
+  assert.equal(vi.getTimerCount(), 0);
+  assert.equal(port.disposed, true, 'caller finally executes');
+});
+
+test('collect: an initially unavailable backend rejects even during stopped status', async () => {
+  const port = new FakeRenderer({ actual: 'unavailable', running: false });
+  await assert.rejects(collectBenchmarkSamples(port, () => DEFAULT_CONFIG,
+    { warmUpMs: 0, cadenceMs: 5, sampleCount: 2 }), /backend became unavailable/);
+  assert.equal(port.disposed, false, 'benchmark does not dispose caller port');
+});
+
+test('collect: a paused available backend can resume without fabricated samples', async () => {
+  const port = new FakeRenderer({ actual: 'webgl2', running: false, fps: 60 });
+  const run = collectBenchmarkSamples(port, () => DEFAULT_CONFIG,
+    { warmUpMs: 0, cadenceMs: 5, sampleCount: 2 });
+  await vi.waitFor(() => assert.ok(port.calls.some(call => call.type === 'getStatus')));
+  port.setStatus({ running: true });
+  const samples = await run;
+  assert.equal(samples.length, 2);
+  assert.ok(samples.every(sample => sample.actual === 'webgl2'));
+});
+
+test('collect: backend replacement rejects instead of mixing benchmark rows', async () => {
+  const port = new FakeRenderer({ actual: 'webgpu', running: true, fps: 60 });
+  const getStatus = port.getStatus.bind(port);
+  let reads = 0;
+  port.getStatus = () => { if (++reads === 2) port.setStatus({ actual: 'webgl2' }); return getStatus(); };
+  await assert.rejects(collectBenchmarkSamples(port, () => DEFAULT_CONFIG,
+    { warmUpMs: 0, cadenceMs: 5, sampleCount: 3 }), /actual backend changed/);
+});
+
 const ENVIRONMENT: BenchmarkEnvironment = {
   browser: 'Chromium',
   browserVersion: '141',
