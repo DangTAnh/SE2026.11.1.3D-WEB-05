@@ -124,18 +124,50 @@ record the pass rate. The two named flaky risks are controlled explicitly:
 - **Time and random data.** No `setTimeout` in assertions, no random data and no wall-clock
   threshold in unit tests; the hasher is injected and deterministic.
 
-## 4. Traceability to acceptance criteria
+## 4. Traceability
 
-| AC | Tests |
-|---|---|
-| AC1 — reviewer permissions | T01, T02, T03, T04, T14 |
-| AC2 — original data unchanged | T03, T04, T05, T17 |
-| AC3 — concurrency / no lost update | T08, T09, T10, T15 |
-| AC4 — exact revision approval | T06, T07, T09, T19 |
-| AC5 — atomic failure / double review | T11, T12, T13 |
-| NFR1 — p95 ≤ 1500 ms at 40 tasks | T15 |
-| NFR2 — no lost updates | T08, T15 |
-| NFR3 — deterministic, repeatable | P16 (procedure) |
+### 4.1 Acceptance criteria / risk → test → commit → measured result
+
+`Commit` is the commit that introduced the test. Results are the measured values
+from the evidence logs in §4.2; a PASS is not a production or GPU claim.
+
+| AC / risk | Test | Test file | Commit | Measured result |
+|---|---|---|---|---|
+| AC1 / R3 — reviewer cannot submit | T01 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS in 17/17 suite; 30/30 repeats |
+| AC1 / R3 — editor cannot approve | T02 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS in 17/17 suite; 30/30 repeats |
+| AC1–AC2 / R2 — approve preserves document/hash/version | T03 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; document, contentHash and version unchanged |
+| AC1–AC2 / R2 — reject preserves document/hash/version | T04 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; only review metadata changed |
+| AC2 / R2 — read/input cannot mutate stored content | T05 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; frozen snapshot and caller mutation isolated |
+| AC4 / R4 — wrong presented content hash | T06 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; `content-changed`, board unchanged |
+| AC4 / R1–R4 — stale approval after newer submission | T07 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; mutant survivor via pre-await version check |
+| AC3 / R1 — two concurrent submissions | T08 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS in both winner orders; one `stale-version` |
+| AC3 / R1 — two concurrent approvals | T09 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; mutant survivor via post-await status check |
+| AC3 / R1 — concurrent submit + approve | T10 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; mutant killer (`expected 'approved' to be 'pending'`) |
+| AC5 / R5 — invalid document at the module boundary | T11 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; board unchanged |
+| AC5 / R5 — hasher failure is atomic | T12 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; rejection propagates, board unchanged |
+| AC5 / R3 — double review | T13 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; second call `not-reviewable` |
+| AC1 / R3 — review with no revision | T14 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; `not-reviewable`, board `null` |
+| NFR1–NFR2 / R1 — 40 tasks, p95, no lost updates | T15 | `tests/load/review-load.test.ts` | `a5a770d` | PASS 10/10; p95 1037.167–1109.063 ms; finalVersion 40 |
+| AC2 / R2 — identity covers the whole document | T17 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; different contentHash; `content-changed` |
+| R7 — independent boards | T18 | `tests/unit/review-workflow.test.ts` | `a5a770d` | PASS; second board untouched |
+| AC4 / R4 — post-await digest mismatch | T19 | `tests/unit/review-workflow.test.ts` | `b649b3f` | PASS 1/1 alone and 17/17 suite; mutant killer (resolved instead of rejecting) |
+
+NFR3 is a procedure, not a test: P16 is recorded in §3 and executed by
+[05-flakiness.log](evidence/reviewer-concurrency-2026-11-06/05-flakiness.log)
+(30/30 runs, 17/17 each).
+
+### 4.2 Evidence artifacts
+
+| Evidence | File | Commit | Measured result |
+|---|---|---|---|
+| RED | [`01-fail.log`](evidence/reviewer-concurrency-2026-11-06/01-fail.log) | `d151016` | 11 assertion failures, no import/module errors; load `finalVersion: 1` |
+| GREEN | [`02-pass.log`](evidence/reviewer-concurrency-2026-11-06/02-pass.log) | `9264d7f` | 16/16 unit; p95 1009.037 ms; finalVersion 40; 281/281 full suite; build pass |
+| Mutation | [`03-mutation.log`](evidence/reviewer-concurrency-2026-11-06/03-mutation.log) + [`mutation-remove-post-await-recheck.patch`](evidence/reviewer-concurrency-2026-11-06/mutation-remove-post-await-recheck.patch) | `ee8e25e`, `0822e15` | Pre-T19: 1 failed (T10) / 15 passed; post-T19: 2 failed (T10, T19) / 15 passed; mutant killed |
+| Coverage | [`04-coverage.log`](evidence/reviewer-concurrency-2026-11-06/04-coverage.log) | `c420291` | 98.03% statements, 97.22% branches, 100% functions, 98% lines; line 176 only |
+| Flakiness | [`05-flakiness.log`](evidence/reviewer-concurrency-2026-11-06/05-flakiness.log) | `c420291` | 30/30 runs; 17/17 each; 100% pass rate |
+| Load repeat | [`06-load-repeat.log`](evidence/reviewer-concurrency-2026-11-06/06-load-repeat.log) | `c420291` | 10/10 runs; p95 1037.167–1109.063 ms; finalVersion 40 |
+| Coverage dependency | `package.json`, `package-lock.json` | `8160226` | `@vitest/coverage-v8@5.0.3` devDependency only; runtime deps unchanged |
+| Runbook | [`docs/04-testing/README.md`](README.md) | `575de35` | Commands for unit, load, coverage and mutation checks |
 
 ## 5. What the tests cannot prove
 
