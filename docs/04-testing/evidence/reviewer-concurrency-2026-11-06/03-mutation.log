@@ -143,3 +143,131 @@ Expected: the unit run exits 1 with T10 failing and the other 15 tests passing.
 
 These explanations describe the code path; the measured claim is only the raw
 test output above: 1 failed (T10) | 15 passed.
+
+## Re-run after T19 (temp branch bt3-mutation-check, current HEAD b649b3f)
+# Command: npx vitest run tests/unit/review-workflow.test.ts --reporter=verbose
+
+
+ RUN  v5.0.3 D:/subjects/SE
+
+ ✓ tests/unit/review-workflow.test.ts > [T01] a reviewer cannot submit preset content 17ms
+ ✓ tests/unit/review-workflow.test.ts > [T02] an editor cannot approve 3ms
+ ✓ tests/unit/review-workflow.test.ts > [T03] a reviewer approves the exact revision without changing content 17ms
+ ✓ tests/unit/review-workflow.test.ts > [T04] a reviewer rejects without changing content 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T05] read and input cannot mutate stored content 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T06] approval with a wrong content hash changes nothing 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T07] a stale approval after a newer submission is rejected 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T08] two concurrent submissions from the same base have one winner 4ms
+ ✓ tests/unit/review-workflow.test.ts > [T09] two concurrent approvals leave exactly one review 2ms
+ × tests/unit/review-workflow.test.ts > [T10] a concurrent submit and approval leave a consistent revision 9ms
+   → expected 'approved' to be 'pending' // Object.is equality
+ ✓ tests/unit/review-workflow.test.ts > [T11] invalid documents fail at the module boundary without writing 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T12] a failed digest leaves the board unchanged 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T13] a second review of the same revision is refused 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T14] reviewing an empty board is refused 0ms
+ ✓ tests/unit/review-workflow.test.ts > [T17] the review hash covers fields that configHash ignores 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T18] two boards do not share review state 1ms
+ × tests/unit/review-workflow.test.ts > [T19] a post-await digest mismatch is refused as content-changed 10ms
+   → promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T10] a concurrent submit and approval leave a consistent revision
+AssertionError: expected 'approved' to be 'pending' // Object.is equality
+
+Expected: "pending"
+Received: "approved"
+
+ ❯ tests/unit/review-workflow.test.ts:271:26
+    269|     const expected = serializePresetDocument(documentFor(41, 'v2'));
+    270|     expect(final.version).toBe(2);
+    271|     expect(final.status).toBe('pending');
+       |                          ^
+    272|     expect(serializePresetDocument(final.document as PresetDocument)).…
+    273|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T19] a post-await digest mismatch is refused as content-changed
+AssertionError: promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-1ead4203",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "auto",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#6ce6ff",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 101000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "digest-mismatch",
++     "schemaVersion": 2,
++   },
++   "reviewNote": null,
++   "reviewedBy": "reviewer-bao",
++   "status": "approved",
++   "submittedBy": "editor-ana",
++   "version": 1,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:400:23
+    398|   gated.release(gated.gates[0]!, 'fnv1a-deadbeef');
+    399|
+    400|   await expect(attempt).rejects.toMatchObject({ code: 'content-changed…
+       |                       ^
+    401|   expect(board.read()!.status).toBe('pending');
+    402|   expect(board.read()!.reviewedBy).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 15 passed (17)
+   Start at  16:42:07
+   Duration  1.30s (transform 53%, import 37%, tests 9%, worker 1%)
+
+EXIT=1
+
+## Mutation re-run after T19 (from the raw output above)
+
+- Unit suite: 2 failed | 15 passed (17), EXIT=1.
+- Killers: T10 (same `expected 'approved' to be 'pending'` assertion) and T19
+  (`promise resolved ... instead of rejecting`).
+- The earlier "killed only by T10" statement describes the pre-T19 suite and
+  remains the recorded result for that run. With T19 added, the mutant is still
+  killed, now by T10 and T19; T19 is an additional killer, not a replacement.
+- T07 and T09 still pass, for the same reasons recorded above: T07 is stopped
+  by the pre-await version check, and T09 by the post-await status check.
