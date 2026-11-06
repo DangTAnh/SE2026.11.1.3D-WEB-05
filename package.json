@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:load": "vitest run --config vitest.load.config.ts",
     "test:e2e": "playwright test --grep-invert @evidence",
     "test:a11y": "playwright test --grep @a11y",
     "evidence:screenshots": "playwright test --grep @evidence",
