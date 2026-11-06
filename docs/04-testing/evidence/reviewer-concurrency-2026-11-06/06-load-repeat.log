@@ -1,0 +1,49 @@
+# BT3 VT-123 - repeated load / p95 evidence
+# Date: 2026-11-06
+# Command: repeated npm run test:load -- --reporter=dot
+# Runs: 10
+
+run 1: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":519.692,"p95Ms":1057.668,"maxMs":1118.929,"minMs":17.161,"wallMs":1123.282,"finalVersion":40,"committedSubmissions":40}
+run 2: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":513.74,"p95Ms":1037.167,"maxMs":1111.869,"minMs":9.873,"wallMs":1115.446,"finalVersion":40,"committedSubmissions":40}
+run 3: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":547.068,"p95Ms":1082.76,"maxMs":1143.85,"minMs":9.092,"wallMs":1147.416,"finalVersion":40,"committedSubmissions":40}
+run 4: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":512.437,"p95Ms":1063.085,"maxMs":1107.625,"minMs":6.762,"wallMs":1111.467,"finalVersion":40,"committedSubmissions":40}
+run 5: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":488.135,"p95Ms":1037.492,"maxMs":1098.098,"minMs":7.231,"wallMs":1102.066,"finalVersion":40,"committedSubmissions":40}
+run 6: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":560.687,"p95Ms":1109.063,"maxMs":1185.267,"minMs":11.61,"wallMs":1189.042,"finalVersion":40,"committedSubmissions":40}
+run 7: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":568.202,"p95Ms":1103.536,"maxMs":1165.516,"minMs":17.387,"wallMs":1169.172,"finalVersion":40,"committedSubmissions":40}
+run 8: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":574.867,"p95Ms":1108.321,"maxMs":1153.777,"minMs":11.944,"wallMs":1157.624,"finalVersion":40,"committedSubmissions":40}
+run 9: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":568.053,"p95Ms":1094.394,"maxMs":1156.76,"minMs":17.766,"wallMs":1161.04,"finalVersion":40,"committedSubmissions":40}
+run 10: exit=0 | VT123_LOAD_RESULT {"tasks":40,"p50Ms":563.076,"p95Ms":1099.94,"maxMs":1177.101,"minMs":10.926,"wallMs":1181.247,"finalVersion":40,"committedSubmissions":40}
+
+p95 samples (ms), ascending:
+1037.167 1037.492 1057.668 1063.085 1082.76 1094.394 1099.94 1103.536 1108.321 1109.063 
+count=10 min=1037.167 max=1109.063 mean=1079.343 spread=71.896
+
+## Summary (from the raw lines above)
+
+- Runs: 10; all exited 0; every run reported `finalVersion: 40` and
+  `committedSubmissions: 40`.
+- p95 samples (ms): 1037.167, 1037.492, 1057.668, 1063.085, 1082.760,
+  1094.394, 1099.940, 1103.536, 1108.321, 1109.063.
+- p95 min = 1037.167 ms, max = 1109.063 ms, mean = 1079.343 ms,
+  spread = 71.896 ms.
+- Largest observed p95 is 390.937 ms below 1500 ms (26.1% headroom);
+  smallest observed p95 is 462.833 ms below 1500 ms (30.9% headroom).
+- These values are above the earlier single-run p95 values (1009.037 ms in
+  02-pass.log and 957.856 ms in 03-mutation.log). p50 in this repeat run is
+  488.135–574.867 ms and max is 1098.098–1185.267 ms. The spread is consistent
+  with CAS retry contention: tasks that lose the version race retry, so p95
+  depends on scheduling and on how many retries occur, not only on the fixed
+  simulated store delay.
+- This is an in-process harness, not a server or network measurement. The
+  result is machine- and load-dependent; it is evidence for this machine at
+  this time, not a production p95.
+
+## Decision on the assertion
+
+Keep `p95 <= 1500` as a hard assertion for this dedicated load harness. NFR1
+requires a measured budget, all 10 runs passed with at least 390.937 ms of
+headroom, and this harness is not part of the default unit suite. It is a
+harness budget, not a production SLO. If a slower/noisier CI machine fails it,
+record that environment and the observed p95 rather than silently weakening the
+threshold; moving it to a report-only check would require an explicit decision
+and a documented replacement acceptance criterion.
