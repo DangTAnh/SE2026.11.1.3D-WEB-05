@@ -9,7 +9,8 @@
  * `content-changed`, never a silent overwrite.
  *
  * The board is in-process. A real deployment must persist the conditional
- * write and derive `ReviewActor` from authentication; see spec.md §7.
+ * write and derive `ReviewActor` from authentication; see
+ * docs/01-requirements/reviewer-concurrency-requirements.md §7.
  */
 import {
   parsePresetDocument,

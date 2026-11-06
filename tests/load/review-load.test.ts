@@ -6,8 +6,10 @@
  * revision; a conflict means "read again and retry", never a silent overwrite.
  * A 1 ms delay inside the hasher simulates the store round-trip.
  *
- * p95 rule (stated once in spec.md §4 NFR1): nearest-rank over the 40 sorted
- * latencies, ceil(0.95 × 40) = 38th value, index 37 (zero-based).
+ * p95 rule (stated once in
+ * docs/01-requirements/reviewer-concurrency-requirements.md §4 NFR1):
+ * nearest-rank over the 40 sorted latencies, ceil(0.95 × 40) = 38th value,
+ * index 37 (zero-based).
  */
 import { createHash } from 'node:crypto';
 import { expect, test } from 'vitest';
