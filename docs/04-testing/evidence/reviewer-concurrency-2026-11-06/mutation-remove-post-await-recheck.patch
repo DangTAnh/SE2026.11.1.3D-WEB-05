@@ -1,0 +1,43 @@
+From 6cc420f6e0010e26a29d0c9087e732382e386114 Mon Sep 17 00:00:00 2001
+From: minhhhduc <dominhduc02102005@gmail.com>
+Date: Fri, 6 Nov 2026 14:50:45 +0700
+Subject: [PATCH] test(mutation): remove post-await review re-check
+
+Temporary mutation for Phase 4. Removes the post-await version and
+contentHash comparisons in PresetReviewBoard.#review. Never pushed.
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+---
+ src/presets/review.ts | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/src/presets/review.ts b/src/presets/review.ts
+index baf6ac6..c83d7c7 100644
+--- a/src/presets/review.ts
++++ b/src/presets/review.ts
+@@ -168,19 +168,14 @@ export class PresetReviewBoard {
+       throw new ReviewError('not-reviewable', `revision is already ${target.status}`);
+     }
+ 
+-    const digest = await this.#hash(serializePresetDocument(target.document as PresetDocument));
++    await this.#hash(serializePresetDocument(target.document as PresetDocument));
+ 
+-    // Post-await re-check: this is the window a concurrent write can enter.
++    // MUTATION (temp branch only): the post-await version/contentHash re-check
++    // is deliberately removed. The status check and submit CAS remain.
+     const current = this.#revision;
+     if (current === null) {
+       throw new ReviewError('not-reviewable', 'the revision disappeared during review');
+     }
+-    if (current.version !== target.version) {
+-      throw new ReviewError('stale-version', 'a newer revision was submitted during review');
+-    }
+-    if (current.contentHash !== target.contentHash || digest !== target.contentHash) {
+-      throw new ReviewError('content-changed', 'the revision content changed during review');
+-    }
+     if (current.status !== 'pending') {
+       throw new ReviewError('not-reviewable', `revision is already ${current.status}`);
+     }
+-- 
+2.53.0.windows.2
+

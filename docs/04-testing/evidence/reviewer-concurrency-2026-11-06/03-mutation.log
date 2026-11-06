@@ -1,0 +1,145 @@
+# BT3 VT-123 - Phase 4 mutation evidence
+# Date: 2026-11-06T14:50:53+07:00
+# Branch: bt3-mutation-tmp
+# Mutation commit: 6cc420f6e0010e26a29d0c9087e732382e386114
+# Base patch commit: 9264d7f631495851fd2dac545ff03d2748477e7f
+
+## Mutation diff (9264d7f..HEAD, src/presets/review.ts)
+diff --git a/src/presets/review.ts b/src/presets/review.ts
+index baf6ac6..c83d7c7 100644
+--- a/src/presets/review.ts
++++ b/src/presets/review.ts
+@@ -168,19 +168,14 @@ export class PresetReviewBoard {
+       throw new ReviewError('not-reviewable', `revision is already ${target.status}`);
+     }
+ 
+-    const digest = await this.#hash(serializePresetDocument(target.document as PresetDocument));
++    await this.#hash(serializePresetDocument(target.document as PresetDocument));
+ 
+-    // Post-await re-check: this is the window a concurrent write can enter.
++    // MUTATION (temp branch only): the post-await version/contentHash re-check
++    // is deliberately removed. The status check and submit CAS remain.
+     const current = this.#revision;
+     if (current === null) {
+       throw new ReviewError('not-reviewable', 'the revision disappeared during review');
+     }
+-    if (current.version !== target.version) {
+-      throw new ReviewError('stale-version', 'a newer revision was submitted during review');
+-    }
+-    if (current.contentHash !== target.contentHash || digest !== target.contentHash) {
+-      throw new ReviewError('content-changed', 'the revision content changed during review');
+-    }
+     if (current.status !== 'pending') {
+       throw new ReviewError('not-reviewable', `revision is already ${current.status}`);
+     }
+
+## 1. npx vitest run tests/unit/review-workflow.test.ts --reporter=verbose
+
+ RUN  v5.0.3 D:/subjects/SE
+
+ ✓ tests/unit/review-workflow.test.ts > [T01] a reviewer cannot submit preset content 5ms
+ ✓ tests/unit/review-workflow.test.ts > [T02] an editor cannot approve 3ms
+ ✓ tests/unit/review-workflow.test.ts > [T03] a reviewer approves the exact revision without changing content 6ms
+ ✓ tests/unit/review-workflow.test.ts > [T04] a reviewer rejects without changing content 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T05] read and input cannot mutate stored content 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T06] approval with a wrong content hash changes nothing 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T07] a stale approval after a newer submission is rejected 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T08] two concurrent submissions from the same base have one winner 3ms
+ ✓ tests/unit/review-workflow.test.ts > [T09] two concurrent approvals leave exactly one review 1ms
+ × tests/unit/review-workflow.test.ts > [T10] a concurrent submit and approval leave a consistent revision 10ms
+   → expected 'approved' to be 'pending' // Object.is equality
+ ✓ tests/unit/review-workflow.test.ts > [T11] invalid documents fail at the module boundary without writing 2ms
+ ✓ tests/unit/review-workflow.test.ts > [T12] a failed digest leaves the board unchanged 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T13] a second review of the same revision is refused 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T14] reviewing an empty board is refused 0ms
+ ✓ tests/unit/review-workflow.test.ts > [T17] the review hash covers fields that configHash ignores 1ms
+ ✓ tests/unit/review-workflow.test.ts > [T18] two boards do not share review state 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T10] a concurrent submit and approval leave a consistent revision
+AssertionError: expected 'approved' to be 'pending' // Object.is equality
+
+Expected: "pending"
+Received: "approved"
+
+ ❯ tests/unit/review-workflow.test.ts:269:26
+    267|     const expected = serializePresetDocument(documentFor(41, 'v2'));
+    268|     expect(final.version).toBe(2);
+    269|     expect(final.status).toBe('pending');
+       |                          ^
+    270|     expect(serializePresetDocument(final.document as PresetDocument)).…
+    271|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  14:50:58
+   Duration  861ms (import 52%, transform 37%, tests 9%, worker 3%)
+
+EXIT=1
+
+## 2. npm run test:load -- --reporter=verbose
+
+> gpu-particle-lab-week1-ui-prototype@0.1.0 test:load
+> vitest run --config vitest.load.config.ts --reporter=verbose
+
+
+ RUN  v5.0.3 D:/subjects/SE
+
+stdout | tests/load/review-load.test.ts > [T15] 40 concurrent review tasks meet the p95 budget with no lost updates
+VT123_LOAD_RESULT {"tasks":40,"p50Ms":492.128,"p95Ms":957.856,"maxMs":1017.968,"minMs":13.5,"wallMs":1025.578,"finalVersion":40,"committedSubmissions":40}
+
+ ✓ tests/load/review-load.test.ts > [T15] 40 concurrent review tasks meet the p95 budget with no lost updates 1041ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  14:51:01
+   Duration  1.63s (tests 75%, import 14%, transform 10%, worker 1%)
+
+EXIT=0
+
+## Reproduction
+
+The mutation is saved as `mutation-remove-post-await-recheck.patch` in this
+folder. It was generated from commit `6cc420f` with:
+
+```sh
+git format-patch -1 6cc420f --stdout \
+  > docs/04-testing/evidence/reviewer-concurrency-2026-11-06/mutation-remove-post-await-recheck.patch
+```
+
+`git apply --check mutation-remove-post-await-recheck.patch` passed on the
+submission tree. To reproduce without keeping the mutant:
+
+```sh
+git switch -c bt3-mutation-repro 9264d7f
+git apply docs/04-testing/evidence/reviewer-concurrency-2026-11-06/mutation-remove-post-await-recheck.patch
+npx vitest run tests/unit/review-workflow.test.ts --reporter=verbose
+git restore src/presets/review.ts
+git switch feat/85-reviewer-concurrency
+git branch -D bt3-mutation-repro
+```
+
+Expected: the unit run exits 1 with T10 failing and the other 15 tests passing.
+
+## Result summary (from the output above)
+
+- Failing test: T10 "a concurrent submit and approval leave a consistent revision".
+  Assertion: expected 'approved' to be 'pending'.
+- Unit suite: 1 failed | 15 passed (16). EXIT=1.
+- Load harness: passed (p95 957.856 ms, final version 40), but it does not
+  restore the safety property; the mutant is rejected on the unit result.
+- Mutant killed: YES — killed **only by T10**. The raw unit output shows T07
+  and T09 passing.
+- T07 still passes because the pre-await `target.version !== version` check
+  rejects the stale approval before the digest/await; the removed post-await
+  checks are never reached on that path.
+- T09 still passes because the post-await `current.status !== 'pending'` check
+  remains; the mutation removes only the post-await version/contentHash
+  comparisons, so the second approval is still refused as `not-reviewable`.
+
+These explanations describe the code path; the measured claim is only the raw
+test output above: 1 failed (T10) | 15 passed.
