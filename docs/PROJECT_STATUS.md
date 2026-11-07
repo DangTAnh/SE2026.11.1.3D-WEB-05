@@ -1,5 +1,22 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
+
+- Baseline dev@f00271e; isolated issue branch. Canonical full-document operation
+  identity, coalesced retries, matching receipt before success, finite attempts.
+- No real service/persistence/auth/UI added: atomic dedupe is a required port
+  contract demonstrated by a test-only ledger, not a durable exactly-once claim.
+- Test-first RED e626654 -> GREEN 184cdd2. Success-on-failed-write mutant is on
+  separate local-only e1142f8, NOT submission ancestry; T04/T13 kill it.
+- Reviewed tests: 297 repository tests PASS, selected module coverage 100%.
+  Three shuffled/reseeded 25-test runs PASS. Five 80-task load rounds PASS,
+  queue/retry-inclusive p95 25.8876..49.6524ms under simulated 1ms service I/O.
+- Completed full verify exit0: both typechecks, 297 units, 76 E2E PASS/12
+  capability SKIP (6.7min, no actual retry/flaky) and build PASS. An earlier
+  interrupted/incomplete session is retained separately, not labelled PASS.
+- [Scope, commands, evidence and limits](04-testing/VT120-README.md).
+  Owner/human review required before merge; no deployment/release claim.
+
 ## 04/11/2026 — Issue #82 benchmark backend-loss fix candidate
 
 - PR #70 change request reproduced on dev@8f7c3ee: stopped/unavailable backend

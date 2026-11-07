@@ -94,6 +94,17 @@ test('VT120-T11 default backoff uses bounded linear waits', async () => {
 test.each([0, 9, NaN])('VT120-T12 rejects invalid attempt budget %s', maxAttempts => {
   expect(() => new PresetPersistenceClient(new Vt120Service(), { maxAttempts })).toThrow();
 });
+test.each([-1, 1001, .5, NaN])('VT120-T12b rejects invalid retry delay %s', delayMs => {
+  expect(() => new PresetPersistenceClient(new Vt120Service(), {delayMs})).toThrow('delayMs');
+});
+test.each(['canonical', 'committed'] as const)('VT120-T08b independently rejects wrong receipt %s', field => {
+  const service = {write: async (request: import('../../src/presets/persistence.ts').SaveRequest) => ({
+    ...request, committed: field === 'committed' ? false : true,
+    canonical: field === 'canonical' ? 'different content' : request.canonical,
+  })};
+  const client = new PresetPersistenceClient(service as never, immediate);
+  return expect(client.save('independent-receipt', document())).rejects.toThrow('receipt');
+});
 test('VT120-T13 property: generated partial-failure traces preserve confirmation and at-most-once', async () => {
   await fc.assert(fc.asyncProperty(
     fc.record({count: fc.integer({min: 1000, max: 500000}), speed: fc.integer({min: 100, max: 3000}), name: fc.string({minLength: 1, maxLength: 30})}),
@@ -104,25 +115,28 @@ test('VT120-T13 property: generated partial-failure traces preserve confirmation
       input.name = data.name; input.config.simulation.particleCount = data.count; input.config.simulation.speed = data.speed / 1000;
       const service = new Vt120Service(() => faults);
       const client = new PresetPersistenceClient(service, {...immediate, maxAttempts});
-      let succeeded = false;
-      try {
-        const receipt = await client.save('property-op', input);
-        succeeded = true;
-        expect(receipt).toEqual(service.ledger.get('property-op'));
-        expect(client.confirmed('property-op')).toEqual(receipt);
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error);
+      // Capture only the operation, never assertion errors inside a retry catch.
+      const outcome = await client.save('property-op', input).then(
+        receipt => ({ok: true as const, receipt}),
+        error => ({ok: false as const, error}),
+      );
+      if (outcome.ok) {
+        expect(outcome.receipt).toEqual(service.ledger.get('property-op'));
+        expect(client.confirmed('property-op')).toEqual(outcome.receipt);
+        expect(service.effects.get('property-op')).toBe(1);
+      } else {
+        expect(outcome.error).toBeInstanceOf(Error);
         expect(client.confirmed('property-op')).toBeUndefined();
       }
       const firstSuccess = faults.findIndex(fault => fault === 'ok');
       const permanent = faults.findIndex(fault => fault === 'permanent');
       const successAt = firstSuccess < 0 ? faults.length : firstSuccess;
       const expectedSuccess = successAt < maxAttempts && (permanent < 0 || permanent > successAt);
-      expect(succeeded).toBe(expectedSuccess);
+      expect(outcome.ok).toBe(expectedSuccess);
       expect(service.calls.length).toBeLessThanOrEqual(maxAttempts);
       expect(service.effects.get('property-op') ?? 0).toBeLessThanOrEqual(1);
       expect(service.calls.every(call => call.canonical === serializePresetDocument(input))).toBe(true);
-    }), {seed: 23001821, numRuns: 200});
+    }), {seed: Number(process.env.VT120_PBT_SEED ?? 23001821), numRuns: 200});
 });
 test('VT120-T14 receipt shape and rejected wait cannot be treated as persisted', async () => {
   const wrong = { write: async () => ({key: 'x', canonical: '', committed: false}) };
