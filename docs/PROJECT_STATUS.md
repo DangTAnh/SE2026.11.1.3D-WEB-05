@@ -10,10 +10,13 @@
   separate local-only e1142f8, NOT submission ancestry; T04/T13 kill it.
 - Reviewed tests: 297 repository tests PASS, selected module coverage 100%.
   Three shuffled/reseeded 25-test runs PASS. Five 80-task load rounds PASS,
-  queue/retry-inclusive p95 25.8876..49.6524ms under simulated 1ms service I/O.
+  common-start queue/retry-inclusive p95 20.9024..48.1686ms under simulated
+  1ms service I/O. Earlier per-task-start rounds are retained as historical.
 - Completed full verify exit0: both typechecks, 297 units, 76 E2E PASS/12
   capability SKIP (6.7min, no actual retry/flaky) and build PASS. An earlier
   interrupted/incomplete session is retained separately, not labelled PASS.
+  Full browser verify preceded final load-clock tightening; final G0/unit/five
+  load runs reverify the follow-up without product-code changes.
 - [Scope, commands, evidence and limits](04-testing/VT120-README.md).
   Owner/human review required before merge; no deployment/release claim.
 

@@ -21,6 +21,8 @@ automatic shrinking. Optional VT120_PBT_SEED changes the recorded seed.
 Load runs separately from normal verify: 80 tasks released at a shared barrier,
 1ms simulated service I/O, half fail-before-commit and half lose first response,
 3 attempts/5ms base delay, p95 = sorted latency index 75, threshold 2500ms.
+All tasks use the SAME barrier-release timestamp, including their initial
+dispatch queue; the clock does not begin only when a task's microtask starts.
 It measures end-to-end per-task validation/retries/confirmation in ONE process.
 No real users, HTTP, disk, DB, network, GPU or deployed service is measured.
 

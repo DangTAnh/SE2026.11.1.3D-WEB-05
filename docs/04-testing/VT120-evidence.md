@@ -32,11 +32,14 @@ worker, local retries=0; no actual retry/flaky entry. The 12 skips are capabilit
 platform skips, not proof of physical WebGPU or GPU parity. Full source/test
 typechecks and build also passed. Existing chunk advisory remains.
 
-Load p95 ms, every run retained: 41.2880, 40.6502, 45.2277, 49.6524,
-25.8876. Range 25.8876..49.6524 ms <2500ms. These are individual campaign
-observations, not a claimed improvement or a real-user service SLO. The first
-load overlapped the final repeat process briefly; all rounds and their raw
-latencies are retained, with no cherry-picking.
+Final common-start load p95 ms, every run retained: 43.7972, 20.9024, 36.0106,
+48.1686, 45.7776. Range 20.9024..48.1686 ms <2500ms. These are individual
+campaign observations, not an improvement or a real-user service SLO. The
+original per-task-start rounds (41.2880, 40.6502, 45.2277, 49.6524, 25.8876ms)
+are retained as load-per-task-start-1..5.json/log. Their first round briefly
+overlapped the final repeat process. The final harness uses the common barrier
+release timestamp, including initial dispatch queue; all five final rounds PASS
+without a competing verification campaign. No workload/threshold relaxation.
 
 The initial mutation worktree had no node_modules junction. An attempted npx
 invocation fetched a temporary newer CLI and failed config loading; that is
@@ -87,7 +90,7 @@ second oracle defect, despite near-complete execution.
 | AC2 retry/policy | T02,T04,T05,T11,T12/T12b | same | GREEN PASS; 3 shuffled repeats PASS |
 | AC3 partial failure/dedupe | T03,T07,T09,T10,I01-I03 | unit + tests/integration/preset-persistence.test.ts | GREEN PASS, 80 clients/1 effect |
 | AC4 no false success | T04,T08/T08b,T13,T14,I03 | same | mutant e1142f8 killed; corrected oracle PASS |
-| AC5 scoped latency | T15 | tests/load/vt120-load.test.ts | 5 rounds PASS, 80 tasks, p95 <=49.6524ms |
+| AC5 scoped latency | T15 | tests/load/vt120-load.test.ts | 5 common-start rounds PASS, 80 tasks, p95 <=48.1686ms |
 | Module risk coverage | all above | src/presets/persistence.ts | 100% selected-module coverage; NOT whole app |
 
 The load case has an independent effects/calls/receipt oracle and records failed
@@ -120,6 +123,11 @@ Existing browser regression is a separate full-verify checkpoint.
    did NOT review the separate load harness; its review is not human approval.
 7. PDF/report synthesis uses the actual command outputs and explicitly labels
    limits. No AI claim substitutes for execution, deployment or team acceptance.
+8. Final measurement review found per-task clocks excluded initial dispatch
+   delay. Tighten to one shared submission timestamp, preserve both campaigns,
+   rerun five rounds and final G0/unit checks. Full browser verify was on the
+   preceding 78065e6 content; this follow-up changes only load harness/docs,
+   not product code.
 
 Missing-context risk: module-only AI could assume a durable idempotent server
 exists or prove exactly-once from a client cache. Architecture review rejects
