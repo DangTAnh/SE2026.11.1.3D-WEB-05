@@ -149,6 +149,41 @@ test('VT122-T14 confirmed() follows the inclusive cache boundary', async () => {
   expect(store.calls).toHaveLength(1);
 });
 
+test('VT122-T20 invalid retention windows are rejected at construction', () => {
+  for (const retentionMs of [0, -1, 1.5, 604_800_001, Number.NaN]) {
+    expect(() => new PresetSaveService(new Vt122Store(), { retentionMs })).toThrow(RangeError);
+  }
+});
+
+test('VT122-T21 confirmed() is undefined while the first save is pending', async () => {
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const store = new Vt122Store([], () => gate);
+  const saver = makeService(store);
+  const pending = saver.save('req-1', document());
+
+  expect(saver.confirmed('req-1')).toBeUndefined();
+  release();
+  await expect(pending).resolves.toBeDefined();
+  expect(saver.confirmed('req-1')).toBeDefined();
+});
+
+test('VT122-T22 the default retention window is 24 hours and inclusive', async () => {
+  const clock = makeClock(0);
+  const store = new Vt122Store();
+  const saver = new PresetSaveService(store, { now: clock.now });
+  const input = document();
+  const first = await saver.save('req-1', input);
+
+  clock.set(86_400_000);
+  expect(await saver.save('req-1', input)).toBe(first);
+  clock.set(86_400_001);
+  await saver.save('req-1', input);
+
+  expect(store.calls).toHaveLength(2);
+  expect(store.effectCount('req-1')).toBe(1);
+});
+
 test('VT122-T18 the same payload under a different request id is a different operation', async () => {
   const store = new Vt122Store();
   const saver = makeService(store);

@@ -1,0 +1,419 @@
+{
+  "scenario": "serialized-control",
+  "tasks": 100,
+  "errors": 0,
+  "errorMessages": [],
+  "effects": 100,
+  "calls": 100,
+  "p50Ms": 3117.6607999999997,
+  "p95Ms": 5911.0336,
+  "maxMs": 6224.0737,
+  "targetP95Ms": 3000,
+  "ioMs": 50,
+  "node": "v24.22.1",
+  "platform": "win32",
+  "arch": "x64",
+  "scope": "single Node process, 100 promises, 50 ms simulated I/O per port call, no real network/DB/user capacity claim; deliberate global serialization control",
+  "raw": [
+    {
+      "id": "serial-0",
+      "latencyMs": 61.09019999999998
+    },
+    {
+      "id": "serial-1",
+      "latencyMs": 123.21950000000004
+    },
+    {
+      "id": "serial-2",
+      "latencyMs": 185.53320000000002
+    },
+    {
+      "id": "serial-3",
+      "latencyMs": 247.73789999999997
+    },
+    {
+      "id": "serial-4",
+      "latencyMs": 310.88800000000003
+    },
+    {
+      "id": "serial-5",
+      "latencyMs": 373.98510000000005
+    },
+    {
+      "id": "serial-6",
+      "latencyMs": 436.33540000000005
+    },
+    {
+      "id": "serial-7",
+      "latencyMs": 498.361
+    },
+    {
+      "id": "serial-8",
+      "latencyMs": 559.2659
+    },
+    {
+      "id": "serial-9",
+      "latencyMs": 621.7617
+    },
+    {
+      "id": "serial-10",
+      "latencyMs": 684.4498999999998
+    },
+    {
+      "id": "serial-11",
+      "latencyMs": 746.4886999999999
+    },
+    {
+      "id": "serial-12",
+      "latencyMs": 808.1950999999999
+    },
+    {
+      "id": "serial-13",
+      "latencyMs": 870.2982000000001
+    },
+    {
+      "id": "serial-14",
+      "latencyMs": 933.1523
+    },
+    {
+      "id": "serial-15",
+      "latencyMs": 996.4224000000002
+    },
+    {
+      "id": "serial-16",
+      "latencyMs": 1059.3642
+    },
+    {
+      "id": "serial-17",
+      "latencyMs": 1120.886
+    },
+    {
+      "id": "serial-18",
+      "latencyMs": 1182.8486
+    },
+    {
+      "id": "serial-19",
+      "latencyMs": 1244.9505
+    },
+    {
+      "id": "serial-20",
+      "latencyMs": 1307.3804
+    },
+    {
+      "id": "serial-21",
+      "latencyMs": 1370.0171
+    },
+    {
+      "id": "serial-22",
+      "latencyMs": 1433.1964
+    },
+    {
+      "id": "serial-23",
+      "latencyMs": 1495.2671
+    },
+    {
+      "id": "serial-24",
+      "latencyMs": 1557.6480000000001
+    },
+    {
+      "id": "serial-25",
+      "latencyMs": 1620.1728
+    },
+    {
+      "id": "serial-26",
+      "latencyMs": 1684.1202
+    },
+    {
+      "id": "serial-27",
+      "latencyMs": 1745.1641
+    },
+    {
+      "id": "serial-28",
+      "latencyMs": 1807.3107
+    },
+    {
+      "id": "serial-29",
+      "latencyMs": 1868.9389
+    },
+    {
+      "id": "serial-30",
+      "latencyMs": 1929.9177
+    },
+    {
+      "id": "serial-31",
+      "latencyMs": 1993.4699
+    },
+    {
+      "id": "serial-32",
+      "latencyMs": 2056.6619
+    },
+    {
+      "id": "serial-33",
+      "latencyMs": 2119.1933
+    },
+    {
+      "id": "serial-34",
+      "latencyMs": 2183.0368000000003
+    },
+    {
+      "id": "serial-35",
+      "latencyMs": 2245.3451999999997
+    },
+    {
+      "id": "serial-36",
+      "latencyMs": 2307.8178000000003
+    },
+    {
+      "id": "serial-37",
+      "latencyMs": 2368.9808
+    },
+    {
+      "id": "serial-38",
+      "latencyMs": 2431.7828000000004
+    },
+    {
+      "id": "serial-39",
+      "latencyMs": 2494.8511
+    },
+    {
+      "id": "serial-40",
+      "latencyMs": 2556.9157
+    },
+    {
+      "id": "serial-41",
+      "latencyMs": 2618.8014000000003
+    },
+    {
+      "id": "serial-42",
+      "latencyMs": 2680.4973
+    },
+    {
+      "id": "serial-43",
+      "latencyMs": 2743.8236
+    },
+    {
+      "id": "serial-44",
+      "latencyMs": 2805.8778
+    },
+    {
+      "id": "serial-45",
+      "latencyMs": 2868.0658999999996
+    },
+    {
+      "id": "serial-46",
+      "latencyMs": 2930.6696
+    },
+    {
+      "id": "serial-47",
+      "latencyMs": 2993.9605
+    },
+    {
+      "id": "serial-48",
+      "latencyMs": 3055.7212999999997
+    },
+    {
+      "id": "serial-49",
+      "latencyMs": 3117.6607999999997
+    },
+    {
+      "id": "serial-50",
+      "latencyMs": 3179.2043
+    },
+    {
+      "id": "serial-51",
+      "latencyMs": 3241.6114000000002
+    },
+    {
+      "id": "serial-52",
+      "latencyMs": 3304.2185
+    },
+    {
+      "id": "serial-53",
+      "latencyMs": 3366.1339
+    },
+    {
+      "id": "serial-54",
+      "latencyMs": 3429.559
+    },
+    {
+      "id": "serial-55",
+      "latencyMs": 3490.9776
+    },
+    {
+      "id": "serial-56",
+      "latencyMs": 3553.2054
+    },
+    {
+      "id": "serial-57",
+      "latencyMs": 3615.8460999999998
+    },
+    {
+      "id": "serial-58",
+      "latencyMs": 3677.1336
+    },
+    {
+      "id": "serial-59",
+      "latencyMs": 3738.8169
+    },
+    {
+      "id": "serial-60",
+      "latencyMs": 3799.4881
+    },
+    {
+      "id": "serial-61",
+      "latencyMs": 3862.5114
+    },
+    {
+      "id": "serial-62",
+      "latencyMs": 3921.9739999999997
+    },
+    {
+      "id": "serial-63",
+      "latencyMs": 3983.4500000000003
+    },
+    {
+      "id": "serial-64",
+      "latencyMs": 4045.8906
+    },
+    {
+      "id": "serial-65",
+      "latencyMs": 4108.5449
+    },
+    {
+      "id": "serial-66",
+      "latencyMs": 4172.3742
+    },
+    {
+      "id": "serial-67",
+      "latencyMs": 4233.739
+    },
+    {
+      "id": "serial-68",
+      "latencyMs": 4301.243399999999
+    },
+    {
+      "id": "serial-69",
+      "latencyMs": 4359.1909000000005
+    },
+    {
+      "id": "serial-70",
+      "latencyMs": 4421.6837000000005
+    },
+    {
+      "id": "serial-71",
+      "latencyMs": 4483.162200000001
+    },
+    {
+      "id": "serial-72",
+      "latencyMs": 4544.6789
+    },
+    {
+      "id": "serial-73",
+      "latencyMs": 4607.458
+    },
+    {
+      "id": "serial-74",
+      "latencyMs": 4669.491599999999
+    },
+    {
+      "id": "serial-75",
+      "latencyMs": 4731.7611
+    },
+    {
+      "id": "serial-76",
+      "latencyMs": 4795.6247
+    },
+    {
+      "id": "serial-77",
+      "latencyMs": 4855.5353
+    },
+    {
+      "id": "serial-78",
+      "latencyMs": 4916.7419
+    },
+    {
+      "id": "serial-79",
+      "latencyMs": 4980.469099999999
+    },
+    {
+      "id": "serial-80",
+      "latencyMs": 5041.5734999999995
+    },
+    {
+      "id": "serial-81",
+      "latencyMs": 5102.9911999999995
+    },
+    {
+      "id": "serial-82",
+      "latencyMs": 5164.7694
+    },
+    {
+      "id": "serial-83",
+      "latencyMs": 5226.6262
+    },
+    {
+      "id": "serial-84",
+      "latencyMs": 5289.4542
+    },
+    {
+      "id": "serial-85",
+      "latencyMs": 5351.8493
+    },
+    {
+      "id": "serial-86",
+      "latencyMs": 5414.0811
+    },
+    {
+      "id": "serial-87",
+      "latencyMs": 5476.3013
+    },
+    {
+      "id": "serial-88",
+      "latencyMs": 5538.982
+    },
+    {
+      "id": "serial-89",
+      "latencyMs": 5600.5001
+    },
+    {
+      "id": "serial-90",
+      "latencyMs": 5663.3422
+    },
+    {
+      "id": "serial-91",
+      "latencyMs": 5726.1615
+    },
+    {
+      "id": "serial-92",
+      "latencyMs": 5788.5604
+    },
+    {
+      "id": "serial-93",
+      "latencyMs": 5850.1123
+    },
+    {
+      "id": "serial-94",
+      "latencyMs": 5911.0336
+    },
+    {
+      "id": "serial-95",
+      "latencyMs": 5974.315299999999
+    },
+    {
+      "id": "serial-96",
+      "latencyMs": 6036.51
+    },
+    {
+      "id": "serial-97",
+      "latencyMs": 6098.7067
+    },
+    {
+      "id": "serial-98",
+      "latencyMs": 6161.2805
+    },
+    {
+      "id": "serial-99",
+      "latencyMs": 6224.0737
+    }
+  ]
+}
