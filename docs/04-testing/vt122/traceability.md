@@ -69,5 +69,6 @@ Targeted coverage is 100% statements (54/54), branches (36/36), functions
 | Baseline `origin/dev` | `f00271e06347c5a4c88ebeffc00ca4c2134a7651` |
 | Issue | #90, assignee Terivn |
 | Branch | `feat/90-idempotent-preset-resubmit` |
+| Draft PR | [#91](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/91), base `dev` |
 | Commits | `217a9d9` RED, `4417683` GREEN, `ed0805a` pairwise/load, `352b6cc` coverage/flaky, `04b5ba4` AI candidates, `81b98d5` strengthen, `86cb9eb` mutation evidence |
 | Mutant | `eb1b1d320484813aeb9f23d89c552185d514a130` on local `temp/vt122-mutation` only |

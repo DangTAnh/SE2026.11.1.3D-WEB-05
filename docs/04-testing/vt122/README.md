@@ -2,7 +2,8 @@
 
 Personal BT3 vertical slice for Lê Huy Anh Dũng (23001846), team SE2026-T30,
 project 3D-WEB-05. Issue
-[#90](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/90).
+[#90](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/issues/90), draft PR
+[#91](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/91).
 
 ## Problem
 
