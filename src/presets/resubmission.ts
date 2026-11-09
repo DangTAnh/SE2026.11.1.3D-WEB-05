@@ -115,7 +115,7 @@ export class PresetSaveService {
 }
 
 function assertRequestId(requestId: string): void {
-  if (!REQUEST_ID.test(requestId)) {
+  if (typeof requestId !== 'string' || !REQUEST_ID.test(requestId)) {
     throw new TypeError('requestId must match ^[A-Za-z0-9._:-]{1,128}$');
   }
 }

@@ -99,10 +99,15 @@ test('VT122-T07 invalid request ids are rejected before serialization or I/O', a
   const saver = makeService(store);
   const input = document();
 
-  for (const requestId of ['', 'bad key', 'slash/key', 'a'.repeat(129)]) {
-    await expect(saver.save(requestId, input)).rejects.toThrow(TypeError);
+  const invalid: readonly unknown[] = [
+    '', 'bad key', 'slash/key', 'a'.repeat(129),
+    undefined, null, 123, true, ['req-1'], { toString: () => 'req-1' },
+  ];
+  for (const requestId of invalid) {
+    await expect(saver.save(requestId as string, input)).rejects.toThrow(TypeError);
   }
   expect(store.calls).toHaveLength(0);
+  expect(store.effects.size).toBe(0);
 });
 
 test('VT122-T11 mismatched receipts never become confirmed success', async () => {
