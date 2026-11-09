@@ -34,7 +34,7 @@ export class PresetPersistenceClient {
   }
   confirmed(key: string): SaveReceipt | undefined { return this.#operations.get(key)?.receipt; }
   async save(key: string, document: PresetDocument): Promise<SaveReceipt> {
-    if (!/^[a-zA-Z0-9._:-]{1,128}$/.test(key)) throw new TypeError('invalid operation key');
+    if (typeof key !== 'string' || !/^[a-zA-Z0-9._:-]{1,128}$/.test(key)) throw new TypeError('invalid operation key');
     const canonical = serializePresetDocument(document);
     let operation = this.#operations.get(key);
     if (operation && operation.canonical !== canonical) throw new Error('operation key already bound to different content');

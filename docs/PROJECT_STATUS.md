@@ -17,6 +17,9 @@
   interrupted/incomplete session is retained separately, not labelled PASS.
   Full browser verify preceded final load-clock tightening; final G0/unit/five
   load runs reverify the follow-up without product-code changes.
+- 09/11/2026 review follow-up: runtime `typeof` key guard plus T06b; non-string
+  operation keys are rejected before any port call. Current head: 298/298
+  repository tests, source/test typechecks and build PASS.
 - [Scope, commands, evidence and limits](04-testing/VT120-README.md).
   Owner/human review required before merge; no deployment/release claim.
 

@@ -44,6 +44,16 @@ test('VT120-T06 invalid schema and key never reach persistence', async () => {
   await expect(client.save('', document())).rejects.toThrow('key');
   expect(service.calls).toHaveLength(0);
 });
+test('VT120-T06b non-string operation keys never reach persistence', async () => {
+  const service = new Vt120Service();
+  const client = new PresetPersistenceClient(service, immediate);
+  const invalid: readonly unknown[] = [undefined, null, 123, true, ['req-1'], { toString: () => 'req-1' }];
+  for (const key of invalid) {
+    await expect(client.save(key as string, document())).rejects.toThrow('invalid operation key');
+  }
+  expect(service.calls).toHaveLength(0);
+  expect(service.ledger.size).toBe(0);
+});
 test('VT120-T07 key reuse with different content is rejected, even after response loss', async () => {
   const service = new Vt120Service(() => ['after']);
   const client = new PresetPersistenceClient(service, { ...immediate, maxAttempts: 1 });
