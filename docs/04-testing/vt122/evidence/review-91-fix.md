@@ -40,9 +40,18 @@ zero committed effects.
   12 capability skips, CodeQL and Analyze pass (reviewer-provided evidence, then
   re-checked on the PR).
 
-Re-review `5835810121` (APPROVED, 10/11/2026) confirms the P2 is resolved.
-That review is AI-assisted technical evidence, not independent human approval,
-NFR acceptance or authorization to merge.
+Re-review `5835810121` (verdict APPROVE, 10/11/2026) confirms the P2 is
+resolved. That review is AI-assisted technical evidence, not independent human
+approval, NFR acceptance or authorization to merge.
+
+## Approval lifecycle
+
+The APPROVE was recorded against `f88a94b`. When the docs-only commit `aab05b3`
+was pushed, GitHub auto-dismissed it (`review_dismissed`, 10/11/2026 06:19 UTC,
+actor Terivn; repository setting dismisses stale approvals on new commits).
+The review body is retained, but the PR currently has **no active approval**.
+A fresh human approval is therefore still required after the documentation
+follow-up; the dismissal is a workflow fact, not a new code defect.
 
 ## Remaining workflow correction
 

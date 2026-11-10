@@ -60,7 +60,7 @@ Targeted coverage is 100% statements (54/54), branches (36/36), functions
 | strengthened recovery | `evidence/ai-candidates-after.txt` | 2/2 passed |
 | T07 red with guard reverted | `evidence/review91-t07-red.txt` | 1 failed (promise resolved for `undefined`) |
 | T07 green after fix | `evidence/review91-t07.txt` | 1/1 passed |
-| Review P2 fix summary | `evidence/review-91-fix.md` | root cause, fix, red/green, re-review |
+| Review P2 fix summary | `evidence/review-91-fix.md` | root cause, fix, red/green, re-review, approval auto-dismissed by docs commit |
 | `npm run build` | `evidence/build.txt` | typechecks + build PASS |
 | full E2E regression | `evidence/e2e.txt` | 75 passed, 12 skipped, 1 failed (mobile teardown) |
 | single E2E rerun | `evidence/e2e-rerun.txt` | same mobile teardown timeout |

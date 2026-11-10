@@ -201,7 +201,7 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><td>Pairwise + load</td><td><span class="mono">ed0805a</span></td><td>18/18 pairwise; full suite <span class="ok">305/305</span></td><td><span class="mono">pairwise.txt</span></td></tr>
     <tr><td>Coverage + flaky</td><td><span class="mono">352b6cc</span></td><td>100% coverage; 20 seed shuffle không lỗi</td><td><span class="mono">coverage.txt</span>, <span class="mono">flaky-shuffle.txt</span></td></tr>
     <tr><td>AI + mutation</td><td><span class="mono">04b5ba4</span>…<span class="mono">86cb9eb</span></td><td>6 ứng viên AI pass nhưng yếu; mutant bị giết bởi test biên</td><td><span class="mono">ai-candidates-*.txt</span>, <span class="mono">mutation-*.txt</span></td></tr>
-    <tr><td>Review P2</td><td><span class="mono">f88a94b</span></td><td>Chặn requestId không phải string; T07 đỏ → xanh; re-review APPROVE</td><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07*.txt</span></td></tr>
+    <tr><td>Review P2</td><td><span class="mono">f88a94b</span></td><td>Chặn requestId không phải string; T07 đỏ → xanh; re-review APPROVE (bị auto-dismiss khi push docs)</td><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07*.txt</span></td></tr>
     <tr><td>Final</td><td><span class="mono">f88a94b</span></td><td><span class="ok">310/310</span> Vitest; CI verify PASS; build PASS (cảnh báo chunk cũ)</td><td><span class="mono">green-final.txt</span>, <span class="mono">build.txt</span></td></tr>
   </table>
   <h3>Danh mục 38 test VT-122</h3>
@@ -371,8 +371,10 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     tự ép kiểu nên <span class="mono">undefined</span>, <span class="mono">null</span>, số, boolean, mảng
     hay object có <span class="mono">toString</span> vẫn lọt qua guard. Bản sửa <span class="mono">f88a94b</span>
     kiểm tra <span class="mono">typeof requestId !== 'string'</span> trước regex; T07 được mở rộng và
-    đỏ→xanh được ghi lại. Re-review chuyển sang <strong>APPROVE</strong>. Đây là bằng chứng kỹ thuật
-    AI-assisted, không thay thế phê duyệt của con người.
+    đỏ→xanh được ghi lại. Re-review chuyển sang <strong>APPROVE</strong>, nhưng khi push commit tài liệu
+    <span class="mono">aab05b3</span> thì GitHub tự động dismiss approval cũ. PR hiện không còn approval
+    hiệu lực, nên vẫn cần một phê duyệt mới của con người. Đây là bằng chứng kỹ thuật AI-assisted, không
+    thay thế phê duyệt của con người.
   </p>
   <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 6 / 8</span></div>
 </section>
@@ -390,8 +392,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
         <li>20 seed shuffle: <span class="ok">0 lỗi</span>.</li>
         <li>100 task trùng: <span class="ok">10 call → 10 effect</span>, p95 54–58 ms.</li>
         <li>Mutation <span class="mono">&gt;</span> → <span class="mono">&gt;=</span>: <span class="ok">bị giết</span> bởi test biên.</li>
-        <li>Review P2 <span class="mono">f88a94b</span>: chặn id không phải string; T07 đỏ→xanh.</li>
-        <li>CI <span class="mono">verify</span> trên <span class="mono">f88a94b</span>: <span class="ok">PASS</span> (76 E2E / 12 skip).</li>
+        <li>Review P2 <span class="mono">f88a94b</span>: chặn id không phải string; T07 đỏ→xanh; approval sau đó bị auto-dismiss bởi docs commit.</li>
+        <li>CI <span class="mono">verify</span> trên <span class="mono">f88a94b</span> và <span class="mono">aab05b3</span>: <span class="ok">PASS</span> (76 E2E / 12 skip).</li>
         <li><span class="mono">npm run build</span>: <span class="ok">PASS</span>.</li>
       </ul>
     </div>
@@ -460,7 +462,7 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><td><span class="mono">red.txt</span></td><td>12 failed / 3 passed trước implementation</td></tr>
     <tr><td><span class="mono">green-targeted.txt</span>, <span class="mono">green-full.txt</span></td><td>15/15 targeted; 287/287 full sau GREEN</td></tr>
     <tr><td><span class="mono">green-final.txt</span></td><td>310/310 full suite cuối trên <span class="mono">f88a94b</span></td></tr>
-    <tr><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07-red.txt</span>, <span class="mono">review91-t07.txt</span></td><td>P2 non-string id: T07 đỏ (guard revert) → xanh (guard restored); re-review APPROVE</td></tr>
+    <tr><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07-red.txt</span>, <span class="mono">review91-t07.txt</span></td><td>P2 non-string id: T07 đỏ (guard revert) → xanh (guard restored); re-review APPROVE rồi bị auto-dismiss khi push docs</td></tr>
     <tr><td><span class="mono">pairwise.txt</span>, <span class="mono">tests/fixtures/vt122-pairwise.json</span></td><td>18/18 dòng; 29 combo; 52/52 cặp (100%)</td></tr>
     <tr><td><span class="mono">coverage.txt</span>, <span class="mono">coverage-summary.json</span></td><td>100% statements/branches/functions/lines</td></tr>
     <tr><td><span class="mono">flaky-shuffle.txt</span></td><td>20 seed 23001847–23001866, 36/36 mỗi lần</td></tr>

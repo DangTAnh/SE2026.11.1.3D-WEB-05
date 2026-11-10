@@ -90,6 +90,8 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
   checks `typeof requestId !== 'string'` first; T07 covers `undefined`, `null`,
   `123`, `true`, an array and an object with `toString`. Removing the guard
   fails T07 (`review91-t07-red.txt`); restoring it passes (`review91-t07.txt`).
+  The re-review APPROVE on `f88a94b` was auto-dismissed when the docs commit
+  `aab05b3` was pushed, so a fresh human approval is still required.
 - 20 shuffled seeds `23001847`–`23001866`: 36/36 each, no failures.
 - CI on `f88a94b`: `verify` PASS (310 tests, 76 E2E pass / 12 capability skips),
   CodeQL and Analyze PASS.
