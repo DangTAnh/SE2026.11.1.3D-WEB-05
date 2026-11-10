@@ -1,0 +1,419 @@
+{
+  "scenario": "unique",
+  "tasks": 100,
+  "errors": 0,
+  "errorMessages": [],
+  "effects": 100,
+  "calls": 100,
+  "p50Ms": 57.85089999999997,
+  "p95Ms": 58.58910000000003,
+  "maxMs": 60.56490000000002,
+  "targetP95Ms": 3000,
+  "ioMs": 50,
+  "node": "v24.22.1",
+  "platform": "win32",
+  "arch": "x64",
+  "scope": "single Node process, 100 promises, 50 ms simulated I/O per port call, no real network/DB/user capacity claim",
+  "raw": [
+    {
+      "id": "unique-0",
+      "latencyMs": 60.56490000000002
+    },
+    {
+      "id": "unique-1",
+      "latencyMs": 58.76799999999997
+    },
+    {
+      "id": "unique-2",
+      "latencyMs": 58.67879999999997
+    },
+    {
+      "id": "unique-3",
+      "latencyMs": 58.64209999999997
+    },
+    {
+      "id": "unique-4",
+      "latencyMs": 58.61669999999998
+    },
+    {
+      "id": "unique-5",
+      "latencyMs": 58.58910000000003
+    },
+    {
+      "id": "unique-6",
+      "latencyMs": 58.52620000000002
+    },
+    {
+      "id": "unique-7",
+      "latencyMs": 58.47720000000004
+    },
+    {
+      "id": "unique-8",
+      "latencyMs": 58.481100000000026
+    },
+    {
+      "id": "unique-9",
+      "latencyMs": 58.47589999999997
+    },
+    {
+      "id": "unique-10",
+      "latencyMs": 58.428999999999974
+    },
+    {
+      "id": "unique-11",
+      "latencyMs": 58.40880000000004
+    },
+    {
+      "id": "unique-12",
+      "latencyMs": 58.393100000000004
+    },
+    {
+      "id": "unique-13",
+      "latencyMs": 58.37760000000003
+    },
+    {
+      "id": "unique-14",
+      "latencyMs": 58.36270000000002
+    },
+    {
+      "id": "unique-15",
+      "latencyMs": 58.348299999999995
+    },
+    {
+      "id": "unique-16",
+      "latencyMs": 58.342299999999966
+    },
+    {
+      "id": "unique-17",
+      "latencyMs": 58.334900000000005
+    },
+    {
+      "id": "unique-18",
+      "latencyMs": 58.32370000000003
+    },
+    {
+      "id": "unique-19",
+      "latencyMs": 58.315200000000004
+    },
+    {
+      "id": "unique-20",
+      "latencyMs": 58.31020000000001
+    },
+    {
+      "id": "unique-21",
+      "latencyMs": 58.28199999999998
+    },
+    {
+      "id": "unique-22",
+      "latencyMs": 58.27159999999998
+    },
+    {
+      "id": "unique-23",
+      "latencyMs": 58.26010000000002
+    },
+    {
+      "id": "unique-24",
+      "latencyMs": 58.246099999999956
+    },
+    {
+      "id": "unique-25",
+      "latencyMs": 58.231600000000014
+    },
+    {
+      "id": "unique-26",
+      "latencyMs": 58.21879999999999
+    },
+    {
+      "id": "unique-27",
+      "latencyMs": 58.20479999999998
+    },
+    {
+      "id": "unique-28",
+      "latencyMs": 58.19150000000002
+    },
+    {
+      "id": "unique-29",
+      "latencyMs": 58.1789
+    },
+    {
+      "id": "unique-30",
+      "latencyMs": 58.13409999999999
+    },
+    {
+      "id": "unique-31",
+      "latencyMs": 58.09469999999999
+    },
+    {
+      "id": "unique-32",
+      "latencyMs": 58.07819999999998
+    },
+    {
+      "id": "unique-33",
+      "latencyMs": 58.06290000000001
+    },
+    {
+      "id": "unique-34",
+      "latencyMs": 58.0514
+    },
+    {
+      "id": "unique-35",
+      "latencyMs": 58.03989999999999
+    },
+    {
+      "id": "unique-36",
+      "latencyMs": 58.028700000000015
+    },
+    {
+      "id": "unique-37",
+      "latencyMs": 58.01679999999999
+    },
+    {
+      "id": "unique-38",
+      "latencyMs": 58.00559999999996
+    },
+    {
+      "id": "unique-39",
+      "latencyMs": 57.99430000000001
+    },
+    {
+      "id": "unique-40",
+      "latencyMs": 57.982699999999966
+    },
+    {
+      "id": "unique-41",
+      "latencyMs": 57.971299999999985
+    },
+    {
+      "id": "unique-42",
+      "latencyMs": 57.96030000000002
+    },
+    {
+      "id": "unique-43",
+      "latencyMs": 57.94920000000002
+    },
+    {
+      "id": "unique-44",
+      "latencyMs": 57.937400000000025
+    },
+    {
+      "id": "unique-45",
+      "latencyMs": 57.925899999999956
+    },
+    {
+      "id": "unique-46",
+      "latencyMs": 57.91410000000002
+    },
+    {
+      "id": "unique-47",
+      "latencyMs": 57.8845
+    },
+    {
+      "id": "unique-48",
+      "latencyMs": 57.872000000000014
+    },
+    {
+      "id": "unique-49",
+      "latencyMs": 57.86180000000002
+    },
+    {
+      "id": "unique-50",
+      "latencyMs": 57.85089999999997
+    },
+    {
+      "id": "unique-51",
+      "latencyMs": 57.83960000000002
+    },
+    {
+      "id": "unique-52",
+      "latencyMs": 57.82850000000002
+    },
+    {
+      "id": "unique-53",
+      "latencyMs": 57.81790000000001
+    },
+    {
+      "id": "unique-54",
+      "latencyMs": 57.807000000000016
+    },
+    {
+      "id": "unique-55",
+      "latencyMs": 57.79599999999999
+    },
+    {
+      "id": "unique-56",
+      "latencyMs": 57.78530000000001
+    },
+    {
+      "id": "unique-57",
+      "latencyMs": 57.77510000000001
+    },
+    {
+      "id": "unique-58",
+      "latencyMs": 57.7645
+    },
+    {
+      "id": "unique-59",
+      "latencyMs": 57.754200000000026
+    },
+    {
+      "id": "unique-60",
+      "latencyMs": 57.74440000000004
+    },
+    {
+      "id": "unique-61",
+      "latencyMs": 57.7414
+    },
+    {
+      "id": "unique-62",
+      "latencyMs": 57.738200000000006
+    },
+    {
+      "id": "unique-63",
+      "latencyMs": 57.73019999999997
+    },
+    {
+      "id": "unique-64",
+      "latencyMs": 57.7208
+    },
+    {
+      "id": "unique-65",
+      "latencyMs": 57.70890000000003
+    },
+    {
+      "id": "unique-66",
+      "latencyMs": 57.69749999999999
+    },
+    {
+      "id": "unique-67",
+      "latencyMs": 57.6866
+    },
+    {
+      "id": "unique-68",
+      "latencyMs": 57.676199999999994
+    },
+    {
+      "id": "unique-69",
+      "latencyMs": 57.6653
+    },
+    {
+      "id": "unique-70",
+      "latencyMs": 57.6542
+    },
+    {
+      "id": "unique-71",
+      "latencyMs": 57.64369999999997
+    },
+    {
+      "id": "unique-72",
+      "latencyMs": 57.63220000000001
+    },
+    {
+      "id": "unique-73",
+      "latencyMs": 57.62130000000002
+    },
+    {
+      "id": "unique-74",
+      "latencyMs": 57.60910000000001
+    },
+    {
+      "id": "unique-75",
+      "latencyMs": 57.59839999999997
+    },
+    {
+      "id": "unique-76",
+      "latencyMs": 57.58760000000001
+    },
+    {
+      "id": "unique-77",
+      "latencyMs": 57.57650000000001
+    },
+    {
+      "id": "unique-78",
+      "latencyMs": 57.56600000000003
+    },
+    {
+      "id": "unique-79",
+      "latencyMs": 57.554899999999975
+    },
+    {
+      "id": "unique-80",
+      "latencyMs": 57.54399999999998
+    },
+    {
+      "id": "unique-81",
+      "latencyMs": 57.532899999999984
+    },
+    {
+      "id": "unique-82",
+      "latencyMs": 57.522400000000005
+    },
+    {
+      "id": "unique-83",
+      "latencyMs": 57.51089999999999
+    },
+    {
+      "id": "unique-84",
+      "latencyMs": 57.5
+    },
+    {
+      "id": "unique-85",
+      "latencyMs": 57.4889
+    },
+    {
+      "id": "unique-86",
+      "latencyMs": 57.47750000000002
+    },
+    {
+      "id": "unique-87",
+      "latencyMs": 57.4667
+    },
+    {
+      "id": "unique-88",
+      "latencyMs": 57.45490000000001
+    },
+    {
+      "id": "unique-89",
+      "latencyMs": 57.44380000000001
+    },
+    {
+      "id": "unique-90",
+      "latencyMs": 57.43209999999999
+    },
+    {
+      "id": "unique-91",
+      "latencyMs": 57.48770000000002
+    },
+    {
+      "id": "unique-92",
+      "latencyMs": 57.47700000000003
+    },
+    {
+      "id": "unique-93",
+      "latencyMs": 57.46640000000002
+    },
+    {
+      "id": "unique-94",
+      "latencyMs": 57.45569999999998
+    },
+    {
+      "id": "unique-95",
+      "latencyMs": 57.44499999999999
+    },
+    {
+      "id": "unique-96",
+      "latencyMs": 57.43439999999998
+    },
+    {
+      "id": "unique-97",
+      "latencyMs": 57.42349999999999
+    },
+    {
+      "id": "unique-98",
+      "latencyMs": 57.412999999999954
+    },
+    {
+      "id": "unique-99",
+      "latencyMs": 57.42840000000001
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "generatedBy": "scripts/vt122-pairwise.mjs",
+  "seed": 23001846,
+  "factors": {
+    "prior": [
+      "none",
+      "committed-same",
+      "committed-different",
+      "failed"
+    ],
+    "clock": [
+      "before",
+      "exact",
+      "after"
+    ],
+    "input": [
+      "valid",
+      "invalid-key",
+      "invalid-doc"
+    ],
+    "receipt": [
+      "valid",
+      "wrong-requestId",
+      "wrong-canonical",
+      "uncommitted",
+      "throw-after-commit"
+    ]
+  },
+  "constraints": [
+    "invalid-key implies prior=none",
+    "prior=none implies clock=before (no entry to expire)",
+    "invalid input implies receipt=valid (validation precedes the port)",
+    "non-valid receipt implies prior in {none, failed} and clock=before",
+    "committed prior with clock before/exact implies receipt=valid (replay/conflict precedes the port)"
+  ],
+  "coverage": {
+    "validCombinations": 29,
+    "selectedRows": 18,
+    "validPairs": 52,
+    "coveredPairs": 52,
+    "percent": 100
+  },
+  "rows": [
+    {
+      "id": "P01",
+      "prior": "committed-same",
+      "clock": "exact",
+      "input": "invalid-doc",
+      "receipt": "valid"
+    },
+    {
+      "id": "P02",
+      "prior": "committed-different",
+      "clock": "after",
+      "input": "valid",
+      "receipt": "valid"
+    },
+    {
+      "id": "P03",
+      "prior": "failed",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "wrong-requestId"
+    },
+    {
+      "id": "P04",
+      "prior": "failed",
+      "clock": "after",
+      "input": "invalid-doc",
+      "receipt": "valid"
+    },
+    {
+      "id": "P05",
+      "prior": "none",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "wrong-canonical"
+    },
+    {
+      "id": "P06",
+      "prior": "none",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "uncommitted"
+    },
+    {
+      "id": "P07",
+      "prior": "none",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "throw-after-commit"
+    },
+    {
+      "id": "P08",
+      "prior": "none",
+      "clock": "before",
+      "input": "invalid-key",
+      "receipt": "valid"
+    },
+    {
+      "id": "P09",
+      "prior": "committed-different",
+      "clock": "before",
+      "input": "invalid-doc",
+      "receipt": "valid"
+    },
+    {
+      "id": "P10",
+      "prior": "committed-same",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "valid"
+    },
+    {
+      "id": "P11",
+      "prior": "committed-different",
+      "clock": "exact",
+      "input": "valid",
+      "receipt": "valid"
+    },
+    {
+      "id": "P12",
+      "prior": "none",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "wrong-requestId"
+    },
+    {
+      "id": "P13",
+      "prior": "none",
+      "clock": "before",
+      "input": "invalid-doc",
+      "receipt": "valid"
+    },
+    {
+      "id": "P14",
+      "prior": "committed-same",
+      "clock": "after",
+      "input": "valid",
+      "receipt": "valid"
+    },
+    {
+      "id": "P15",
+      "prior": "failed",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "wrong-canonical"
+    },
+    {
+      "id": "P16",
+      "prior": "failed",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "uncommitted"
+    },
+    {
+      "id": "P17",
+      "prior": "failed",
+      "clock": "before",
+      "input": "valid",
+      "receipt": "throw-after-commit"
+    },
+    {
+      "id": "P18",
+      "prior": "failed",
+      "clock": "exact",
+      "input": "valid",
+      "receipt": "valid"
+    }
+  ]
+}
