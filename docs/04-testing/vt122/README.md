@@ -69,7 +69,7 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
 | --- | --- |
 | RED before implementation | `evidence/red.txt` — 12 failed / 3 passed |
 | GREEN targeted | `evidence/green-targeted.txt` — 15/15 |
-| GREEN full suite | `evidence/green-final.txt` — 310/310 |
+| GREEN full suite | `evidence/green-final.txt` — 310/310 before merge; `evidence/green-merge-dev.txt` — 336/336 after merging `dev` |
 | Pairwise | `evidence/pairwise.txt` — 18/18, 52/52 valid pairs |
 | Coverage | `evidence/coverage.txt` — 100% statements/branches/functions/lines |
 | Flaky check | `evidence/flaky-shuffle.txt` — 20 seeds, 0 failures |
@@ -82,8 +82,10 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
 
 ## Results at a glance
 
-- 310/310 Vitest tests pass; 38 of them are VT-122 tests (13 unit + 5
-  integration + 18 pairwise + 2 recovery).
+- 336/336 Vitest tests pass after merging `dev` (310/310 before the merge);
+  38 of them are VT-122 tests (13 unit + 5 integration + 18 pairwise + 2
+  recovery). The other 298 come from the repository, including VT-120 after
+  PR #89 was merged into `dev`.
 - Targeted coverage of `src/presets/resubmission.ts`: 100% statements (54/54),
   100% branches (36/36), 100% functions (11/11), 100% lines (50/50).
 - Review #91 P2: `RegExp.test` used to coerce non-string ids. The guard now
@@ -95,6 +97,11 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
 - 20 shuffled seeds `23001847`–`23001866`: 36/36 each, no failures.
 - CI on `f88a94b`: `verify` PASS (310 tests, 76 E2E pass / 12 capability skips),
   CodeQL and Analyze PASS.
+- Merge of `origin/dev` at `e865cdf`: conflicts in `package.json`,
+  `package-lock.json` and `tsconfig.tests.json` resolved by keeping both
+  `@vitest/coverage-v8` and `fast-check`, and both load-test configs. Local
+  `npm test` 336/336 and `npm run build` PASS; CI run `42771452722` PASS
+  (336 tests, 76 E2E pass / 12 skips, CodeQL/Analyze PASS).
 - 100 concurrent unique tasks: p95 58.6–64.2 ms over three runs; 100 calls and
   100 effects.
 - 100 concurrent tasks over 10 keys: p95 54.0–58.0 ms; only 10 calls and
@@ -118,6 +125,10 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
   12 capability skips). Neither result exercises VT-122.
 - Retention eviction is lazy: an untouched key remains until that key is
   accessed again. This is not bounded-memory eviction, as noted in review #91.
+- `dev` now also contains the VT-120 persistence coordinator from #89
+  (`src/presets/persistence.ts`). The two slices coexist in the tree after the
+  merge, but this PR does not claim a shared persistence abstraction or a
+  settled integration boundary between them.
 - Draft only. Team review is required before merge.
 
 ## Status vocabulary

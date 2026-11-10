@@ -43,7 +43,7 @@
   th { background: #e7f1f5; color: #0b4f6c; font-weight: 600; }
   table.small { font-size: 8.8pt; line-height: 1.28; }
   table.tiny { font-size: 8.1pt; line-height: 1.24; }
-  .page:last-child table.tiny th, .page:last-child table.tiny td { padding: 0.9mm 1.4mm; }
+  .page:last-child table.tiny th, .page:last-child table.tiny td { padding: 0.6mm 1.3mm; }
   code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.6pt; }
   pre {
     margin: 1.2mm 0 2mm; padding: 2mm 2.5mm; background: #f4f7f8;
@@ -91,7 +91,7 @@
       <tr><td>Issue</td><td><span class="mono">#90</span> — giao cho Terivn</td></tr>
       <tr><td>Branch</td><td><span class="mono">feat/90-idempotent-preset-resubmit</span></td></tr>
       <tr><td>Pull Request</td><td><span class="mono">DRAFT #91 — github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/91</span></td></tr>
-      <tr><td>Commit kỹ thuật cuối</td><td><span class="mono">f88a94b</span> (review P2 fix); commit tài liệu theo sau</td></tr>
+      <tr><td>Commit kỹ thuật cuối</td><td><span class="mono">e865cdf</span> (merge <span class="mono">dev</span>/PR #89); fix P2 <span class="mono">f88a94b</span>; commit tài liệu theo sau</td></tr>
       <tr><td>Variant</td><td><strong>VT-122</strong></td></tr>
       <tr><td>Ngày</td><td>08/11/2026</td></tr>
     </table>
@@ -202,7 +202,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><td>Coverage + flaky</td><td><span class="mono">352b6cc</span></td><td>100% coverage; 20 seed shuffle không lỗi</td><td><span class="mono">coverage.txt</span>, <span class="mono">flaky-shuffle.txt</span></td></tr>
     <tr><td>AI + mutation</td><td><span class="mono">04b5ba4</span>…<span class="mono">86cb9eb</span></td><td>6 ứng viên AI pass nhưng yếu; mutant bị giết bởi test biên</td><td><span class="mono">ai-candidates-*.txt</span>, <span class="mono">mutation-*.txt</span></td></tr>
     <tr><td>Review P2</td><td><span class="mono">f88a94b</span></td><td>Chặn requestId không phải string; T07 đỏ → xanh; re-review APPROVE (bị auto-dismiss khi push docs)</td><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07*.txt</span></td></tr>
-    <tr><td>Final</td><td><span class="mono">f88a94b</span></td><td><span class="ok">310/310</span> Vitest; CI verify PASS; build PASS (cảnh báo chunk cũ)</td><td><span class="mono">green-final.txt</span>, <span class="mono">build.txt</span></td></tr>
+    <tr><td>Merge <span class="mono">dev</span> (#89)</td><td><span class="mono">e865cdf</span></td><td>Giữ cả coverage-v8 và fast-check; <span class="ok">336/336</span> test; CI <span class="ok">PASS</span></td><td><span class="mono">green-merge-dev.txt</span>, <span class="mono">build-merge-dev.txt</span></td></tr>
+    <tr><td>Final</td><td><span class="mono">e865cdf</span></td><td><span class="ok">336/336</span> Vitest (310 trước merge); CI verify PASS; build PASS (cảnh báo chunk cũ)</td><td><span class="mono">green-merge-dev.txt</span>, <span class="mono">build-merge-dev.txt</span></td></tr>
   </table>
   <h3>Danh mục 38 test VT-122</h3>
   <table class="small">
@@ -386,14 +387,14 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <div>
       <h3>Kết quả đã kiểm chứng</h3>
       <ul>
-        <li><span class="ok">310/310</span> Vitest pass; 38 test VT-122.</li>
+        <li><span class="ok">336/336</span> Vitest pass sau merge <span class="mono">dev</span> (310 trước merge); 38 test VT-122.</li>
         <li>Targeted: <span class="ok">36/36</span> (unit + integration + pairwise).</li>
         <li>Coverage module: <span class="ok">100%</span> cả 4 chỉ số.</li>
         <li>20 seed shuffle: <span class="ok">0 lỗi</span>.</li>
         <li>100 task trùng: <span class="ok">10 call → 10 effect</span>, p95 54–58 ms.</li>
         <li>Mutation <span class="mono">&gt;</span> → <span class="mono">&gt;=</span>: <span class="ok">bị giết</span> bởi test biên.</li>
         <li>Review P2 <span class="mono">f88a94b</span>: chặn id không phải string; T07 đỏ→xanh; approval sau đó bị auto-dismiss bởi docs commit.</li>
-        <li>CI <span class="mono">verify</span> trên <span class="mono">f88a94b</span> và <span class="mono">aab05b3</span>: <span class="ok">PASS</span> (76 E2E / 12 skip).</li>
+        <li>CI <span class="mono">verify</span> trên <span class="mono">f88a94b</span>, <span class="mono">aab05b3</span> và <span class="mono">e865cdf</span>: <span class="ok">PASS</span> (merge: 336 test, 76 E2E / 12 skip).</li>
         <li><span class="mono">npm run build</span>: <span class="ok">PASS</span>.</li>
       </ul>
     </div>
@@ -405,6 +406,7 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
         <li>Load chỉ 1 tiến trình, I/O mô phỏng; không phải capacity test.</li>
         <li>Cache chỉ dọn khi truy cập, không có background sweep; không phải cache giới hạn bộ nhớ.</li>
         <li>Local E2E: 75 pass, 12 skip, <span class="bad">1 fail</span> do teardown mobile Chromium; CI Linux pass 76/12 với cùng test file.</li>
+        <li><span class="mono">dev</span> nay có thêm VT-120 (#89). Sau merge hai module cùng tồn tại, nhưng báo cáo không tuyên bố đã thống nhất abstraction hay ranh giới tích hợp.</li>
         <li>PR phải để <strong>draft</strong> và chờ phê duyệt của con người trước khi merge.</li>
       </ul>
     </div>
@@ -461,7 +463,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><th style="width:32%">Tệp</th><th>Nội dung</th></tr>
     <tr><td><span class="mono">red.txt</span></td><td>12 failed / 3 passed trước implementation</td></tr>
     <tr><td><span class="mono">green-targeted.txt</span>, <span class="mono">green-full.txt</span></td><td>15/15 targeted; 287/287 full sau GREEN</td></tr>
-    <tr><td><span class="mono">green-final.txt</span></td><td>310/310 full suite cuối trên <span class="mono">f88a94b</span></td></tr>
+    <tr><td><span class="mono">green-final.txt</span></td><td>310/310 full suite trước merge, trên <span class="mono">f88a94b</span></td></tr>
+    <tr><td><span class="mono">green-merge-dev.txt</span>, <span class="mono">build-merge-dev.txt</span></td><td>336/336 test và build PASS sau khi merge <span class="mono">dev</span> (#89) tại <span class="mono">e865cdf</span></td></tr>
     <tr><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07-red.txt</span>, <span class="mono">review91-t07.txt</span></td><td>P2 non-string id: T07 đỏ (guard revert) → xanh (guard restored); re-review APPROVE rồi bị auto-dismiss khi push docs</td></tr>
     <tr><td><span class="mono">pairwise.txt</span>, <span class="mono">tests/fixtures/vt122-pairwise.json</span></td><td>18/18 dòng; 29 combo; 52/52 cặp (100%)</td></tr>
     <tr><td><span class="mono">coverage.txt</span>, <span class="mono">coverage-summary.json</span></td><td>100% statements/branches/functions/lines</td></tr>
@@ -473,6 +476,7 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><td><span class="mono">build.txt</span></td><td>Typecheck + Vite build PASS; cảnh báo chunk có sẵn</td></tr>
     <tr><td><span class="mono">e2e.txt</span>, <span class="mono">e2e-rerun.txt</span></td><td>Local: 75 pass, 12 skip, 1 fail teardown mobile; chạy lại vẫn fail. CI Linux: 76 pass / 12 skip</td></tr>
     <tr><td>CI run <span class="mono">42590832942</span></td><td><span class="mono">f88a94b</span>: verify PASS; 310 test, 76 E2E, 12 skip; CodeQL/Analyze PASS</td></tr>
+    <tr><td>CI run <span class="mono">42771452722</span></td><td><span class="mono">e865cdf</span> (merge <span class="mono">dev</span>): verify PASS; 336 test, 76 E2E, 12 skip; CodeQL/Analyze PASS</td></tr>
   </table>
 
   <h3>Lệnh tái lập chính</h3>

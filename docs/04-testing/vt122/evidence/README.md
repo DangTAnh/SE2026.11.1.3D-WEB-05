@@ -9,7 +9,9 @@ Playwright Chromium (headless shell 1248).
 | `green-targeted.txt` | 15 targeted tests after implementation |
 | `green-full.txt` | Full suite after implementation: 287/287 |
 | `green-full-after-pairwise.txt` | Full suite after pairwise: 305/305 |
-| `green-final.txt` | Final full suite: 310/310 |
+| `green-final.txt` | Full suite before merging `dev`: 310/310 |
+| `green-merge-dev.txt` | Full suite after merging `dev`/PR #89: 336/336 |
+| `build-merge-dev.txt` | Typechecks + build after the merge: PASS |
 | `pairwise.txt` | 18 pairwise rows pass |
 | `coverage.txt` | 100% statements/branches/functions/lines |
 | `coverage-summary.json` | Machine-readable copy of the coverage summary |
@@ -35,9 +37,11 @@ Playwright Chromium (headless shell 1248).
 | `e2e-rerun.txt` | Local single mobile rerun: same teardown timeout |
 
 Published CI on `f88a94b` (run `42590832942`) passed: 310 tests, 76 E2E pass /
-12 capability skips, both typechecks, build, CodeQL and Analyze. The local mobile
-teardown failure did not reproduce on the Linux runner, so it is recorded as an
-environment-specific result rather than a VT-122 pass.
+12 capability skips, both typechecks, build, CodeQL and Analyze. After merging
+`origin/dev`, CI on `e865cdf` (run `42771452722`) passed with 336 tests, 76 E2E
+pass / 12 skips, CodeQL and Analyze. The local mobile teardown failure did not
+reproduce on the Linux runner, so it is recorded as an environment-specific
+result rather than a VT-122 pass.
 
 ## Load summary (three runs)
 

@@ -48,7 +48,8 @@ Targeted coverage is 100% statements (54/54), branches (36/36), functions
 | targeted Vitest after implementation | `evidence/green-targeted.txt` | 15/15 passed |
 | `npm test` after implementation | `evidence/green-full.txt` | 287/287 passed |
 | `npm test` after pairwise | `evidence/green-full-after-pairwise.txt` | 305/305 passed |
-| `npm test` final | `evidence/green-final.txt` | 310/310 passed |
+| `npm test` before merge | `evidence/green-final.txt` | 310/310 passed |
+| `npm test` after merging `dev` | `evidence/green-merge-dev.txt` | 336/336 passed |
 | pairwise suite | `evidence/pairwise.txt` | 18/18 passed |
 | coverage command | `evidence/coverage.txt` | 100% / 100% / 100% / 100% |
 | 20 shuffled runs | `evidence/flaky-shuffle.txt` | 20/20 runs, 36/36 each |
@@ -62,6 +63,7 @@ Targeted coverage is 100% statements (54/54), branches (36/36), functions
 | T07 green after fix | `evidence/review91-t07.txt` | 1/1 passed |
 | Review P2 fix summary | `evidence/review-91-fix.md` | root cause, fix, red/green, re-review, approval auto-dismissed by docs commit |
 | `npm run build` | `evidence/build.txt` | typechecks + build PASS |
+| `npm run build` after merging `dev` | `evidence/build-merge-dev.txt` | typechecks + build PASS |
 | full E2E regression | `evidence/e2e.txt` | 75 passed, 12 skipped, 1 failed (mobile teardown) |
 | single E2E rerun | `evidence/e2e-rerun.txt` | same mobile teardown timeout |
 
@@ -73,5 +75,7 @@ Targeted coverage is 100% statements (54/54), branches (36/36), functions
 | Issue | #90, assignee Terivn |
 | Branch | `feat/90-idempotent-preset-resubmit` |
 | Draft PR | [#91](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/91), base `dev` |
-| Commits | `217a9d9` RED, `4417683` GREEN, `ed0805a` pairwise/load, `352b6cc` coverage/flaky, `04b5ba4` AI candidates, `81b98d5` strengthen, `86cb9eb` mutation evidence, `e50534e` docs, `cec1327` PR link, `f88a94b` review P2 fix |
+| Commits | `217a9d9` RED, `4417683` GREEN, `ed0805a` pairwise/load, `352b6cc` coverage/flaky, `04b5ba4` AI candidates, `81b98d5` strengthen, `86cb9eb` mutation evidence, `e50534e` docs, `cec1327` PR link, `f88a94b` review P2 fix, `aab05b3` P2 evidence, `0894761` approval-dismissal note, `e865cdf` merge of `dev`/PR #89 |
+| Merge conflicts | `package.json`, `package-lock.json`, `tsconfig.tests.json`: kept both `@vitest/coverage-v8` and `fast-check`, and both `vitest.vt120-load.config.ts` / `vitest.vt122-load.config.ts` |
+| Post-merge CI | `42771452722` on `e865cdf`: 336 tests, 76 E2E pass / 12 skips, CodeQL/Analyze PASS |
 | Mutant | `eb1b1d320484813aeb9f23d89c552185d514a130` on local `temp/vt122-mutation` only |
