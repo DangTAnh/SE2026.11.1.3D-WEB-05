@@ -43,6 +43,7 @@
   th { background: #e7f1f5; color: #0b4f6c; font-weight: 600; }
   table.small { font-size: 8.8pt; line-height: 1.28; }
   table.tiny { font-size: 8.1pt; line-height: 1.24; }
+  .page:last-child table.tiny th, .page:last-child table.tiny td { padding: 0.9mm 1.4mm; }
   code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.6pt; }
   pre {
     margin: 1.2mm 0 2mm; padding: 2mm 2.5mm; background: #f4f7f8;
@@ -90,6 +91,7 @@
       <tr><td>Issue</td><td><span class="mono">#90</span> — giao cho Terivn</td></tr>
       <tr><td>Branch</td><td><span class="mono">feat/90-idempotent-preset-resubmit</span></td></tr>
       <tr><td>Pull Request</td><td><span class="mono">DRAFT #91 — github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/91</span></td></tr>
+      <tr><td>Commit kỹ thuật cuối</td><td><span class="mono">f88a94b</span> (review P2 fix); commit tài liệu theo sau</td></tr>
       <tr><td>Variant</td><td><strong>VT-122</strong></td></tr>
       <tr><td>Ngày</td><td>08/11/2026</td></tr>
     </table>
@@ -199,7 +201,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><td>Pairwise + load</td><td><span class="mono">ed0805a</span></td><td>18/18 pairwise; full suite <span class="ok">305/305</span></td><td><span class="mono">pairwise.txt</span></td></tr>
     <tr><td>Coverage + flaky</td><td><span class="mono">352b6cc</span></td><td>100% coverage; 20 seed shuffle không lỗi</td><td><span class="mono">coverage.txt</span>, <span class="mono">flaky-shuffle.txt</span></td></tr>
     <tr><td>AI + mutation</td><td><span class="mono">04b5ba4</span>…<span class="mono">86cb9eb</span></td><td>6 ứng viên AI pass nhưng yếu; mutant bị giết bởi test biên</td><td><span class="mono">ai-candidates-*.txt</span>, <span class="mono">mutation-*.txt</span></td></tr>
-    <tr><td>Final</td><td><span class="mono">86cb9eb</span></td><td><span class="ok">310/310</span> Vitest; build PASS (chỉ còn cảnh báo chunk cũ)</td><td><span class="mono">green-final.txt</span>, <span class="mono">build.txt</span></td></tr>
+    <tr><td>Review P2</td><td><span class="mono">f88a94b</span></td><td>Chặn requestId không phải string; T07 đỏ → xanh; re-review APPROVE</td><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07*.txt</span></td></tr>
+    <tr><td>Final</td><td><span class="mono">f88a94b</span></td><td><span class="ok">310/310</span> Vitest; CI verify PASS; build PASS (cảnh báo chunk cũ)</td><td><span class="mono">green-final.txt</span>, <span class="mono">build.txt</span></td></tr>
   </table>
   <h3>Danh mục 38 test VT-122</h3>
   <table class="small">
@@ -223,7 +226,7 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
   <h3>4.1 Phân vùng tương đương</h3>
   <table class="small">
     <tr><th style="width:22%">Đầu vào / trạng thái</th><th>Lớp hợp lệ</th><th>Lớp không hợp lệ</th></tr>
-    <tr><td><span class="mono">requestId</span></td><td>1–128 ký tự thuộc <span class="mono">A–Z a–z 0–9 . _ : -</span></td><td>rỗng, có dấu cách, có <span class="mono">/</span>, dài 129</td></tr>
+    <tr><td><span class="mono">requestId</span></td><td>string JavaScript, 1–128 ký tự thuộc <span class="mono">A–Z a–z 0–9 . _ : -</span></td><td>rỗng, có dấu cách, có <span class="mono">/</span>, dài 129; và giá trị không phải string: <span class="mono">undefined</span>, <span class="mono">null</span>, số, boolean, mảng, object có <span class="mono">toString</span></td></tr>
     <tr><td>document</td><td>schema v2 đầy đủ, name tùy chọn</td><td>unknown key, schema v1, sai cấu trúc</td></tr>
     <tr><td>Entry trước đó</td><td>none, committed-same, failed</td><td>committed-different (xung đột)</td></tr>
     <tr><td>Đồng hồ so với <span class="mono">expiresAt</span></td><td>before, exact (inclusive)</td><td>after</td></tr>
@@ -363,6 +366,14 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     nội dung của thành viên khác. Chi tiết đầy đủ ở <span class="mono">docs/04-testing/vt122/ai-usage-log.md</span>
     và mục Phụ lục.
   </p>
+  <p style="font-size:8.8pt">
+    <strong>Review #91 (AI-assisted, TV4).</strong> Review phát hiện P2: <span class="mono">RegExp.test</span>
+    tự ép kiểu nên <span class="mono">undefined</span>, <span class="mono">null</span>, số, boolean, mảng
+    hay object có <span class="mono">toString</span> vẫn lọt qua guard. Bản sửa <span class="mono">f88a94b</span>
+    kiểm tra <span class="mono">typeof requestId !== 'string'</span> trước regex; T07 được mở rộng và
+    đỏ→xanh được ghi lại. Re-review chuyển sang <strong>APPROVE</strong>. Đây là bằng chứng kỹ thuật
+    AI-assisted, không thay thế phê duyệt của con người.
+  </p>
   <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 6 / 8</span></div>
 </section>
 
@@ -379,6 +390,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
         <li>20 seed shuffle: <span class="ok">0 lỗi</span>.</li>
         <li>100 task trùng: <span class="ok">10 call → 10 effect</span>, p95 54–58 ms.</li>
         <li>Mutation <span class="mono">&gt;</span> → <span class="mono">&gt;=</span>: <span class="ok">bị giết</span> bởi test biên.</li>
+        <li>Review P2 <span class="mono">f88a94b</span>: chặn id không phải string; T07 đỏ→xanh.</li>
+        <li>CI <span class="mono">verify</span> trên <span class="mono">f88a94b</span>: <span class="ok">PASS</span> (76 E2E / 12 skip).</li>
         <li><span class="mono">npm run build</span>: <span class="ok">PASS</span>.</li>
       </ul>
     </div>
@@ -388,41 +401,41 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
         <li>Không có API/DB/auth/UI thật; port chỉ là test double.</li>
         <li>Exactly-once xuyên process/restart: <strong>NOT_RUN</strong>.</li>
         <li>Load chỉ 1 tiến trình, I/O mô phỏng; không phải capacity test.</li>
-        <li>Cache chỉ dọn khi truy cập, không có background sweep.</li>
-        <li>E2E regression: 75 pass, 12 skip, <span class="bad">1 fail</span> do teardown mobile Chromium; chạy lại đơn lẻ vẫn fail, không liên quan module này.</li>
-        <li>PR phải để <strong>draft</strong> và chờ review của nhóm trước khi merge.</li>
+        <li>Cache chỉ dọn khi truy cập, không có background sweep; không phải cache giới hạn bộ nhớ.</li>
+        <li>Local E2E: 75 pass, 12 skip, <span class="bad">1 fail</span> do teardown mobile Chromium; CI Linux pass 76/12 với cùng test file.</li>
+        <li>PR phải để <strong>draft</strong> và chờ phê duyệt của con người trước khi merge.</li>
       </ul>
     </div>
   </div>
   <h3>Suy ngẫm cá nhân</h3>
   <p>
-    Phần khó nhất của VT-122 không phải viết cache mà là quyết định test được phép khẳng định điều gì.
-    Repository không có API lưu, database hay UI, nên một test browser trên endpoint giả sẽ trông ấn
-    tượng nhưng không chứng minh được tính bền vững. Tôi chọn lát cắt nhỏ hơn — service đứng trước port —
-    và ghi rõ giới hạn vào README, PR và báo cáo. Mỗi test xanh vì thế có ý nghĩa cụ thể.
+    Phần khó nhất của VT-122 không phải viết cache mà là quyết định test được phép khẳng định gì.
+    Repository không có API lưu, database hay UI, nên test browser trên endpoint giả sẽ trông ấn tượng
+    nhưng không chứng minh tính bền vững. Tôi chọn lát cắt service + port và ghi rõ giới hạn vào README,
+    PR, báo cáo.
   </p>
   <p>
-    Viết test trước đã thay đổi thiết kế. Ý tưởng đầu của tôi là “nhớ receipt gần nhất trong một khoảng”.
-    Các test RED buộc tôi tách ba câu hỏi: service có gọi port không, store có tạo effect không, và caller
-    có được coi là thành công không. Khi số call và số effect là hai oracle riêng, lỗ hổng mất response
-    hiện ra. TTL phía client không thể chứng minh exactly-once; port phải gắn nguyên tử requestId,
-    canonical và effect. Tôi vẫn giữ TTL vì nó tránh call không cần thiết, nhưng không còn gọi nó là bảo đảm.
+    Viết test trước đã thay đổi thiết kế. Ý tưởng đầu là “nhớ receipt gần nhất trong một khoảng”. Test RED
+    buộc tôi tách ba câu hỏi: có gọi port không, store có tạo effect không, caller có được coi là thành công
+    không. Khi call và effect là hai oracle riêng, lỗ hổng mất response hiện ra. TTL phía client không thể
+    chứng minh exactly-once; port phải gắn nguyên tử requestId, canonical và effect. Tôi vẫn giữ TTL để
+    tránh call không cần thiết, nhưng không còn gọi nó là bảo đảm.
   </p>
   <p>
-    Thí nghiệm mutation là giờ học hữu ích nhất. Đổi <span class="mono">&gt;</span> thành
+    Mutation là giờ học hữu ích nhất. Đổi <span class="mono">&gt;</span> thành
     <span class="mono">&gt;=</span> chỉ một ký tự nhưng biến “đúng hạn thì replay” thành “đúng hạn đã hết hạn”.
     T02 vẫn pass, cho thấy test replay happy-path không thể giết mutant; chỉ T05, T14, T22 và các dòng
     pairwise exact fail. Tôi coi test không ở biên còn sống là thông tin, không phải vấn đề cần che.
   </p>
   <p>
-    Bài học từ AI cũng tương tự: sáu test sinh ra đều pass ngay, và đó chính là lý do chúng nguy hiểm.
-    Bốn test assert quá ít hoặc lặp, một test dùng timer thật. Tôi xóa bốn, viết lại hai với clock inject
-    và effect oracle. Một test AI pass chỉ là ứng viên, không phải bằng chứng. Con số tôi tin là con số có
-    log: 100 task trùng tạo đúng 10 effect, còn control bị serialize vượt mục tiêu p95 như thiết kế.
+    Bài học từ AI cũng tương tự: sáu test sinh ra đều pass ngay, nên tôi xóa bốn test yếu/lặp và viết lại
+    hai với clock inject. Một test AI pass chỉ là ứng viên, không phải bằng chứng. Con số tôi tin là con số
+    có log: 100 task trùng tạo đúng 10 effect, còn control serialize vượt p95 như thiết kế.
   </p>
   <p>
-    Nếu có thêm thời gian, tôi sẽ thêm test với adapter transaction thật và case restart để bắt đầu bịt
-    hai khoảng trống mà bằng chứng hiện tại chưa thể đóng.
+    Review #91 dạy thêm: kiểu TypeScript không phải kiểm tra runtime. <span class="mono">RegExp.test</span>
+    ép kiểu nên <span class="mono">undefined</span> vẫn lọt qua guard. Tôi giữ test đỏ của T07 làm bằng chứng
+    thay vì chỉ ghi “đã sửa”. Nếu có thời gian, tôi sẽ thêm adapter transaction thật và case restart.
   </p>
   <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 7 / 8</span></div>
 </section>
@@ -446,7 +459,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><th style="width:32%">Tệp</th><th>Nội dung</th></tr>
     <tr><td><span class="mono">red.txt</span></td><td>12 failed / 3 passed trước implementation</td></tr>
     <tr><td><span class="mono">green-targeted.txt</span>, <span class="mono">green-full.txt</span></td><td>15/15 targeted; 287/287 full sau GREEN</td></tr>
-    <tr><td><span class="mono">green-final.txt</span></td><td>310/310 full suite cuối</td></tr>
+    <tr><td><span class="mono">green-final.txt</span></td><td>310/310 full suite cuối trên <span class="mono">f88a94b</span></td></tr>
+    <tr><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07-red.txt</span>, <span class="mono">review91-t07.txt</span></td><td>P2 non-string id: T07 đỏ (guard revert) → xanh (guard restored); re-review APPROVE</td></tr>
     <tr><td><span class="mono">pairwise.txt</span>, <span class="mono">tests/fixtures/vt122-pairwise.json</span></td><td>18/18 dòng; 29 combo; 52/52 cặp (100%)</td></tr>
     <tr><td><span class="mono">coverage.txt</span>, <span class="mono">coverage-summary.json</span></td><td>100% statements/branches/functions/lines</td></tr>
     <tr><td><span class="mono">flaky-shuffle.txt</span></td><td>20 seed 23001847–23001866, 36/36 mỗi lần</td></tr>
@@ -455,7 +469,8 @@ new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
     <tr><td><span class="mono">unique.json</span>, <span class="mono">duplicates.json</span>, <span class="mono">serialized-control.json</span></td><td>Load run 1; kèm <span class="mono">load-run2/</span>, <span class="mono">load-run3/</span></td></tr>
     <tr><td><span class="mono">ai-candidates-before.txt</span>, <span class="mono">ai-candidates-after.txt</span></td><td>6/6 pass trước review; 2/2 pass sau khi sửa</td></tr>
     <tr><td><span class="mono">build.txt</span></td><td>Typecheck + Vite build PASS; cảnh báo chunk có sẵn</td></tr>
-    <tr><td><span class="mono">e2e.txt</span>, <span class="mono">e2e-rerun.txt</span></td><td>75 pass, 12 skip, 1 fail teardown mobile; chạy lại vẫn fail</td></tr>
+    <tr><td><span class="mono">e2e.txt</span>, <span class="mono">e2e-rerun.txt</span></td><td>Local: 75 pass, 12 skip, 1 fail teardown mobile; chạy lại vẫn fail. CI Linux: 76 pass / 12 skip</td></tr>
+    <tr><td>CI run <span class="mono">42590832942</span></td><td><span class="mono">f88a94b</span>: verify PASS; 310 test, 76 E2E, 12 skip; CodeQL/Analyze PASS</td></tr>
   </table>
 
   <h3>Lệnh tái lập chính</h3>

@@ -76,8 +76,9 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
 | Mutation | `evidence/mutation-meta.txt`, `mutation-survive.txt`, `mutation-killed.txt`, `mutation-full.txt`, `mutation.diff` |
 | Load | `evidence/unique.json`, `duplicates.json`, `serialized-control.json`, `load-run2/`, `load-run3/` |
 | AI candidates | `evidence/ai-candidates-before.txt`, `evidence/ai-candidates-after.txt` |
+| Review #91 P2 fix | `evidence/review-91-fix.md`, `review91-t07-red.txt`, `review91-t07.txt` |
 | Build | `evidence/build.txt` — typechecks + Vite build PASS (existing chunk advisory) |
-| E2E regression | `evidence/e2e.txt`, `evidence/e2e-rerun.txt` |
+| E2E regression | `evidence/e2e.txt`, `evidence/e2e-rerun.txt`; CI passed 76/12 |
 
 ## Results at a glance
 
@@ -85,7 +86,13 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
   integration + 18 pairwise + 2 recovery).
 - Targeted coverage of `src/presets/resubmission.ts`: 100% statements (54/54),
   100% branches (36/36), 100% functions (11/11), 100% lines (50/50).
+- Review #91 P2: `RegExp.test` used to coerce non-string ids. The guard now
+  checks `typeof requestId !== 'string'` first; T07 covers `undefined`, `null`,
+  `123`, `true`, an array and an object with `toString`. Removing the guard
+  fails T07 (`review91-t07-red.txt`); restoring it passes (`review91-t07.txt`).
 - 20 shuffled seeds `23001847`–`23001866`: 36/36 each, no failures.
+- CI on `f88a94b`: `verify` PASS (310 tests, 76 E2E pass / 12 capability skips),
+  CodeQL and Analyze PASS.
 - 100 concurrent unique tasks: p95 58.6–64.2 ms over three runs; 100 calls and
   100 effects.
 - 100 concurrent tasks over 10 keys: p95 54.0–58.0 ms; only 10 calls and
@@ -103,9 +110,12 @@ All raw logs are in [`evidence/`](evidence/). The report indexes them.
 - The load harness runs 100 promises in one Node process with 50 ms simulated
   I/O. It is not a network/DB/user-capacity benchmark.
 - The retention cache is pruned on access; there is no background sweep.
-- E2E does not exercise this slice because no save UI/backend exists. The full
-  E2E regression run is recorded for honesty; one mobile Chromium teardown
-  timeout is documented in the evidence and is unrelated to VT-122.
+- E2E does not exercise this slice because no save UI/backend exists. The local
+  full E2E run had one mobile Chromium teardown timeout, documented in the
+  evidence; the same unchanged test passed on the Linux CI run (76 E2E pass /
+  12 capability skips). Neither result exercises VT-122.
+- Retention eviction is lazy: an untouched key remains until that key is
+  accessed again. This is not bounded-memory eviction, as noted in review #91.
 - Draft only. Team review is required before merge.
 
 ## Status vocabulary

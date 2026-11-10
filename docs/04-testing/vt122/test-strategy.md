@@ -25,7 +25,7 @@ network are used in unit/integration/pairwise tests. The load harness uses
 
 | Input / state | Valid classes | Invalid classes |
 | --- | --- | --- |
-| `requestId` | 1–128 chars of `A–Z a–z 0–9 . _ : -` | empty, space, `/`, length 129 |
+| `requestId` | JavaScript string, 1–128 chars of `A–Z a–z 0–9 . _ : -` | empty, space, `/`, length 129, and non-string runtime values (`undefined`, `null`, `123`, `true`, array, object with `toString`) |
 | document | schema v2, complete config, optional name | unknown key, schema v1, malformed |
 | prior entry | none, committed-same, committed-different, failed | — |
 | clock relative to `expiresAt` | before, exact | after |
@@ -139,3 +139,7 @@ The tool is not a runtime dependency.
   boundary test while a non-boundary test survives.
 - AI candidates were run before review: all six passed, yet four were deleted
   and two rewritten because passing is not the same as being a good oracle.
+- T07 includes non-string runtime values, because a TypeScript annotation does
+  not enforce the JavaScript boundary and `RegExp.test` coerces its argument.
+  The guard is reverted once to confirm the regression test fails
+  (`evidence/review91-t07-red.txt`), then restored (`review91-t07.txt`).

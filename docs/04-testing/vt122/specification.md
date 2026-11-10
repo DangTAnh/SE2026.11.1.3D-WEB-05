@@ -59,8 +59,10 @@ class PresetSaveService {
 
 Rules:
 
-1. `requestId` must match `^[A-Za-z0-9._:-]{1,128}$`; otherwise `TypeError`
-   before serialization or any port call.
+1. `requestId` must be a **string** matching `^[A-Za-z0-9._:-]{1,128}$`;
+   otherwise `TypeError` before serialization or any port call. The runtime
+   type check is mandatory because `RegExp.test` would otherwise coerce
+   `undefined`, `null`, numbers, booleans, arrays or objects with `toString`.
 2. The document is canonicalized with the existing `serializePresetDocument`,
    so schema/unknown-key validation runs before the port.
 3. Replaying the same `(requestId, canonical)` while an entry is committed and
@@ -81,7 +83,7 @@ Rules:
 | --- | --- |
 | AC1 | Same id + canonical, sequential or concurrent, within retention: exactly one store effect and the same confirmed receipt. |
 | AC2 | Same id + different canonical within retention: `SaveConflictError`, no additional call/effect; existing receipt preserved. |
-| AC3 | Invalid id or invalid document (unknown key, v1) is rejected before the port: zero calls/effects. |
+| AC3 | Invalid id (including non-string runtime values) or invalid document (unknown key, v1) is rejected before the port: zero calls/effects. |
 | AC4 | Retention boundary is inclusive: exact expiry replays; one millisecond later may call again; in-flight work never expires. |
 | AC5 | Port failure or a mismatched/uncommitted receipt never produces confirmed success; a retry after a lost response keeps at most one effect under the atomic port contract. |
 
@@ -96,6 +98,7 @@ Rules:
 | R5 | Process restart / second process | Local cache is empty | Explicit limitation: port must be durable and atomic; not proven here |
 | R6 | Retained entries grow | Memory growth | Entries pruned on access; no background sweep (documented) |
 | R7 | Test double mistaken for production proof | False confidence | Scope and NOT_RUN statements in README/PR/report |
+| R8 | Regex coerces a non-string id | Malformed identity stored / duplicate | `typeof requestId !== 'string'` guard; T07 red/green in `evidence/review-91-fix.md` |
 
 ## 7. Out of scope
 

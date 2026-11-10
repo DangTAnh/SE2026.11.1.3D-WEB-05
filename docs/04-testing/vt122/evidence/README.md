@@ -27,9 +27,17 @@ Playwright Chromium (headless shell 1248).
 | `load-run3.txt`, `load-run3/` | Load command output and JSON, run 3 |
 | `ai-candidates-before.txt` | Six AI candidates all passing before review |
 | `ai-candidates-after.txt` | Two rewritten recovery tests |
+| `review-91-fix.md` | Review P2: non-string request ids, root cause, fix, red/green |
+| `review91-t07-red.txt` | T07 with the `typeof` guard reverted: 1 failed |
+| `review91-t07.txt` | T07 after the fix: 1/1 passed |
 | `build.txt` | `npm run build` including both typechecks |
-| `e2e.txt` | Full E2E regression: 75 passed, 12 skipped, 1 mobile teardown timeout |
-| `e2e-rerun.txt` | Single mobile test rerun: same teardown timeout |
+| `e2e.txt` | Local full E2E: 75 passed, 12 skipped, 1 mobile teardown timeout |
+| `e2e-rerun.txt` | Local single mobile rerun: same teardown timeout |
+
+Published CI on `f88a94b` (run `42590832942`) passed: 310 tests, 76 E2E pass /
+12 capability skips, both typechecks, build, CodeQL and Analyze. The local mobile
+teardown failure did not reproduce on the Linux runner, so it is recorded as an
+environment-specific result rather than a VT-122 pass.
 
 ## Load summary (three runs)
 
@@ -63,5 +71,5 @@ Error: browserContext.close: Test ended.
 The same single test was rerun alone and failed the same way (`e2e-rerun.txt`),
 so this is reproducible in this environment, not a one-off random flake. The
 VT-122 module is not imported by the application or by that test; no UI, backend
-or renderer file was changed. This is recorded as an environment/test-harness
-limitation, not as a VT-122 pass.
+or renderer file was changed. The unchanged test passed on the Linux CI run, so
+this is recorded as a Windows test-harness limitation, not as a VT-122 pass.
