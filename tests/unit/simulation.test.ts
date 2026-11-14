@@ -231,6 +231,15 @@ test('reference step does not import DOM or three', () => {
   }
 });
 
+test('parity harness mirrors the adapter frame-delta clamp (#96)', () => {
+  const clampOf = (file: string): string | undefined =>
+    /MAX_FRAME_DELTA = ([\d.]+);/.exec(readFileSync(file, 'utf8'))?.[1];
+  const adapter = clampOf('src/simulations/rendererAdapter.ts');
+  const harness = clampOf('tests/e2e/fixtures/simulation-parity.ts');
+  expect(adapter).toBeTruthy();
+  expect(harness).toBe(adapter);
+});
+
 test('golden values give the kernels a numeric baseline', () => {
   const goldenConfig: SimulationConfig = {
     mode: 'attractor',

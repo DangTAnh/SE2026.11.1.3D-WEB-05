@@ -15,7 +15,7 @@
   `0.5`/`50`, damping `0.8`/`1`, and keeps the zero-delta no-op.
 - Targeted desktop Chromium: 15/15 WebGL2 parity PASS, 3/3 corrupt readbacks
   rejected, 8/8 invalid parameters rejected, 2/2 WebGPU SKIP (no adapter).
-  Typechecks, 339/339 units and build PASS. WebGPU, physical-GPU execution and
+  Typechecks, 340/340 units and build PASS. WebGPU, physical-GPU execution and
   performance remain NOT_RUN; software WebGL2 is not hardware acceptance.
 - [Matrix, deltas, environment and limits](04-testing/gpu-kernel-parity-2026-11-14.md).
   Candidate into `dev`; TV3/TV5 review and a human approval are still required.

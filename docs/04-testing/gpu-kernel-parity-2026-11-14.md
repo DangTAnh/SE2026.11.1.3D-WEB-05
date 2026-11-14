@@ -123,7 +123,7 @@ cannot match the CPU reference.
 |---|---|
 | `npm run typecheck` | PASS |
 | `npm run typecheck:tests` | PASS |
-| `npm test` | 339/339 PASS (30 files) |
+| `npm test` | 340/340 PASS (30 files) |
 | Targeted parity spec | 3/3 Playwright tests PASS (4.8 s) |
 | Full E2E (`--grep-invert @evidence --workers=1`) | 77 passed, 13 skipped, 0 failed (11.6 min) |
 | `npm run build` | PASS |
