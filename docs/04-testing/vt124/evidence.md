@@ -23,6 +23,7 @@ User plan review and correction are recorded in [plan.md](plan.md).
 | V8 selected-module coverage | targeted suite with coverage.include=src/presets/batchImport.ts | lines21/21,statements27/27,functions2/2;branches19/20=95% |
 | Shuffle repeat | targeted suite, seeds12493/20261114/930124 | each exit0,24/24 PASS |
 | Load rounds1-5 | vitest.vt124-load.config.ts | each exit0,120tasks,0errors;p95 62.4054/61.6537/63.7603/71.9902/82.1818ms |
+| Final EOF-only cleanup | both typechecks; npm test; npm run build | exit0,360/360 PASS; removed trailing blank EOF lines only, no behavior change |
 
 The initial RED uses a deliberately throwing contract stub, not an old production
 bulk implementation. For example, T02/T03 expected two accepted documents and
@@ -70,6 +71,8 @@ execution logs, exit ledgers and all five load JSONs are also preserved in
 [evidence/](evidence/). Public text excludes personal student metadata.
 Committed console-log copies normalize trailing spaces/blank EOF lines for
 git diff --check; verbatim originals remain in the local evidence package.
+The complete E2E run preceded the final trailing-EOF cleanup; final G0/unit
+checks were repeated afterward. No production/test logic changed in that cleanup.
 
 ## Mutation and performance interpretation
 

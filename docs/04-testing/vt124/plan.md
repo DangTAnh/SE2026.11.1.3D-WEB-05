@@ -65,4 +65,3 @@ hardware, real-user capacity or durable persistence.
 Raw local logs: vt124-evidence.local/ (ignored; no personal data in public docs).
 Results/evidence ledger is updated only after commands finish. Do not commit
 temporary files, node_modules, dist or other students' work.
-

@@ -118,4 +118,3 @@ test('VT124-T15b byte budget applies to the whole batch with multibyte documents
 test.each([null, undefined, {}, '[]'])('VT124-T21 non-array envelope rejects (%s)', input => {
   expect(() => importPresetBatch(input as never)).toThrow(TypeError);
 });
-

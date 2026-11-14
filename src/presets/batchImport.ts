@@ -50,4 +50,3 @@ export function importPresetBatch(inputs: readonly unknown[]): BatchImportResult
       : rejectedCount === 0 ? 'VALID_ONLY' : 'MIXED';
   return { state, acceptedCount, rejectedCount, items };
 }
-

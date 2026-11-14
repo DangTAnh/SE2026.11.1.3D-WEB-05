@@ -11,4 +11,3 @@ export function vt124Document(name = 'VT124 cloud', mode: 'attractor' | 'vortex'
   config.camera.distance = 42;
   return { schemaVersion: 2, app: '3D-WEB-05', name, config };
 }
-

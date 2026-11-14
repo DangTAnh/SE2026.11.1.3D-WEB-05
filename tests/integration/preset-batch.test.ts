@@ -55,4 +55,3 @@ test('VT124-T22 published examples stay byte-identical after batch round-trip', 
     expect(serializePresetDocument(item.document)).toBe(texts[index]);
   });
 });
-
