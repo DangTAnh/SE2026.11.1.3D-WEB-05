@@ -18,10 +18,12 @@ export interface BatchImportResult {
  */
 export function importPresetBatch(inputs: readonly unknown[]): BatchImportResult {
   if (!Array.isArray(inputs)) throw new TypeError('Preset batch must be an array');
-  if (inputs.length > 100) throw new RangeError('Preset batch exceeds 100 records');
+  const length = inputs.length;
+  if (length > 100) throw new RangeError('Preset batch exceeds 100 records');
 
-  // Snapshot/densify so even sparse input slots receive exactly one outcome.
-  const records: unknown[] = Array.from(inputs);
+  // Snapshot the checked indexed positions, independent of a custom iterator.
+  // Reading holes by index still yields undefined and an explicit rejection.
+  const records: unknown[] = Array.from({ length }, (_, index) => inputs[index]);
   const encoder = new TextEncoder();
   let bytes = 0;
   for (const record of records) {
