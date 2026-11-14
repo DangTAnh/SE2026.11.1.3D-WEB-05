@@ -171,6 +171,8 @@ export interface BenchmarkRunProtocol {
  * Samples one backend with the fixed protocol and resolves once the run has
  * exactly `sampleCount` samples. The port stays owned by the caller and is not
  * disposed here. Tests pass a smaller protocol; production uses the default.
+ * Backend loss or replacement rejects the run; an available paused port may
+ * resume. This does not impose a timeout on pauses or define FPS freshness.
  */
 export function collectBenchmarkSamples(
   port: RendererPort,
@@ -188,10 +190,20 @@ export function collectBenchmarkSamples(
       return parsePreset(pinnedPreset);
     };
     const samples: PerformanceSnapshot[] = [];
+    let actual: ActualBackend | undefined;
     const collector = new PerformanceCollector(port, {
       warmUpMs: protocol.warmUpMs,
       cadenceMs: protocol.cadenceMs,
       getConfig: checkedConfig,
+      onStatus: (status) => {
+        if (status.actual === 'unavailable') {
+          throw new Error('collectBenchmarkSamples: backend became unavailable during sampling');
+        }
+        if (actual !== undefined && actual !== status.actual) {
+          throw new Error('collectBenchmarkSamples: actual backend changed during sampling');
+        }
+        actual = status.actual;
+      },
       onSample: (sample) => {
         checkedConfig(); // Also check after the asynchronous hash/status capture.
         samples.push(sample);

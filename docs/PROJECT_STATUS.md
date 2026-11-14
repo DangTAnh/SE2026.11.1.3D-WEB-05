@@ -1,5 +1,53 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — PR #87 integration with current dev
+
+- Normally merge dev@e55405d into the published Issue #85 branch; preserve
+  history. Resolve package/lockfile/test-config conflicts by retaining the dev
+  lockfile and all load configurations. No production workflow changes.
+- Full local verify PASS: 353 tests /31 files, 76 E2E PASS /12 capability SKIP
+  in 6.3 minutes, no actual retry/flaky entries, both typechecks and build PASS.
+  All three current load suites pass; no real-user capacity or GPU claim.
+- [Integration evidence and limits](04-testing/reviewer-concurrency-integration-2026-11-14.md).
+  Remote CI and independent human review remain required; #85 stays open.
+  The unmerged #92 test fix and #70 release/deployment gates remain separate.
+
+## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
+
+- Baseline dev@f00271e; isolated issue branch. Canonical full-document operation
+  identity, coalesced retries, matching receipt before success, finite attempts.
+- No real service/persistence/auth/UI added: atomic dedupe is a required port
+  contract demonstrated by a test-only ledger, not a durable exactly-once claim.
+- Test-first RED e626654 -> GREEN 184cdd2. Success-on-failed-write mutant is on
+  separate local-only e1142f8, NOT submission ancestry; T04/T13 kill it.
+- Reviewed tests: 297 repository tests PASS, selected module coverage 100%.
+  Three shuffled/reseeded 25-test runs PASS. Five 80-task load rounds PASS,
+  common-start queue/retry-inclusive p95 20.9024..48.1686ms under simulated
+  1ms service I/O. Earlier per-task-start rounds are retained as historical.
+- Completed full verify exit0: both typechecks, 297 units, 76 E2E PASS/12
+  capability SKIP (6.7min, no actual retry/flaky) and build PASS. An earlier
+  interrupted/incomplete session is retained separately, not labelled PASS.
+  Full browser verify preceded final load-clock tightening; final G0/unit/five
+  load runs reverify the follow-up without product-code changes.
+- 09/11/2026 review follow-up: runtime `typeof` key guard plus T06b; non-string
+  operation keys are rejected before any port call. Current head: 298/298
+  repository tests, source/test typechecks and build PASS.
+- [Scope, commands, evidence and limits](04-testing/VT120-README.md).
+  Owner/human review required before merge; no deployment/release claim.
+
+## 04/11/2026 — Issue #82 benchmark backend-loss fix candidate
+
+- PR #70 change request reproduced on dev@8f7c3ee: stopped/unavailable backend
+  leaves benchmark pending. Two regressions FAIL before the fix and PASS after.
+- Optional collector status observation lets the benchmark reject unavailable
+  or replaced backends before paused snapshots are skipped. Sampling timers are
+  disposed; caller-owned adapter cleanup runs. Available pause/resume remains.
+- Both typechecks/build and 270 tests PASS; production WebGL2 context-loss smoke
+  2/2 desktop/mobile PASS, retries=0. Full local E2E/new measurements NOT_RUN.
+- [Evidence and limits](04-testing/benchmark-backend-loss-2026-11-04.md).
+  This is a candidate into dev; #70 still needs integration, final CI/re-review
+  and independent release approval. No deployment, tag or release acceptance.
+
 ## 31/10/2026 — Issue #79 cached GPU timestamp fix candidate
 
 - Branch `fix/79-cached-gpu-timestamps` starts from merged #78 at
