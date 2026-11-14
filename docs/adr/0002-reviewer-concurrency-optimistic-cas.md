@@ -80,7 +80,7 @@ Negative:
 ## Evidence
 
 - Unit and race evidence:
-  `tests/unit/review-workflow.test.ts` (T01–T19).
+  `tests/unit/review-workflow.test.ts` (T01–T14, T17–T19; 17 tests).
 - Load evidence: `tests/load/review-load.test.ts` (T15).
 - Mutation evidence:
   [03-mutation.log](../04-testing/evidence/reviewer-concurrency-2026-11-06/03-mutation.log).

@@ -55,6 +55,10 @@ those functions rather than inventing a second preset model.
 | NFR3 | Tests are deterministic: no wall-clock assertions, no random data, no shared mutable test state. Interleavings are forced with an injected gated hasher; the suite is repeated 30–50 times with a recorded pass rate. |
 | NFR4 | No new runtime dependency, no preset-schema change and no `configHash` change. The slice reuses `serializePresetDocument` / `parsePresetDocument` and the existing Vitest harness. |
 
+Issue #85 uses NFR2 for determinism and has no separate lost-update NFR; this
+table keeps the lost-update constraint as NFR2 and determinism as NFR3. The
+mapping is: Issue NFR1 → NFR1, Issue NFR2 → NFR3.
+
 ## 5. Single most important invariant
 
 **A review action never changes the reviewed document. Every write is conditional on the

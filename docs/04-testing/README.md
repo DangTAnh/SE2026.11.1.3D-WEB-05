@@ -27,7 +27,7 @@ when a change also needs the test typecheck.
 ## Review slice
 
 ```sh
-npx vitest run tests/unit/review-workflow.test.ts  # T01-T19, deterministic unit/race suite
+npx vitest run tests/unit/review-workflow.test.ts  # T01-T14, T17-T19 (17 tests), deterministic unit/race suite
 npm run test:load                                  # T15, 40 concurrent tasks, p95 budget
 npm run test:coverage                              # coverage for src/presets/review.ts
 ```
