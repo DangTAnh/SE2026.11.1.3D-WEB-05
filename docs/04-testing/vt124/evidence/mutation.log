@@ -1,0 +1,398 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 npx
+npm notice run vitest run tests/unit/preset-batch.test.ts tests/integration/preset-batch.test.ts
+
+ RUN  v5.0.3 C:/Users/Admin/.codex/worktrees/vt124-bulk-preset-import/SE2026.11.1.3D-WEB-05
+
+ ❯ tests/integration/preset-batch.test.ts (5 tests | 5 failed) 13ms
+   × VT124-T09 strict schema failures do not poison a later valid record 7ms
+   × VT124-T10 attractor document/name round-trip survives batch import 1ms
+   × VT124-T10 vortex document/name round-trip survives batch import 0ms
+   × VT124-T11 count/range/precision validation remains unchanged 1ms
+   × VT124-T22 published examples stay byte-identical after batch round-trip 3ms
+ ❯ tests/unit/preset-batch.test.ts (19 tests | 14 failed) 22ms
+   × VT124-T01 accepts a complete v2 document 8ms
+   × VT124-T02/T03 valid-error-valid preserves both documents and the rejected position 2ms
+   × VT124-T04 report follows valid/error state transitions 1ms
+   × VT124-T05 report follows valid/error state transitions 0ms
+   × VT124-T06 report follows valid/error state transitions 1ms
+   × VT124-T19 report follows valid/error state transitions 0ms
+   × VT124-T08 empty/new calls do not inherit a previous report 0ms
+   × VT124-T12 non-string runtime records fail independently 2ms
+   × VT124-T20 sparse array slots still receive indexed outcomes 1ms
+   × VT124-T13 results and repeated accepted documents are isolated 0ms
+   × VT124-T14 duplicate documents are retained in order 0ms
+   × VT124-T15 record-count boundary is inclusive 1ms
+   × VT124-T15 UTF-8 byte boundary is inclusive and checked before parsing 1ms
+   × VT124-T15b byte budget applies to the whole batch with multibyte documents 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T09 strict schema failures do not poison a later valid record
+AssertionError: expected [ 'rejected', 'rejected', …(2) ] to deeply equal [ 'rejected', 'rejected', …(2) ]
+
+- Expected
++ Received
+
+  [
+    "rejected",
+    "rejected",
+    "rejected",
+-   "accepted",
++   "rejected",
+  ]
+
+ ❯ tests/integration/preset-batch.test.ts:16:49
+     14|     JSON.stringify(base),
+     15|   ]);
+     16|   expect(result.items.map(item => item.status)).toEqual(['rejected', '…
+       |                                                 ^
+     17|   expect(result.items[3]).toEqual({ index: 3, status: 'accepted', docu…
+     18|   expect(result.acceptedCount).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T10 attractor document/name round-trip survives batch import
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T10 vortex document/name round-trip survives batch import
+Error: valid document was lost
+ ❯ tests/integration/preset-batch.test.ts:26:42
+     24|   const result = importPresetBatch([JSON.stringify(input), '{bad']);
+     25|   const item = result.items[0];
+     26|   if (item?.status !== 'accepted') throw new Error('valid document was…
+       |                                          ^
+     27|   expect(item.document).toEqual(input);
+     28|   expect(parsePresetDocument(serializePresetDocument(item.document))).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T11 count/range/precision validation remains unchanged
+AssertionError: expected [ 'rejected', 'rejected', …(4) ] to deeply equal [ 'accepted', 'accepted', …(4) ]
+
+- Expected
++ Received
+
+  [
+-   "accepted",
+-   "accepted",
++   "rejected",
++   "rejected",
+    "rejected",
+    "rejected",
+    "rejected",
+    "rejected",
+  ]
+
+ ❯ tests/integration/preset-batch.test.ts:41:49
+     39|   precision.config.simulation.speed = 1.2345;
+     40|   const result = importPresetBatch([...inputs, JSON.stringify(precisio…
+     41|   expect(result.items.map(item => item.status)).toEqual([
+       |                                                 ^
+     42|     'accepted', 'accepted', 'rejected', 'rejected', 'rejected', 'rejec…
+     43|   ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T22 published examples stay byte-identical after batch round-trip
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/integration/preset-batch.test.ts:52:32
+     50|     readFileSync(new URL(`../../public/examples/${mode}-preset.json`, …
+     51|   const result = importPresetBatch(texts);
+     52|   expect(result.acceptedCount).toBe(2);
+       |                                ^
+     53|   result.items.forEach((item, index) => {
+     54|     if (item.status !== 'accepted') throw new Error('published example…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T01 accepts a complete v2 document
+AssertionError: expected { state: 'ERROR_ONLY', …(3) } to deeply equal { state: 'VALID_ONLY', …(3) }
+
+- Expected
++ Received
+
+  {
+-   "acceptedCount": 1,
++   "acceptedCount": 0,
+    "items": [
+      {
+-       "document": {
+-         "app": "3D-WEB-05",
+-         "config": {
+-           "backendPreference": "auto",
+-           "camera": {
+-             "autoRotate": false,
+-             "distance": 42,
+-             "enabled": true,
+-           },
+-           "mode": "attractor",
+-           "modes": {
+-             "attractor": {
+-               "attractorDamping": 0.98,
+-               "attractorRadius": 6,
+-               "attractorStrength": 1.5,
+-             },
+-             "vortex": {
+-               "vortexDamping": 0.99,
+-               "vortexStrength": 1.5,
+-             },
+-           },
+-           "rendering": {
+-             "additiveBlend": false,
+-             "backgroundColor": "#07111f",
+-             "opacity": 0.65,
+-             "particleColor": "#6ce6ff",
+-           },
+-           "simulation": {
+-             "lifetime": 7,
+-             "particleCount": 65536,
+-             "particleSize": 2.5,
+-             "spawnRadius": 12,
+-             "speed": 1.2,
+-           },
+-         },
+-         "name": "VT124 cloud",
+-         "schemaVersion": 2,
+-       },
+        "index": 0,
+-       "status": "accepted",
++       "reason": "Preset record must be JSON text",
++       "status": "rejected",
+      },
+    ],
+-   "rejectedCount": 0,
+-   "state": "VALID_ONLY",
++   "rejectedCount": 1,
++   "state": "ERROR_ONLY",
+  }
+
+ ❯ tests/unit/preset-batch.test.ts:11:18
+      9| test('VT124-T01 accepts a complete v2 document', () => {
+     10|   const result = importPresetBatch([valid]);
+     11|   expect(result).toEqual({ state: 'VALID_ONLY', acceptedCount: 1, reje…
+       |                  ^
+     12|     items: [{ index: 0, status: 'accepted', document: vt124Document() …
+     13| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T02/T03 valid-error-valid preserves both documents and the rejected position
+AssertionError: expected 'ERROR_ONLY' to be 'MIXED' // Object.is equality
+
+Expected: "MIXED"
+Received: "ERROR_ONLY"
+
+ ❯ tests/unit/preset-batch.test.ts:18:24
+     16|   const after = vt124Document('after error', 'vortex');
+     17|   const result = importPresetBatch([valid, invalid, JSON.stringify(aft…
+     18|   expect(result.state).toBe('MIXED');
+       |                        ^
+     19|   expect(result.acceptedCount).toBe(2);
+     20|   expect(result.rejectedCount).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T04 report follows valid/error state transitions
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T06 report follows valid/error state transitions
+AssertionError: expected 'ERROR_ONLY' to be 'MIXED' // Object.is equality
+
+Expected: "MIXED"
+Received: "ERROR_ONLY"
+
+ ❯ tests/unit/preset-batch.test.ts:39:26
+     37|   for (let length = 1; length <= records.length; length++) {
+     38|     const result = importPresetBatch(records.slice(0, length));
+     39|     expect(result.state).toBe(states[length - 1]);
+       |                          ^
+     40|     expect(result.items.map(item => item.status)).toEqual(outcomes.sli…
+     41|     expect(result.items.map(item => item.index)).toEqual(Array.from({ …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T05 report follows valid/error state transitions
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T19 report follows valid/error state transitions
+AssertionError: expected 'ERROR_ONLY' to be 'VALID_ONLY' // Object.is equality
+
+Expected: "VALID_ONLY"
+Received: "ERROR_ONLY"
+
+ ❯ tests/unit/preset-batch.test.ts:39:26
+     37|   for (let length = 1; length <= records.length; length++) {
+     38|     const result = importPresetBatch(records.slice(0, length));
+     39|     expect(result.state).toBe(states[length - 1]);
+       |                          ^
+     40|     expect(result.items.map(item => item.status)).toEqual(outcomes.sli…
+     41|     expect(result.items.map(item => item.index)).toEqual(Array.from({ …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T08 empty/new calls do not inherit a previous report
+AssertionError: expected 'ERROR_ONLY' to be 'VALID_ONLY' // Object.is equality
+
+Expected: "VALID_ONLY"
+Received: "ERROR_ONLY"
+
+ ❯ tests/unit/preset-batch.test.ts:49:44
+     47|   importPresetBatch([valid, invalid]);
+     48|   expect(importPresetBatch([])).toEqual({ state: 'EMPTY', acceptedCoun…
+     49|   expect(importPresetBatch([valid]).state).toBe('VALID_ONLY');
+       |                                            ^
+     50| });
+     51|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T12 non-string runtime records fail independently
+AssertionError: expected [ 'rejected', 'rejected', …(5) ] to deeply equal [ 'rejected', 'rejected', …(5) ]
+
+- Expected
++ Received
+
+@@ -3,7 +3,7 @@
+    "rejected",
+    "rejected",
+    "rejected",
+    "rejected",
+    "rejected",
+-   "accepted",
++   "rejected",
+  ]
+
+ ❯ tests/unit/preset-batch.test.ts:55:49
+     53|   const records: unknown[] = [null, undefined, 4, {}, ['text'], true, …
+     54|   const result = importPresetBatch(records);
+     55|   expect(result.items.map(item => item.status)).toEqual([
+       |                                                 ^
+     56|     'rejected', 'rejected', 'rejected', 'rejected', 'rejected', 'rejec…
+     57|   ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T20 sparse array slots still receive indexed outcomes
+AssertionError: expected [ [ +0, 'rejected' ], …(2) ] to deeply equal [ [ +0, 'rejected' ], …(2) ]
+
+- Expected
++ Received
+
+@@ -3,11 +3,11 @@
+      0,
+      "rejected",
+    ],
+    [
+      1,
+-     "accepted",
++     "rejected",
+    ],
+    [
+      2,
+      "rejected",
+    ],
+
+ ❯ tests/unit/preset-batch.test.ts:66:63
+     64|   records[1] = valid;
+     65|   const result = importPresetBatch(records);
+     66|   expect(result.items.map(item => [item.index, item.status])).toEqual([
+       |                                                               ^
+     67|     [0, 'rejected'], [1, 'accepted'], [2, 'rejected'],
+     68|   ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T13 results and repeated accepted documents are isolated
+Error: expected first accepted document
+ ❯ tests/unit/preset-batch.test.ts:79:42
+     77|   const second = importPresetBatch(inputs);
+     78|   const item = first.items[0];
+     79|   if (item?.status !== 'accepted') throw new Error('expected first acc…
+       |                                          ^
+     80|   item.document.config.camera.distance = 400;
+     81|   item.document.name = 'changed result';
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T14 duplicate documents are retained in order
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/unit/preset-batch.test.ts:90:32
+     88| test('VT124-T14 duplicate documents are retained in order', () => {
+     89|   const result = importPresetBatch([valid, valid]);
+     90|   expect(result.acceptedCount).toBe(2);
+       |                                ^
+     91|   expect(result.rejectedCount).toBe(0);
+     92|   expect(result.items.map(item => item.index)).toEqual([0, 1]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T15 record-count boundary is inclusive
+AssertionError: expected +0 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 0
+
+ ❯ tests/unit/preset-batch.test.ts:96:67
+     94|
+     95| test('VT124-T15 record-count boundary is inclusive', () => {
+     96|   expect(importPresetBatch(Array(100).fill(valid)).acceptedCount).toBe…
+       |                                                                   ^
+     97|   expect(() => importPresetBatch(Array(101).fill(valid))).toThrow(Rang…
+     98| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T15 UTF-8 byte boundary is inclusive and checked before parsing
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/unit/preset-batch.test.ts:103:53
+    101|   const size = new TextEncoder().encode(valid).byteLength;
+    102|   const padded = valid + ' '.repeat(1_000_000 - size);
+    103|   expect(importPresetBatch([padded]).acceptedCount).toBe(1);
+       |                                                     ^
+    104|   expect(() => importPresetBatch([padded + ' '])).toThrow(RangeError);
+    105|   // Below one million JS characters, but above the UTF-8 byte limit.
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/19]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T15b byte budget applies to the whole batch with multibyte documents
+AssertionError: expected +0 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/unit/preset-batch.test.ts:113:57
+    111|   const bytes = new TextEncoder().encode(text).byteLength;
+    112|   const half = text + ' '.repeat(500_000 - bytes);
+    113|   expect(importPresetBatch([half, half]).acceptedCount).toBe(2);
+       |                                                         ^
+    114|   // Each input is below the cap; only the combined byte total exceeds…
+    115|   expect(() => importPresetBatch([half, half + ' '])).toThrow(RangeErr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/19]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  19 failed | 5 passed (24)
+   Start at  09:51:01
+   Duration  487ms (import 54%, transform 35%, tests 9%, worker 3%)

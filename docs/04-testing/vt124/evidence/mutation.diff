@@ -1,0 +1,13 @@
+diff --git a/src/presets/batchImport.ts b/src/presets/batchImport.ts
+index cd35524..ffa7431 100644
+--- a/src/presets/batchImport.ts
++++ b/src/presets/batchImport.ts
+@@ -35,7 +35,7 @@ export function importPresetBatch(inputs: readonly unknown[]): BatchImportResult
+   let acceptedCount = 0;
+   const items: BatchImportItem[] = records.map((record, index) => {
+     try {
+-      if (typeof record !== 'string') throw new TypeError('Preset record must be JSON text');
++      if (typeof record === 'string') throw new TypeError('Preset record must be JSON text');
+       const document = parsePresetDocument(record);
+       acceptedCount++;
+       return { index, status: 'accepted', document };

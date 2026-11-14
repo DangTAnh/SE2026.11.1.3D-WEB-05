@@ -56,10 +56,11 @@ Expected files: src/presets/batchImport.ts, tests/unit/preset-batch.test.ts,
 tests/integration/preset-batch.test.ts, tests/support/vt124-presets.ts and these
 technical evidence docs; append a new PROJECT_STATUS checkpoint only.
 
-Phase 3 boolean mutation on an isolated branch, selected-module coverage,
-flaky/order experiments and 120-task load (p95 <=3500ms) remain NOT_RUN until
-actually executed. Phase 4 PDF/student reflection remains NOT_RUN. No promises
-about hardware, real-user capacity or durable persistence.
+At plan approval, Phase3/4 were NOT_RUN. After the user subsequently selected
+"continue the entire submission", the actual mutation/coverage/repeats/load and
+local PDF work continued. Their results are recorded separately in evidence.md;
+this original plan is not relabelled as execution evidence. No promises about
+hardware, real-user capacity or durable persistence.
 
 Raw local logs: vt124-evidence.local/ (ignored; no personal data in public docs).
 Results/evidence ledger is updated only after commands finish. Do not commit

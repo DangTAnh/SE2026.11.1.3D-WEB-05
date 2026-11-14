@@ -1,0 +1,7 @@
+{
+  "reason": "Separate run after sandbox launch did not start a listening Vite server; original log retained",
+  "utc": "2026-11-14T02:48:11.9260097Z",
+  "command": "npm run test:e2e",
+  "ciEnvironment": null,
+  "exitCode": 0
+}

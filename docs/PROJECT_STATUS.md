@@ -1,5 +1,25 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — VT-124 / Issue #93 bulk-import candidate
+
+- Branch `feat/93-bulk-preset-import`, baseline `dev@e55405d`; one assignee.
+  Human approved module + harness, no UI, and corrected the single-file-handler
+  assumption using `controlBindings.ts:152` before implementation.
+- Strict existing v2 parser per independent JSON text; invalid records retain
+  accepted documents before/after; indexed exhaustive outcomes, isolated runs.
+  No schema/hash/UI/renderer/persistence or runtime dependency change.
+- RED `296a797`:23 tests FAIL on explicit stub; GREEN `afb31fc`:23 PASS.
+  Review adds aggregate-byte oracle `2640b65`:24 targeted/360 full-suite PASS,
+  both typechecks/build PASS. Normal HTTP E2E76 PASS/12 SKIP,retries0; first
+  sandbox server-start interruption kept separately as INCOMPLETE.
+- Local-only boolean mutant `5bb5192`:19 FAIL/5 PASS; restored feature24 PASS.
+  Module coverage100% lines/statements/functions,95% branches; three shuffle
+  seeds pass. Five120-task rounds,0errors,p95 61.6537..82.1818ms <=3500ms.
+  One process/promises, not real-user HTTP/DB capacity or GPU proof.
+- [Scope, traceability, commands and evidence](04-testing/vt124/README.md).
+  Candidate only; owner/human review pending. Hardware WebGPU/timestamp
+  freshness and physical-GPU parity NOT_RUN; no merge/deploy/tag.
+
 ## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
 
 - Baseline dev@f00271e; isolated issue branch. Canonical full-document operation
