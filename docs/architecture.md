@@ -71,11 +71,19 @@ never point back toward `src/ui`.
 
 Rules:
 
-1. `src/core/types/` imports nothing. It is the leaf.
-2. `src/core/renderer/` may import types only. No DOM, no `three`, no network.
+1. `src/core/types/` imports nothing outside itself. It is the leaf: files there
+   may reference each other (`measurement.ts` type-imports `ActualBackend` from
+   `./backend.ts`), but not another layer or a package.
+2. `src/core/renderer/` may import types only from outside its own layer. Runtime
+   imports stay inside `src/core/renderer/` or come from `src/core/types/`; the
+   only outward dependency is the type-only `LabConfig` edge to `src/presets/`.
+   No DOM, no `three`, no network.
 3. `src/simulations/*` may import `src/core/`; **never** the reverse.
 4. `src/ui/` may not import `src/simulations/*` directly — only `RendererPort`.
 5. `src/presets/` may not import `src/ui/`.
+
+Rules 1, 2, 4 and 5 are enforced by the architecture fitness test
+(`tests/unit/fitness-architecture.test.ts`).
 
 Rule 4 is exercised by the UI port consumer and the fake-port interaction tests.
 The production adapter and composition-root injection implement this boundary;
