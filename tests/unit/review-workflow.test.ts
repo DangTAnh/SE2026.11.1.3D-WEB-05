@@ -109,6 +109,7 @@ test('[T03] a reviewer approves the exact revision without changing content', as
   expect(approved.status).toBe('approved');
   expect(approved.reviewedBy).toBe(reviewer.id);
   expect(approved.reviewNote).toBe('looks good');
+  expect(approved.submittedBy).toBe(pending.submittedBy);
   expect(approved.version).toBe(pending.version);
   expect(approved.contentHash).toBe(pending.contentHash);
   expect(approved.document).toEqual(pending.document);
@@ -123,6 +124,8 @@ test('[T04] a reviewer rejects without changing content', async () => {
 
   expect(rejected.status).toBe('rejected');
   expect(rejected.reviewedBy).toBe(reviewer.id);
+  expect(rejected.reviewNote).toBe('not ready');
+  expect(rejected.submittedBy).toBe(pending.submittedBy);
   expect(rejected.version).toBe(pending.version);
   expect(rejected.contentHash).toBe(pending.contentHash);
   expect(rejected.document).toEqual(pending.document);
