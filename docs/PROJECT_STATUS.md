@@ -1,5 +1,18 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — Issue #102 preview routing candidate
+
+- Independent `fix/102-preview-pointer-routing` from dev@3d1c4f6. Decorative
+  upper/lower/crosshair wrappers pass pointer events through; only actual
+  playback buttons restore pointer hit targets. No adapter/kernel changes.
+- Real Three camera/OrbitControls with fake-port UI shell: 13 PASS /1 desktop
+  touch SKIP. Full relevant UI/camera/backend suite: 69 PASS /1 SKIP, retries0;
+  mobile touch, outside-canvas scroll and keyboard/button isolation PASS.
+- G0, test typecheck, 336 unit/integration tests and diff check PASS. Local
+  installed-Chrome override and physical-device limits are recorded in
+  [evidence](04-testing/preview-pointer-routing-2026-11-14.md); standard CI in PR.
+  TV3/TV5 and independent human acceptance pending; no merge/release/#103 fix.
+
 ## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
 
 - Baseline dev@f00271e; isolated issue branch. Canonical full-document operation
