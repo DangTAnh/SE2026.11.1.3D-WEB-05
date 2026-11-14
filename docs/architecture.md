@@ -28,6 +28,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 | Perf sample shape (`PerformanceSnapshot`) | Implemented (type only) | [`src/core/types/measurement.ts`](../src/core/types/measurement.ts) |
 | Benchmark config identity (`configHash`) | Implemented | [`src/core/measurement/configHash.ts`](../src/core/measurement/configHash.ts) |
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
+| Preset review workflow (Issue #85 / VT-123) | In-process optimistic CAS domain contract; no authentication, UI or persistence | [`src/presets/review.ts`](../src/presets/review.ts) |
 | Preset persistence retry (Issue #88 candidate) | In-process client contract with test-only atomic service harness; no real persistence/API | `src/presets/persistence.ts`, [VT-120 evidence](04-testing/VT120-evidence.md) |
 | UI shell | Consumes an injected RendererPort; no backend init in UI | [`src/ui/app.ts`](../src/ui/app.ts) |
 | Simulation preview | Production canvas bound to the real adapter by the composition root; Canvas2D mock removed | `src/main.ts` |

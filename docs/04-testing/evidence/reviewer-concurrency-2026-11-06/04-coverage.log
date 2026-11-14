@@ -1,0 +1,62 @@
+# BT3 VT-123 - coverage evidence
+# Updated: 2026-11-06 (after adding T19, post-await digest mismatch)
+# Command: npm run test:coverage
+# Script: vitest run --coverage --coverage.include=src/presets/review.ts --coverage.reporter=text --coverage.reporter=json
+# Provider: @vitest/coverage-v8@5.0.3 (declared devDependency in commit 8160226)
+
+## Previous run (before T19; review unit file only; 16 tests)
+Statements 96.07% (49/51) | Branches 94.44% (34/36) | Functions 100% (10/10) | Lines 96% (48/50).
+Uncovered: lines 176,182. Branch 175 counts [0,11]; branch 181 counts [0,10].
+The line-181/182 post-await contentHash/digest guard was the AC4 gap recorded then.
+
+## Current run (after T19; all unit + integration tests; 282 tests)
+
+
+> gpu-particle-lab-week1-ui-prototype@0.1.0 test:coverage
+> vitest run --coverage --coverage.include=src/presets/review.ts --coverage.reporter=text --coverage.reporter=json
+
+
+ RUN  v5.0.3 D:/subjects/SE
+      Coverage enabled with v8
+
+
+ Test Files  25 passed (25)
+      Tests  282 passed (282)
+   Start at  16:42:21
+   Duration  2.87s (import 51%, transform 23%, tests 19%, worker 7%)
+
+    Isolate  25 workers spawned · ~323ms startup each (spawn + environment, per file)
+             at least ~412ms faster with isolate: false — reuses workers across files instead of one per file
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-----------|---------|----------|---------|---------|-------------------
+File       | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-----------|---------|----------|---------|---------|-------------------
+All files  |   98.03 |    97.22 |     100 |      98 |                   
+ review.ts |   98.03 |    97.22 |     100 |      98 | 176               
+-----------|---------|----------|---------|---------|-------------------
+
+=============================== Coverage summary ===============================
+Statements   : 98.03% ( 50/51 )
+Branches     : 97.22% ( 35/36 )
+Functions    : 100% ( 10/10 )
+Lines        : 98% ( 49/50 )
+================================================================================
+
+## Branch detail (from coverage/coverage-final.json)
+
+Uncovered branch id=14, line 175, counts [0, 12]:
+  `if (current === null)` — the true arm was never taken; line 176 was never
+  executed. This is the defensive "revision disappeared during review" guard.
+  No API removes a revision, so this path is unreachable in the current
+  in-process board. Maps to the AC4/AC5 "leave the board unchanged" defensive
+  path, not to an unmet acceptance criterion.
+
+The previous branch id=16 at line 181 (counts [0, 10]) is now covered: T19
+releases the review digest as `fnv1a-deadbeef`, triggering the post-await
+`digest !== target.contentHash` guard and the line-182 `content-changed`
+error. AC4's post-await digest-mismatch path is now exercised.
+
+Coverage percentages alone are not the conclusion: functions are 100% and the
+one remaining uncovered branch is the unreachable defensive null check.
+The `coverage/` directory is generated output and is not committed.
