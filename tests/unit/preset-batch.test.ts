@@ -70,6 +70,45 @@ test('VT124-T20 sparse array slots still receive indexed outcomes', () => {
   expect(result.rejectedCount).toBe(2);
 });
 
+test('VT124-T23 an overridden iterator cannot expand one indexed record to 101 outcomes', () => {
+  const records = [valid];
+  Object.defineProperty(records, Symbol.iterator, {
+    value: function* () { for (let index = 0; index < 101; index++) yield valid; },
+  });
+  const result = importPresetBatch(records);
+  expect(result).toEqual({ state: 'VALID_ONLY', acceptedCount: 1, rejectedCount: 0,
+    items: [{ index: 0, status: 'accepted', document: vt124Document() }] });
+});
+
+test('VT124-T24 an overridden iterator cannot omit indexed records before or after errors', () => {
+  const after = vt124Document('indexed after', 'vortex');
+  const records = [valid, invalid, JSON.stringify(after)];
+  Object.defineProperty(records, Symbol.iterator, {
+    value: function* () { yield valid; },
+  });
+  const result = importPresetBatch(records);
+  expect(result.state).toBe('MIXED');
+  expect(result.acceptedCount).toBe(2);
+  expect(result.rejectedCount).toBe(1);
+  expect(result.items).toEqual([
+    { index: 0, status: 'accepted', document: vt124Document() },
+    { index: 1, status: 'rejected', reason: expect.any(String) },
+    { index: 2, status: 'accepted', document: after },
+  ]);
+});
+
+test('VT124-T25 exact-limit indexed input never invokes its custom iterator', () => {
+  const records = Array(100).fill(valid);
+  Object.defineProperty(records, Symbol.iterator, {
+    value: function* () { throw new Error('custom iteration must not run'); },
+  });
+  const result = importPresetBatch(records);
+  expect(result.acceptedCount).toBe(100);
+  expect(result.rejectedCount).toBe(0);
+  expect(result.items).toHaveLength(100);
+  expect(result.items[99]).toEqual({ index: 99, status: 'accepted', document: vt124Document() });
+});
+
 test('VT124-T13 results and repeated accepted documents are isolated', () => {
   const defaultsBefore = cloneConfig(DEFAULT_CONFIG);
   const inputs = Object.freeze([valid, valid]);
@@ -94,7 +133,9 @@ test('VT124-T14 duplicate documents are retained in order', () => {
 
 test('VT124-T15 record-count boundary is inclusive', () => {
   expect(importPresetBatch(Array(100).fill(valid)).acceptedCount).toBe(100);
-  expect(() => importPresetBatch(Array(101).fill(valid))).toThrow(RangeError);
+  const oversized = Array(101).fill(valid);
+  Object.defineProperty(oversized, Symbol.iterator, { value: function* () {} });
+  expect(() => importPresetBatch(oversized)).toThrow(RangeError);
 });
 
 test('VT124-T15 UTF-8 byte boundary is inclusive and checked before parsing', () => {
