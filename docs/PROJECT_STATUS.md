@@ -1,5 +1,25 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — Issue #96 GPU parity parameter coverage candidate
+
+- Baseline `dev@3d1c4f6` (Issue named `e55405d`; `dev` moved after #92).
+  Branch `test/96-kernel-parameter-parity`; no physics, kernel or attribute
+  layout change.
+- Parity fixture now exposes validated `attractorRadius`/`attractorDamping`
+  (`0.5–50`/`0.8–1`) and `speed` (`0.1–3`), sets the GPU radius/damping
+  uniforms, and applies `clamp(rawDt, 0, 0.05) * speed` exactly once on GPU and
+  CPU. Artifacts retain every effective input plus `effectiveDelta`.
+- CPU control runs prove damping outside radius 6/0.5 changes the state
+  (`0.3488`) while inside radius 6/50 it is bit-identical (`0`). Matrix covers
+  speed `0.1`/`3` including speed-3 respawn/age and a clamped `dt = 0.1`, radius
+  `0.5`/`50`, damping `0.8`/`1`, and keeps the zero-delta no-op.
+- Targeted desktop Chromium: 15/15 WebGL2 parity PASS, 3/3 corrupt readbacks
+  rejected, 8/8 invalid parameters rejected, 2/2 WebGPU SKIP (no adapter).
+  Typechecks, 340/340 units and build PASS. WebGPU, physical-GPU execution and
+  performance remain NOT_RUN; software WebGL2 is not hardware acceptance.
+- [Matrix, deltas, environment and limits](04-testing/gpu-kernel-parity-2026-11-14.md).
+  Candidate into `dev`; TV3/TV5 review and a human approval are still required.
+
 ## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
 
 - Baseline dev@f00271e; isolated issue branch. Canonical full-document operation

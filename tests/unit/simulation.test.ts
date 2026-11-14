@@ -231,6 +231,15 @@ test('reference step does not import DOM or three', () => {
   }
 });
 
+test('parity harness mirrors the adapter frame-delta clamp (#96)', () => {
+  const clampOf = (file: string): string | undefined =>
+    /MAX_FRAME_DELTA = ([\d.]+);/.exec(readFileSync(file, 'utf8'))?.[1];
+  const adapter = clampOf('src/simulations/rendererAdapter.ts');
+  const harness = clampOf('tests/e2e/fixtures/simulation-parity.ts');
+  expect(adapter).toBeTruthy();
+  expect(harness).toBe(adapter);
+});
+
 test('golden values give the kernels a numeric baseline', () => {
   const goldenConfig: SimulationConfig = {
     mode: 'attractor',
@@ -257,4 +266,105 @@ test('golden values give the kernels a numeric baseline', () => {
   expect(vortex.positions[2]).toBeCloseTo(-0.6317195892333984, 6);
   expect(vortex.velocities[0]).toBeCloseTo(-0.5698951482772827, 6);
   expect(vortex.velocities[2]).toBeCloseTo(-0.016484029591083527, 6);
+});
+
+test('attractor damping is conditional on the configured radius (#96)', () => {
+  const base: SimulationConfig = {
+    mode: 'attractor',
+    particleCount: 1,
+    speed: 1,
+    strength: 1,
+    spawnRadius: 20,
+    lifetime: 100,
+    attractorRadius: 6,
+    attractorDamping: 0.8,
+  };
+  const runFrom = (x: number, damping: number) => {
+    const state = createState(base, 5);
+    state.positions.set([x, 0, 0], 0);
+    state.velocities.set([0, 0, 1], 0);
+    step(state, 1 / 60, { ...base, attractorDamping: damping });
+    return state;
+  };
+
+  // Outside the radius, damping 0.8 must differ from identity damping.
+  const outsideDamped = runFrom(10, 0.8);
+  const outsideIdentity = runFrom(10, 1);
+  expect(outsideDamped.velocities[2]).not.toBeCloseTo(outsideIdentity.velocities[2]!, 6);
+  expect(outsideDamped.positions[2]).not.toBeCloseTo(outsideIdentity.positions[2]!, 6);
+
+  // Inside the radius, the branch must not run at all.
+  const insideDamped = runFrom(1, 0.8);
+  const insideIdentity = runFrom(1, 1);
+  expect(snapshot(insideDamped)).toEqual(snapshot(insideIdentity));
+});
+
+test('speed is applied exactly once to delta at the 0.1 and 3 boundaries (#96)', () => {
+  const base: SimulationConfig = {
+    mode: 'attractor',
+    particleCount: 8,
+    speed: 1,
+    strength: 2,
+    spawnRadius: 3,
+    lifetime: 100,
+    attractorRadius: 3,
+    attractorDamping: 0.98,
+  };
+  const dt = 1 / 60;
+
+  for (const speed of [0.1, 3]) {
+    const scaledConfig = { ...base, speed };
+    const referenceConfig = { ...base, speed: 1 };
+    const scaled = createState(scaledConfig, 31);
+    const reference = createState(referenceConfig, 31);
+    const effectiveDt = dt * speed;
+
+    for (let i = 0; i < 40; i += 1) {
+      // `step()` multiplies dt by config.speed internally; the reference receives
+      // the already-scaled dt with speed 1. Identical state proves one application.
+      step(scaled, dt, scaledConfig);
+      step(reference, effectiveDt, referenceConfig);
+    }
+
+    expect(snapshot(scaled)).toEqual(snapshot(reference));
+    expect(scaled.ages[0]).toBeCloseTo(40 * effectiveDt, 5);
+  }
+});
+
+test('speed scales respawn timing without double-applying delta (#96)', () => {
+  const base: SimulationConfig = {
+    mode: 'attractor',
+    particleCount: 4,
+    speed: 1,
+    strength: 2,
+    spawnRadius: 3,
+    lifetime: 0.5,
+    attractorRadius: 3,
+    attractorDamping: 0.98,
+  };
+  const dt = 1 / 60;
+  const fastConfig: SimulationConfig = { ...base, speed: 3 };
+  const referenceConfig: SimulationConfig = { ...base, speed: 1 };
+  const fast = createState(fastConfig, 21);
+  const reference = createState(referenceConfig, 21);
+  const effectiveDt = dt * 3;
+
+  for (let i = 0; i < 40; i += 1) {
+    step(fast, dt, fastConfig);
+    step(reference, effectiveDt, referenceConfig);
+  }
+  expect(snapshot(fast)).toEqual(snapshot(reference));
+
+  // At speed 3 the effective delta is 0.05, so a 0.5 s lifetime wraps after
+  // 10-11 steps, while speed 1 has only advanced 0.2 s after 12 steps.
+  const stillSlow = createState(referenceConfig, 22);
+  const wrappedFast = createState(fastConfig, 22);
+  for (let i = 0; i < 12; i += 1) {
+    step(stillSlow, dt, referenceConfig);
+    step(wrappedFast, dt, fastConfig);
+  }
+  expect(stillSlow.ages[0]).toBeCloseTo(12 / 60, 5);
+  // The fast run already wrapped (its age is one partial period), so it is
+  // strictly younger than the slow run after the same number of steps.
+  expect(wrappedFast.ages[0]).toBeLessThan(stillSlow.ages[0]!);
 });
