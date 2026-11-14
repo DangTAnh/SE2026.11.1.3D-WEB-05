@@ -1,5 +1,40 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — Issue #93 / PR #94 iterator review follow-up
+
+- TV4 P2 reproduced on088bd26: input iterator can expand/omit checked positions
+  or throw during snapshot. RED019c9f5:3 FAIL/24 PASS; GREEN3741157 snapshots
+  the checked length and numeric indices, preserving holes and100-record bound.
+- New27 targeted/363 full-suite tests PASS; source/test types and209-module
+  build PASS. Coverage100% lines/statements/functions,95% branches(19/20).
+- New normal-HTTP E2E76 PASS/12 SKIP,9.8min,retries0; separate120-task load
+  confirmation0errors,p95=69.0736ms <=3500ms. Earlier runs below stay historical.
+- README/PR evidence reconciled with completed T18 and actual re-review status;
+  no independent human approval claimed. Original confirmed local PDF at088bd26
+  is preserved, not relabelled as this revision. Owner re-review/CI remain gates.
+- Scope stays module+harness, no schema/hash/UI/renderer change. Hardware WebGPU/
+  timestamp freshness and physical-GPU parity NOT_RUN; no merge/deploy/tag.
+
+## 14/11/2026 — VT-124 / Issue #93 bulk-import candidate
+
+- Branch `feat/93-bulk-preset-import`, baseline `dev@e55405d`; one assignee.
+  Human approved module + harness, no UI, and corrected the single-file-handler
+  assumption using `controlBindings.ts:152` before implementation.
+- Strict existing v2 parser per independent JSON text; invalid records retain
+  accepted documents before/after; indexed exhaustive outcomes, isolated runs.
+  No schema/hash/UI/renderer/persistence or runtime dependency change.
+- RED `296a797`:23 tests FAIL on explicit stub; GREEN `afb31fc`:23 PASS.
+  Review adds aggregate-byte oracle `2640b65`:24 targeted/360 full-suite PASS,
+  both typechecks/build PASS. Normal HTTP E2E76 PASS/12 SKIP,retries0; first
+  sandbox server-start interruption kept separately as INCOMPLETE.
+- Local-only boolean mutant `5bb5192`:19 FAIL/5 PASS; restored feature24 PASS.
+  Module coverage100% lines/statements/functions,95% branches; three shuffle
+  seeds pass. Five120-task rounds,0errors,p95 61.6537..82.1818ms <=3500ms.
+  One process/promises, not real-user HTTP/DB capacity or GPU proof.
+- [Scope, traceability, commands and evidence](04-testing/vt124/README.md).
+  Candidate only; owner/human review pending. Hardware WebGPU/timestamp
+  freshness and physical-GPU parity NOT_RUN; no merge/deploy/tag.
+
 ## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
 
 - Baseline dev@f00271e; isolated issue branch. Canonical full-document operation

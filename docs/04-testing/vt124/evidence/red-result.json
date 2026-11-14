@@ -1,0 +1,7 @@
+{
+  "command": "npx vitest run tests/unit/preset-batch.test.ts tests/integration/preset-batch.test.ts",
+  "exitCode": 1,
+  "utc": "2026-11-14T02:32:15.6990795Z",
+  "phase": "explicit unimplemented contract stub",
+  "revision": "e55405da0bd2546d33baa53acda060c470e2200d"
+}

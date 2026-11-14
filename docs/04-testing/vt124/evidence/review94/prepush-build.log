@@ -1,0 +1,20 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 build
+npm notice run npm run typecheck && npm run typecheck:tests && vite build
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 typecheck
+npm notice run tsc --noEmit
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 typecheck:tests
+npm notice run tsc --noEmit -p tsconfig.tests.json
+vite v6.4.4 building for production...
+transforming...
+✓ 209 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                     0.60 kB │ gzip:   0.38 kB
+dist/assets/index-D4BrxlkV.css     12.28 kB │ gzip:   3.79 kB
+dist/assets/index-EwQSiJgw.js   1,092.96 kB │ gzip: 305.17 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.17s

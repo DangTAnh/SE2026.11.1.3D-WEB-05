@@ -1,0 +1,736 @@
+{
+  "tasks": 120,
+  "recordsPerTask": 20,
+  "validPerTask": 15,
+  "invalidPerTask": 5,
+  "errors": 0,
+  "p95Ms": 71.99019999999996,
+  "maxMs": 74.98719999999997,
+  "targetMs": 3500,
+  "scope": "one Node process,120 promises,20 independent JSON texts each; common-release queue + parsing + verification; no HTTP/DB/GPU or real-user capacity claim",
+  "inputPreparationIncluded": false,
+  "node": "v24.21.0",
+  "utc": "2026-11-14T02:51:36.215Z",
+  "raw": [
+    {
+      "task": 0,
+      "latencyMs": 3.9049999999999727,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 1,
+      "latencyMs": 5.070299999999975,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 2,
+      "latencyMs": 6.030399999999986,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 3,
+      "latencyMs": 6.899399999999957,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 4,
+      "latencyMs": 7.7823999999999955,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 5,
+      "latencyMs": 8.75139999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 6,
+      "latencyMs": 9.65949999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 7,
+      "latencyMs": 11.180099999999982,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 8,
+      "latencyMs": 11.949299999999994,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 9,
+      "latencyMs": 12.654499999999985,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 10,
+      "latencyMs": 13.323199999999986,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 11,
+      "latencyMs": 14.06450000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 12,
+      "latencyMs": 14.771399999999971,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 13,
+      "latencyMs": 15.377099999999984,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 14,
+      "latencyMs": 16.167899999999975,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 15,
+      "latencyMs": 16.788899999999956,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 16,
+      "latencyMs": 17.378299999999967,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 17,
+      "latencyMs": 17.99029999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 18,
+      "latencyMs": 18.597499999999968,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 19,
+      "latencyMs": 19.17859999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 20,
+      "latencyMs": 19.851399999999956,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 21,
+      "latencyMs": 20.45509999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 22,
+      "latencyMs": 21.050399999999968,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 23,
+      "latencyMs": 21.640600000000006,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 24,
+      "latencyMs": 22.268899999999974,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 25,
+      "latencyMs": 22.907099999999957,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 26,
+      "latencyMs": 24.36239999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 27,
+      "latencyMs": 25.012399999999957,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 28,
+      "latencyMs": 25.53299999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 29,
+      "latencyMs": 26.122199999999964,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 30,
+      "latencyMs": 26.6832,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 31,
+      "latencyMs": 27.702399999999955,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 32,
+      "latencyMs": 28.261499999999955,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 33,
+      "latencyMs": 28.81819999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 34,
+      "latencyMs": 29.419600000000003,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 35,
+      "latencyMs": 29.95519999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 36,
+      "latencyMs": 30.42149999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 37,
+      "latencyMs": 30.974099999999964,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 38,
+      "latencyMs": 31.488099999999974,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 39,
+      "latencyMs": 31.95830000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 40,
+      "latencyMs": 32.422799999999995,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 41,
+      "latencyMs": 32.90359999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 42,
+      "latencyMs": 33.39299999999997,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 43,
+      "latencyMs": 33.906499999999994,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 44,
+      "latencyMs": 34.39929999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 45,
+      "latencyMs": 34.9307,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 46,
+      "latencyMs": 35.466399999999965,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 47,
+      "latencyMs": 35.9418,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 48,
+      "latencyMs": 36.45779999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 49,
+      "latencyMs": 37.650199999999984,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 50,
+      "latencyMs": 38.203299999999956,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 51,
+      "latencyMs": 38.79589999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 52,
+      "latencyMs": 39.35129999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 53,
+      "latencyMs": 39.93109999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 54,
+      "latencyMs": 40.47149999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 55,
+      "latencyMs": 40.93950000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 56,
+      "latencyMs": 41.45909999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 57,
+      "latencyMs": 42.020399999999995,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 58,
+      "latencyMs": 42.502899999999954,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 59,
+      "latencyMs": 42.942499999999995,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 60,
+      "latencyMs": 43.3972,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 61,
+      "latencyMs": 43.8732,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 62,
+      "latencyMs": 44.3614,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 63,
+      "latencyMs": 44.84780000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 64,
+      "latencyMs": 45.3544,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 65,
+      "latencyMs": 45.84949999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 66,
+      "latencyMs": 46.47629999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 67,
+      "latencyMs": 47.13959999999997,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 68,
+      "latencyMs": 47.721000000000004,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 69,
+      "latencyMs": 48.30279999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 70,
+      "latencyMs": 48.81709999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 71,
+      "latencyMs": 49.324299999999994,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 72,
+      "latencyMs": 49.817999999999984,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 73,
+      "latencyMs": 51.24680000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 74,
+      "latencyMs": 51.93509999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 75,
+      "latencyMs": 52.4504,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 76,
+      "latencyMs": 53.001499999999965,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 77,
+      "latencyMs": 53.545199999999966,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 78,
+      "latencyMs": 54.05879999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 79,
+      "latencyMs": 54.59639999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 80,
+      "latencyMs": 55.11949999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 81,
+      "latencyMs": 55.61829999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 82,
+      "latencyMs": 56.1139,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 83,
+      "latencyMs": 56.597099999999955,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 84,
+      "latencyMs": 57.176199999999994,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 85,
+      "latencyMs": 57.70089999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 86,
+      "latencyMs": 58.19649999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 87,
+      "latencyMs": 58.72460000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 88,
+      "latencyMs": 59.27699999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 89,
+      "latencyMs": 59.89670000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 90,
+      "latencyMs": 60.39519999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 91,
+      "latencyMs": 60.867999999999995,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 92,
+      "latencyMs": 61.35089999999997,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 93,
+      "latencyMs": 61.84780000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 94,
+      "latencyMs": 62.45179999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 95,
+      "latencyMs": 62.909599999999955,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 96,
+      "latencyMs": 63.37719999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 97,
+      "latencyMs": 63.83189999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 98,
+      "latencyMs": 64.3238,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 99,
+      "latencyMs": 64.78109999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 100,
+      "latencyMs": 65.23839999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 101,
+      "latencyMs": 65.72969999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 102,
+      "latencyMs": 66.74709999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 103,
+      "latencyMs": 67.279,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 104,
+      "latencyMs": 67.72789999999998,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 105,
+      "latencyMs": 68.23910000000001,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 106,
+      "latencyMs": 68.71369999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 107,
+      "latencyMs": 69.1791,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 108,
+      "latencyMs": 69.6508,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 109,
+      "latencyMs": 70.15559999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 110,
+      "latencyMs": 70.64959999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 111,
+      "latencyMs": 71.11009999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 112,
+      "latencyMs": 71.55429999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 113,
+      "latencyMs": 71.99019999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 114,
+      "latencyMs": 72.58029999999997,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 115,
+      "latencyMs": 73.0471,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 116,
+      "latencyMs": 73.47489999999999,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 117,
+      "latencyMs": 73.952,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 118,
+      "latencyMs": 74.45599999999996,
+      "ok": true,
+      "error": null
+    },
+    {
+      "task": 119,
+      "latencyMs": 74.98719999999997,
+      "ok": true,
+      "error": null
+    }
+  ]
+}

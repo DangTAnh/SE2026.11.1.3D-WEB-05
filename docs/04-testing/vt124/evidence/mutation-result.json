@@ -1,0 +1,7 @@
+{
+  "summary": "      Tests  19 failed | 5 passed (24)",
+  "exitCode": 1,
+  "utc": "2026-11-14T02:51:02.1128409Z",
+  "originalSourceBlob": "cd35524f1e6d3d12fa94c11cb5abd2877851b062",
+  "mutantCommit": "5bb5192fc8cf5d971741ff0a2f4d7cf40ebfdd83"
+}
