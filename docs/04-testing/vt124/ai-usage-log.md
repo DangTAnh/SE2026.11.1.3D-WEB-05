@@ -54,3 +54,14 @@ After the user chose to continue the entire submission, actual mutation,
 coverage, shuffle and five load rounds were executed and recorded in evidence.md.
 The PDF reflection is explicitly AI-assisted draft text requiring the student's
 own edits/confirmation, not invented personal testimony or a claim of authorship.
+
+## Later Issue #93 / PR #94 review response
+
+After the original PDF was confirmed by the user, TV4 submitted a separate code
+review requesting an indexed snapshot instead of the overridable array iterator.
+The primary verified it with three new failing regression tests before changing
+production code (RED019c9f5). GREEN3741157 uses the once-checked length and numeric
+indices. These runs and coverage are recorded separately, without rewriting the
+original report or treating its confirmation as GitHub/human code approval.
+Documentation also reconciles actual T18 execution and Ready/re-review status;
+the author does not self-approve or resolve the reviewer's verdict.

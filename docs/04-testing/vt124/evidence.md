@@ -5,6 +5,46 @@ Isolated branch `feat/93-bulk-preset-import`. Windows, Node v24.21.0,
 npm 12.2.0; committed lockfile, Vitest 5.0.3. No package changes.
 User plan review and correction are recorded in [plan.md](plan.md).
 
+## PR #94 TV4 review follow-up (after 088bd26)
+
+The reviewed head was088bd26, with CI360tests/76E2E PASS/12SKIP. Those runs are
+historical; they do not prove the following correction. Review P2 was reproduced
+against the real implementation: Array.from(inputs) followed the array's custom
+iterator, creating101 outcomes for length1, omitting indexed records or throwing
+before record-level handling. The three new tests fail on088bd26 (3FAIL/24PASS).
+RED checkpoint019c9f5 preserves this reproduction before the implementation fix.
+
+GREEN3741157 captures the length once, checks its limit and reads that many
+numeric positions into a plain snapshot, without invoking the input iterator.
+T23-T25 verify expansion/omission/throwing cases; T15 also ensures an empty
+iterator cannot conceal101 indexed records. Sparse slots remain indexed errors.
+
+Current executed results:27 targeted PASS,363 repository tests/32files PASS,
+source/test typechecks and209-module build PASS (existing chunk advisory).
+Fresh module coverage:22/22 lines,29/29 statements,3/3 functions,19/20 branches
+(95% branches). No fresh mutation result is inferred from these tests;5bb5192
+below remains the original isolated experiment.
+
+Full unchanged E2E:exit0,76 PASS/12 SKIP,9.8min,oneworker,retries0,no actual
+retry/flaky entries. One fresh120-task confirmation after E2E:exit0,0errors,
+p95=69.0736ms,max=72.0706ms <=3500ms. All120 raw outcomes are retained. This
+single run is separate from the original five rounds and is not a performance
+improvement claim. New logs/exit ledgers are under evidence/review94/.
+Original campaigns below remain separate. Existing locally
+approved PDF/evidence ZIP at088bd26 are preserved; they have not been silently
+replaced or relabelled as proof of this later review revision.
+
+Review P3: README's T18 NOT_RUN wording described plan time and has been corrected
+to point to actual completed campaigns. GitHub's actual Ready/re-review state is
+preserved; the PR description/checklist must not claim independent human approval
+or say Keep Draft while Ready. TV4's current review is CHANGES_REQUESTED and agent
+assistance is not independent human approval.
+
+A second fresh-context read-only agent inspected only the iterator fix/tests and
+related documentation. It found no actionable issue, ran no tests and made no
+human approval. The external TV4 verdict remains pending re-review after push;
+this check is not substituted for that owner decision.
+
 ## Actual runs (separate checkpoints)
 
 | Checkpoint | Command | Observed result |
@@ -95,7 +135,8 @@ network (unit/load have none; E2E server-start interruption separately recorded)
 
 ## Remaining evidence
 
-The PDF is a local AI-assisted report with a reflection draft for student
-confirmation. Remote CI must be read on the actual pushed head. New hardware
+The original local AI-assisted PDF/reflection was confirmed by the user, and is
+preserved at its088bd26 checkpoint. This is not independent human code approval.
+Remote CI must be read on the actual pushed head. New hardware
 WebGPU/timestamp/parity, real-user capacity, durable storage, deployment and
 independent human acceptance are NOT_RUN/unverified. No merge/deploy/tag.

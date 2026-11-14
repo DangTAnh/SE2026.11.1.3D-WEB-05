@@ -1,0 +1,6 @@
+{
+  "command": "npm run test:e2e",
+  "ci": null,
+  "utc": "2026-11-14T08:37:37.0633130Z",
+  "exitCode": 0
+}

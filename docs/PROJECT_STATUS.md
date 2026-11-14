@@ -1,5 +1,20 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — Issue #93 / PR #94 iterator review follow-up
+
+- TV4 P2 reproduced on088bd26: input iterator can expand/omit checked positions
+  or throw during snapshot. RED019c9f5:3 FAIL/24 PASS; GREEN3741157 snapshots
+  the checked length and numeric indices, preserving holes and100-record bound.
+- New27 targeted/363 full-suite tests PASS; source/test types and209-module
+  build PASS. Coverage100% lines/statements/functions,95% branches(19/20).
+- New normal-HTTP E2E76 PASS/12 SKIP,9.8min,retries0; separate120-task load
+  confirmation0errors,p95=69.0736ms <=3500ms. Earlier runs below stay historical.
+- README/PR evidence reconciled with completed T18 and actual re-review status;
+  no independent human approval claimed. Original confirmed local PDF at088bd26
+  is preserved, not relabelled as this revision. Owner re-review/CI remain gates.
+- Scope stays module+harness, no schema/hash/UI/renderer change. Hardware WebGPU/
+  timestamp freshness and physical-GPU parity NOT_RUN; no merge/deploy/tag.
+
 ## 14/11/2026 — VT-124 / Issue #93 bulk-import candidate
 
 - Branch `feat/93-bulk-preset-import`, baseline `dev@e55405d`; one assignee.
