@@ -106,6 +106,15 @@ test('VT124-T15 UTF-8 byte boundary is inclusive and checked before parsing', ()
   expect(() => importPresetBatch(['é'.repeat(500_001)])).toThrow(RangeError);
 });
 
+test('VT124-T15b byte budget applies to the whole batch with multibyte documents', () => {
+  const text = JSON.stringify(vt124Document('Mây 🌦'));
+  const bytes = new TextEncoder().encode(text).byteLength;
+  const half = text + ' '.repeat(500_000 - bytes);
+  expect(importPresetBatch([half, half]).acceptedCount).toBe(2);
+  // Each input is below the cap; only the combined byte total exceeds it.
+  expect(() => importPresetBatch([half, half + ' '])).toThrow(RangeError);
+});
+
 test.each([null, undefined, {}, '[]'])('VT124-T21 non-array envelope rejects (%s)', input => {
   expect(() => importPresetBatch(input as never)).toThrow(TypeError);
 });
