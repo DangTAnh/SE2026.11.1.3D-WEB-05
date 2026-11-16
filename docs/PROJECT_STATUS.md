@@ -6,15 +6,21 @@
   awaited the digest, then read the port status, so a config change during
   hashing paired workload A's `configHash` with workload B's metrics.
 - Root-cause fix in `src/perf/collector.ts`: config and status are captured in
-  one synchronous step, and a capture whose effective config changes before the
-  digest resolves (including from an `onStatus` callback) is discarded; the next
-  cadence samples the new workload. Observer ordering, paused skipping,
-  non-overlapping captures and the INV-1 GPU-timing null rule are unchanged.
+  one synchronous step; the status is re-read after the digest so a paused,
+  lost or replaced backend reaches `onStatus` (the #82/#83 path) and the capture
+  is not emitted; a capture whose effective config changes before the digest
+  resolves — including from an `onStatus` callback — is discarded. Observer
+  ordering, paused skipping, non-overlapping captures and the INV-1 GPU-timing
+  null rule are unchanged.
+- TV3 review follow-up: an earlier revision read the status only before the
+  digest and silently dropped backend loss during hashing; the re-read keeps
+  benchmark terminal-loss/replacement rejection intact.
 - New deterministic regressions use a deferred digest: workload change during
   hashing, change from `onStatus`, status/identity pairing, digest failure
-  recovery and stop-during-digest. 17 collector/benchmark tests PASS; full
-  suite 395/395 across 33 files; both typechecks and build PASS.
-- [Root cause, policy and evidence](04-testing/collector-config-identity-2026-11-16.md).
+  recovery, stop-during-digest, and benchmark loss/replacement while the final
+  digest is pending (both fail without the re-read). 39 collector/benchmark
+  tests PASS; full suite 397/397 across 33 files; both typechecks and build PASS.
+- [Root cause, policy, review follow-up and evidence](04-testing/collector-config-identity-2026-11-16.md).
   Controlled-port/timer evidence only; no GPU or physical-device claim. Distinct
   from #97 (stale GPU timestamps on config change), which stays open.
 

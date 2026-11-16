@@ -17,6 +17,10 @@ FPS/GPU metrics. The reported reproduction emitted the default-v2 hash
 - The digest, the `onStatus` observer and the paused/running checks keep their
   previous relative order, so a synchronous `stop`/`dispose`/`restart` from an
   observer still cancels the capture before it can emit.
+- After the digest the port status is read again. A port that is paused, lost or
+  running a different `actual` backend is reported to `onStatus` (the #82/#83
+  classification path) and the captured sample is not emitted, so a benchmark
+  cannot resolve with a row measured across a backend change.
 - After the digest, the effective config is compared with the capture-time
   identity using the existing `canonicalConfig` projection. If it changed — by
   the caller, or synchronously from `onStatus` — the capture is discarded and
@@ -38,12 +42,25 @@ uses the real SHA-256 value, so the assertions compare real hashes:
 | Status changes during the digest | Emitted snapshot keeps the status captured with its own hash |
 | Digest rejects | `onError` once, no sample, cadence keeps running |
 | `stop()` during the digest | No sample |
+| Backend becomes unavailable while the final digest is pending | Benchmark rejects (`backend became unavailable`) instead of resolving |
+| Backend replaced while the final digest is pending | Benchmark rejects (`actual backend changed`) |
+
+## Review follow-up (16/11/2026)
+
+TV3's review of the first revision found that reading the status only before
+the digest regressed the terminal-loss behaviour of #82/#83: the post-digest
+observer received an old status, so a loss during hashing could still emit a
+sample and let a benchmark resolve. The implementation now re-reads the status
+after the digest and surfaces loss/replacement through `onStatus`, keeping the
+captured metrics only when lifecycle and backend are unchanged. The two
+benchmark regressions above fail without that re-check (verified by temporarily
+stashing the source change) and pass with it.
 
 ## Results (local, Windows, Node 22.16, pinned lockfile)
 
 - `npx vitest run tests/unit/perf-collector.test.ts tests/unit/benchmark.test.ts`:
-  **37 PASS / 0 FAIL**.
-- `npm test`: **395 PASS / 0 FAIL**, 33 files.
+  **39 PASS / 0 FAIL**.
+- `npm test`: **397 PASS / 0 FAIL**, 33 files.
 - `npm run typecheck`, `npm run typecheck:tests`, `npm run build`: PASS
   (existing chunk-size advisory only).
 
