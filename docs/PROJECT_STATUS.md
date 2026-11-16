@@ -12,6 +12,20 @@
   installed Chrome override documented; standard-config CI tracked in Draft PR.
   TV5/human acceptance pending; no merge/release or renderer/schema changes.
 
+## 14/11/2026 — Issue #98 import intent candidate
+
+- Baseline dev@3d1c4f6; isolated `fix/98-stale-preset-import` branch.
+- Import generation prevents older reads from replacing newer selections,
+  defaults or deliberate config edits. Input cleanup is synchronous; disposal
+  suppresses late apply/name/toast effects. Schema/renderer contracts unchanged.
+- Two race assertions RED before patch; new desktop/mobile regressions 32 PASS.
+  Both typechecks, 336 unit/integration tests and build PASS. Full equivalent
+  installed-Chrome run: 114 PASS /6 SKIP /0 FAIL, retries=0. Bundled Chromium
+  local download timed out; standard-config CI is tracked in the Draft PR.
+- [Semantics, reproduction, evidence and limitations](04-testing/preset-import-intent-2026-11-14.md).
+  TV1/TV5 and independent human acceptance pending. No merge, Issue closure,
+  release/deploy/tag or #103 change.
+
 ## 14/11/2026 — Issue #96 GPU parity parameter coverage candidate
 
 - Baseline `dev@3d1c4f6` (Issue named `e55405d`; `dev` moved after #92).

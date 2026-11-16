@@ -56,6 +56,9 @@ export function renderLabControls(config: LabConfig): void {
 export function bindLabControls(callbacks: ControlCallbacks): () => void {
   const disposers: Array<() => void> = [];
   let disposed = false;
+  // Selection and deliberate config edits own intent, not file-read completion.
+  let importGeneration = 0;
+  const invalidateImport = (): void => { importGeneration += 1; };
   const listen = (
     element: HTMLElement,
     event: string,
@@ -76,6 +79,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
 
   (Object.keys(numericFields) as Array<keyof typeof numericFields>).forEach((id) => {
     listen(byId<HTMLInputElement>(id), 'input', (event) => {
+      invalidateImport();
       const value = Number((event.target as HTMLInputElement).value);
       const next = cloneConfig(callbacks.getConfig());
       next.simulation[numericFields[id]] = value;
@@ -84,6 +88,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   });
 
   listen(byId<HTMLInputElement>('strength'), 'input', (event) => {
+    invalidateImport();
     const next = cloneConfig(callbacks.getConfig());
     const value = Number((event.target as HTMLInputElement).value);
     if (next.mode === 'attractor') next.modes.attractor.attractorStrength = value;
@@ -92,22 +97,26 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   });
 
   listen(byId<HTMLInputElement>('particle-count'), 'input', (event) => {
+    invalidateImport();
     const value = Number((event.target as HTMLInputElement).value);
     byId<HTMLOutputElement>('particle-count-value').textContent = formatNumber(value);
   });
   listen(byId<HTMLInputElement>('particle-count'), 'change', (event) => {
+    invalidateImport();
     const value = Number((event.target as HTMLInputElement).value);
     const next = cloneConfig(callbacks.getConfig());
     next.simulation.particleCount = value;
     callbacks.updateConfig(next, true);
   });
   listen(byId<HTMLInputElement>('particle-color'), 'input', (event) => {
+    invalidateImport();
     const next = cloneConfig(callbacks.getConfig());
     next.rendering.particleColor = (event.target as HTMLInputElement).value;
     callbacks.updateConfig(next);
   });
 
   listen(byId<HTMLSelectElement>('backend'), 'change', (event) => {
+    invalidateImport();
     callbacks.updateConfig({
       ...callbacks.getConfig(),
       backendPreference: (event.target as HTMLSelectElement).value as LabConfig['backendPreference'],
@@ -116,11 +125,13 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   });
 
   listen(byId<HTMLButtonElement>('apply-backend'), 'click', () => {
+    invalidateImport();
     callbacks.applyBackend();
   });
 
   (['attractor', 'vortex'] as const).forEach((mode) => {
     listen(byId<HTMLButtonElement>(`mode-${mode}`), 'click', () => {
+      invalidateImport();
       callbacks.updateConfig({ ...callbacks.getConfig(), mode }, true);
     });
   });
@@ -151,20 +162,25 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
+    const generation = ++importGeneration;
+    const isCurrent = (): boolean => !disposed && generation === importGeneration;
+    // Capture first, clear synchronously: repeat selection works and an older
+    // completion never clears the input belonging to a newer selection.
+    input.value = '';
     try {
       if (file.size > 1_000_000) throw new Error('Tệp preset vượt quá giới hạn 1 MB.');
-      const next = parsePresetDocument(await file.text());
-      if (disposed) return;
+      const text = await file.text();
+      if (!isCurrent()) return;
+      const next = parsePresetDocument(text);
       callbacks.importPresetDocument(next);
-      callbacks.notify('Đã nhập preset hợp lệ.');
+      if (isCurrent()) callbacks.notify('Đã nhập preset hợp lệ.');
     } catch (error) {
-      if (!disposed) callbacks.notify(error instanceof Error ? error.message : 'Không thể đọc preset.', 'error');
-    } finally {
-      input.value = '';
+      if (isCurrent()) callbacks.notify(error instanceof Error ? error.message : 'Không thể đọc preset.', 'error');
     }
   });
 
   listen(byId<HTMLButtonElement>('restore-defaults'), 'click', () => {
+    invalidateImport();
     callbacks.restoreDefaults();
     callbacks.notify('Đã khôi phục cấu hình mặc định.');
   });
@@ -172,6 +188,7 @@ export function bindLabControls(callbacks: ControlCallbacks): () => void {
   return () => {
     if (disposed) return;
     disposed = true;
+    invalidateImport();
     disposers.forEach((dispose) => dispose());
   };
 }
