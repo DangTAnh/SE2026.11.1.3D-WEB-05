@@ -1,0 +1,8 @@
+{
+  "testTypecheck": 0,
+  "reason": "Only trailing blank EOF lines normalized; behavior unchanged",
+  "build": 0,
+  "unit": 0,
+  "utc": "2026-11-14T02:58:48.0399767Z",
+  "sourceTypecheck": 0
+}

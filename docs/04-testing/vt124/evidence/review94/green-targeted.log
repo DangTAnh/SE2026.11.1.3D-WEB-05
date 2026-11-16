@@ -1,0 +1,10 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 npx
+npm notice run vitest run tests/unit/preset-batch.test.ts tests/integration/preset-batch.test.ts
+
+ RUN  v5.0.3 C:/Users/Admin/.codex/worktrees/vt124-bulk-preset-import/SE2026.11.1.3D-WEB-05
+
+
+ Test Files  2 passed (2)
+      Tests  27 passed (27)
+   Start at  15:27:13
+   Duration  477ms (import 64%, transform 28%, tests 5%, worker 3%)

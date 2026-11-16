@@ -90,6 +90,78 @@ test('fitness: the composition root does not import a concrete backend', () => {
   );
 });
 
+test('fitness: core/types is a leaf with no outward imports', () => {
+  const violations = checkArchitecture([
+    source('src/core/types/example.ts', "import { x } from '../renderer/RendererPort.ts';"),
+    source('src/core/types/example.ts', "export { x } from '../../presets/preset.ts';"),
+    source('src/core/types/example.ts', 'async function load() { await import("../../ui/app.ts"); }'),
+  ]);
+
+  assert.deepEqual(
+    violations.map((violation) => violation.rule),
+    ['core-types-is-leaf', 'core-types-is-leaf', 'core-types-is-leaf'],
+  );
+});
+
+test('fitness: core/types may reference its own files', () => {
+  const violations = checkArchitecture([
+    source('src/core/types/measurement.ts', "import type { ActualBackend } from './backend.ts';"),
+  ]);
+
+  assert.deepEqual(violations, []);
+});
+
+test('fitness: core/renderer only type-imports outward', () => {
+  const violations = checkArchitecture([
+    source('src/core/renderer/example.ts', "import { x } from '../../presets/example.ts';"),
+    source('src/core/renderer/example.ts', "export { x } from '../../simulations/example.ts';"),
+    source('src/core/renderer/example.ts', 'async function load() { await import("../../presets/example.ts"); }'),
+  ]);
+
+  assert.deepEqual(
+    violations.map((violation) => violation.rule),
+    ['core-renderer-imports-types-only', 'core-renderer-imports-types-only', 'core-renderer-imports-types-only'],
+  );
+});
+
+test('fitness: core/renderer keeps the documented LabConfig type-only exception', () => {
+  const violations = checkArchitecture([
+    source('src/core/renderer/RendererPort.ts', "import type { LabConfig } from '../../presets/preset.ts';"),
+    source('src/core/renderer/RendererPort.ts', "export type { LabConfig } from '../../presets/preset.ts';"),
+    source('src/core/renderer/adapter.ts', "import type { RendererPort } from './RendererPort.ts';"),
+  ]);
+
+  assert.deepEqual(violations, []);
+});
+
+test('fitness: presets never import the UI', () => {
+  const violations = checkArchitecture([
+    source('src/presets/example.ts', "import { mount } from '../ui/app.ts';"),
+    source('src/presets/example.ts', "export type { View } from '../ui/app.ts';"),
+    source('src/presets/example.ts', 'async function load() { await import("../ui/app.ts"); }'),
+  ]);
+
+  assert.deepEqual(
+    violations.map((violation) => violation.rule),
+    ['presets-does-not-import-ui', 'presets-does-not-import-ui', 'presets-does-not-import-ui'],
+  );
+});
+
+test('fitness: import-looking text in comments and strings is not a violation', () => {
+  const violations = checkArchitecture([
+    source(
+      'src/core/types/example.ts',
+      '// import { x } from "../ui/example.ts";\nconst text = "import { x } from \'../ui/example.ts\'";',
+    ),
+    source(
+      'src/presets/example.ts',
+      '/* export { x } from "../ui/example.ts" */\nconst specifier = "from \'../ui/example.ts\'";',
+    ),
+  ]);
+
+  assert.deepEqual(violations, []);
+});
+
 test('fitness: the repository itself follows the rules', () => {
   assert.deepEqual(checkArchitecture(readSources('src')), []);
 });
