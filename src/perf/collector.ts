@@ -1,6 +1,6 @@
 import type { PerformanceSnapshot } from '../core/types/measurement.ts';
 import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererPort, type RendererStatus } from '../core/renderer/RendererPort.ts';
-import { configHash } from '../core/measurement/configHash.ts';
+import { canonicalConfig, configHash } from '../core/measurement/configHash.ts';
 import type { LabConfig } from '../presets/preset.ts';
 
 export interface PerformanceCollectorOptions {
@@ -20,6 +20,12 @@ export interface PerformanceCollectorOptions {
 /**
  * Samples the current renderer status on a fixed cadence after warm-up.
  * The collector does not own or dispose the RendererPort.
+ *
+ * Each capture reads the effective config and the port status in one
+ * synchronous step, so an emitted snapshot always pairs one workload identity
+ * with the metrics of that same moment. If the effective config changes before
+ * the asynchronous hash resolves — including from an `onStatus` callback — the
+ * capture is discarded and the next cadence samples the new workload (#99).
  */
 export class PerformanceCollector {
   #running = false;
@@ -92,14 +98,24 @@ export class PerformanceCollector {
     this.#sampling = true;
 
     try {
-      const hash = await configHash(this.options.getConfig());
+      // Capture the effective config and the port status in one synchronous
+      // step, so a digest or an observer callback cannot pair workload A's
+      // configHash with workload B's metrics.
+      const config = this.options.getConfig();
+      const identity = canonicalConfig(config);
+      const status = this.port.getStatus();
+
+      const hash = await configHash(config);
       if (!this.#isActive(generation)) return;
 
-      const status = this.port.getStatus();
+      // The observer keeps its post-digest position so a synchronous stop,
+      // dispose or restart still cancels the capture before it can emit.
       this.options.onStatus?.(status);
-      // Observers may synchronously stop, dispose or restart this collection.
       if (!this.#isActive(generation)) return;
       if (!status.running) return;
+      // Policy for a changed workload: discard this capture rather than emit an
+      // identity the caller no longer runs; the next cadence samples it.
+      if (canonicalConfig(this.options.getConfig()) !== identity) return;
 
       // Enforce INV-1 even if a RendererPort implementation returns an
       // inconsistent status: unsupported, stale or invalid GPU timing is null.
