@@ -58,6 +58,17 @@ input:disabled {
   min-height: 44px;
 }
 
+/* Preview decoration must not intercept canvas camera gestures. */
+.scene-upper,
+.scene-bottom,
+.crosshair {
+  pointer-events: none;
+}
+
+.playback button {
+  pointer-events: auto;
+}
+
 .runtime-notice {
   display: grid;
   gap: var(--ui-space-1);
