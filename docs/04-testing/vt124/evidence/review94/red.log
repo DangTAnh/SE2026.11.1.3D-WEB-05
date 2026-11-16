@@ -1,0 +1,4284 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 npx
+npm notice run vitest run tests/unit/preset-batch.test.ts tests/integration/preset-batch.test.ts
+
+ RUN  v5.0.3 C:/Users/Admin/.codex/worktrees/vt124-bulk-preset-import/SE2026.11.1.3D-WEB-05
+
+ ❯ tests/unit/preset-batch.test.ts (22 tests | 3 failed) 59ms
+   × VT124-T23 an overridden iterator cannot expand one indexed record to 101 outcomes 34ms
+   × VT124-T24 an overridden iterator cannot omit indexed records before or after errors 3ms
+   × VT124-T25 exact-limit indexed input never invokes its custom iterator 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T23 an overridden iterator cannot expand one indexed record to 101 outcomes
+AssertionError: expected { state: 'VALID_ONLY', …(3) } to deeply equal { state: 'VALID_ONLY', …(3) }
+
+- Expected
++ Received
+
+@@ -1,7 +1,7 @@
+  {
+-   "acceptedCount": 1,
++   "acceptedCount": 101,
+    "items": [
+      {
+        "document": {
+          "app": "3D-WEB-05",
+          "config": {
+@@ -39,10 +39,4210 @@
+          },
+          "name": "VT124 cloud",
+          "schemaVersion": 2,
+        },
+        "index": 0,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 1,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 2,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 3,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 4,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 5,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 6,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 7,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 8,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 9,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 10,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 11,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 12,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 13,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 14,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 15,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 16,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 17,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 18,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 19,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 20,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 21,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 22,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 23,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 24,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 25,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 26,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 27,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 28,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 29,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 30,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 31,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 32,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 33,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 34,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 35,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 36,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 37,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 38,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 39,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 40,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 41,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 42,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 43,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 44,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 45,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 46,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 47,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 48,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 49,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 50,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 51,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 52,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 53,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 54,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 55,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 56,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 57,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 58,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 59,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 60,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 61,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 62,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 63,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 64,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 65,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 66,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 67,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 68,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 69,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 70,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 71,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 72,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 73,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 74,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 75,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 76,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 77,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 78,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 79,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 80,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 81,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 82,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 83,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 84,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 85,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 86,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 87,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 88,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 89,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 90,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 91,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 92,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 93,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 94,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 95,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 96,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 97,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 98,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 99,
++       "status": "accepted",
++     },
++     {
++       "document": {
++         "app": "3D-WEB-05",
++         "config": {
++           "backendPreference": "auto",
++           "camera": {
++             "autoRotate": false,
++             "distance": 42,
++             "enabled": true,
++           },
++           "mode": "attractor",
++           "modes": {
++             "attractor": {
++               "attractorDamping": 0.98,
++               "attractorRadius": 6,
++               "attractorStrength": 1.5,
++             },
++             "vortex": {
++               "vortexDamping": 0.99,
++               "vortexStrength": 1.5,
++             },
++           },
++           "rendering": {
++             "additiveBlend": false,
++             "backgroundColor": "#07111f",
++             "opacity": 0.65,
++             "particleColor": "#6ce6ff",
++           },
++           "simulation": {
++             "lifetime": 7,
++             "particleCount": 65536,
++             "particleSize": 2.5,
++             "spawnRadius": 12,
++             "speed": 1.2,
++           },
++         },
++         "name": "VT124 cloud",
++         "schemaVersion": 2,
++       },
++       "index": 100,
+        "status": "accepted",
+      },
+    ],
+    "rejectedCount": 0,
+    "state": "VALID_ONLY",
+
+ ❯ tests/unit/preset-batch.test.ts:79:18
+     77|   });
+     78|   const result = importPresetBatch(records);
+     79|   expect(result).toEqual({ state: 'VALID_ONLY', acceptedCount: 1, reje…
+       |                  ^
+     80|     items: [{ index: 0, status: 'accepted', document: vt124Document() …
+     81| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T24 an overridden iterator cannot omit indexed records before or after errors
+AssertionError: expected 'VALID_ONLY' to be 'MIXED' // Object.is equality
+
+Expected: "MIXED"
+Received: "VALID_ONLY"
+
+ ❯ tests/unit/preset-batch.test.ts:90:24
+     88|   });
+     89|   const result = importPresetBatch(records);
+     90|   expect(result.state).toBe('MIXED');
+       |                        ^
+     91|   expect(result.acceptedCount).toBe(2);
+     92|   expect(result.rejectedCount).toBe(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T25 exact-limit indexed input never invokes its custom iterator
+Error: custom iteration must not run
+ ❯ Array.value tests/unit/preset-batch.test.ts:103:33
+    101|   const records = Array(100).fill(valid);
+    102|   Object.defineProperty(records, Symbol.iterator, {
+    103|     value: function* () { throw new Error('custom iteration must not r…
+       |                                 ^
+    104|   });
+    105|   const result = importPresetBatch(records);
+ ❯ importPresetBatch src/presets/batchImport.ts:24:36
+ ❯ tests/unit/preset-batch.test.ts:105:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 failed | 24 passed (27)
+   Start at  15:26:11
+   Duration  1.16s (import 81%, transform 13%, tests 5%, worker 1%)

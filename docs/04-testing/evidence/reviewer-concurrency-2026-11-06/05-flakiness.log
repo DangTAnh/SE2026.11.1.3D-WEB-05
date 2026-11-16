@@ -1,0 +1,79 @@
+# BT3 VT-123 - flakiness evidence (unit review suite)
+# Date: 2026-11-06
+# Command: repeated npx vitest run tests/unit/review-workflow.test.ts --reporter=dot
+# Runs: 30
+
+run 1: exit=0 |       Tests  16 passed (16)
+run 2: exit=0 |       Tests  16 passed (16)
+run 3: exit=0 |       Tests  16 passed (16)
+run 4: exit=0 |       Tests  16 passed (16)
+run 5: exit=0 |       Tests  16 passed (16)
+run 6: exit=0 |       Tests  16 passed (16)
+run 7: exit=0 |       Tests  16 passed (16)
+run 8: exit=0 |       Tests  16 passed (16)
+run 9: exit=0 |       Tests  16 passed (16)
+run 10: exit=0 |       Tests  16 passed (16)
+run 11: exit=0 |       Tests  16 passed (16)
+run 12: exit=0 |       Tests  16 passed (16)
+run 13: exit=0 |       Tests  16 passed (16)
+run 14: exit=0 |       Tests  16 passed (16)
+run 15: exit=0 |       Tests  16 passed (16)
+run 16: exit=0 |       Tests  16 passed (16)
+run 17: exit=0 |       Tests  16 passed (16)
+run 18: exit=0 |       Tests  16 passed (16)
+run 19: exit=0 |       Tests  16 passed (16)
+run 20: exit=0 |       Tests  16 passed (16)
+run 21: exit=0 |       Tests  16 passed (16)
+run 22: exit=0 |       Tests  16 passed (16)
+run 23: exit=0 |       Tests  16 passed (16)
+run 24: exit=0 |       Tests  16 passed (16)
+run 25: exit=0 |       Tests  16 passed (16)
+run 26: exit=0 |       Tests  16 passed (16)
+run 27: exit=0 |       Tests  16 passed (16)
+run 28: exit=0 |       Tests  16 passed (16)
+run 29: exit=0 |       Tests  16 passed (16)
+run 30: exit=0 |       Tests  16 passed (16)
+
+PASS=30 FAIL=0 TOTAL=30 PASS_RATE=100.00%
+# BT3 VT-123 - flakiness evidence (unit review suite)
+# Updated: 2026-11-06 (after adding T19)
+# Command: repeated npx vitest run tests/unit/review-workflow.test.ts --reporter=dot
+# Runs: 30
+
+## Previous run (before T19; 16 tests): PASS=30 FAIL=0 TOTAL=30 PASS_RATE=100.00%
+Each run: 16 passed (16).
+
+## Current run (after T19; 17 tests)
+
+run 1: exit=0 |       Tests  17 passed (17)
+run 2: exit=0 |       Tests  17 passed (17)
+run 3: exit=0 |       Tests  17 passed (17)
+run 4: exit=0 |       Tests  17 passed (17)
+run 5: exit=0 |       Tests  17 passed (17)
+run 6: exit=0 |       Tests  17 passed (17)
+run 7: exit=0 |       Tests  17 passed (17)
+run 8: exit=0 |       Tests  17 passed (17)
+run 9: exit=0 |       Tests  17 passed (17)
+run 10: exit=0 |       Tests  17 passed (17)
+run 11: exit=0 |       Tests  17 passed (17)
+run 12: exit=0 |       Tests  17 passed (17)
+run 13: exit=0 |       Tests  17 passed (17)
+run 14: exit=0 |       Tests  17 passed (17)
+run 15: exit=0 |       Tests  17 passed (17)
+run 16: exit=0 |       Tests  17 passed (17)
+run 17: exit=0 |       Tests  17 passed (17)
+run 18: exit=0 |       Tests  17 passed (17)
+run 19: exit=0 |       Tests  17 passed (17)
+run 20: exit=0 |       Tests  17 passed (17)
+run 21: exit=0 |       Tests  17 passed (17)
+run 22: exit=0 |       Tests  17 passed (17)
+run 23: exit=0 |       Tests  17 passed (17)
+run 24: exit=0 |       Tests  17 passed (17)
+run 25: exit=0 |       Tests  17 passed (17)
+run 26: exit=0 |       Tests  17 passed (17)
+run 27: exit=0 |       Tests  17 passed (17)
+run 28: exit=0 |       Tests  17 passed (17)
+run 29: exit=0 |       Tests  17 passed (17)
+run 30: exit=0 |       Tests  17 passed (17)
+
+PASS=30 FAIL=0 TOTAL=30 PASS_RATE=100.00%

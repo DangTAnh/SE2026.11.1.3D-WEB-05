@@ -1,0 +1,560 @@
+# BT3 VT-123 - Phase 3 RED evidence (test-first)
+# Date: 2026-11-06T10:37:39+07:00
+# Baseline commit: 8f7c3eeb74c7a9501332b265fa16a6aa552aa2b3
+# Branch: feat/85-reviewer-concurrency
+
+## 1. npm run typecheck:tests
+
+> gpu-particle-lab-week1-ui-prototype@0.1.0 typecheck:tests
+> tsc --noEmit -p tsconfig.tests.json
+
+EXIT=0
+
+## 2. npx vitest run tests/unit/review-workflow.test.ts --reporter=verbose
+
+ RUN  v5.0.3 D:/subjects/SE
+
+ × tests/unit/review-workflow.test.ts > [T01] a reviewer cannot submit preset content 10ms
+   → promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+ × tests/unit/review-workflow.test.ts > [T02] an editor cannot approve 2ms
+   → promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+ ✓ tests/unit/review-workflow.test.ts > [T03] a reviewer approves the exact revision without changing content 4ms
+ ✓ tests/unit/review-workflow.test.ts > [T04] a reviewer rejects without changing content 0ms
+ × tests/unit/review-workflow.test.ts > [T05] read and input cannot mutate stored content 1ms
+   → expected function to throw an error, but it didn't
+ × tests/unit/review-workflow.test.ts > [T06] approval with a wrong content hash changes nothing 1ms
+   → promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+ × tests/unit/review-workflow.test.ts > [T07] a stale approval after a newer submission is rejected 1ms
+   → expected undefined to be an instance of ReviewError
+ × tests/unit/review-workflow.test.ts > [T08] two concurrent submissions from the same base have one winner 1ms
+   → expected [ { status: 'fulfilled', …(1) }, …(1) ] to have a length of 1 but got 2
+ × tests/unit/review-workflow.test.ts > [T09] two concurrent approvals leave exactly one review 1ms
+   → expected [] to have a length of 2 but got +0
+ × tests/unit/review-workflow.test.ts > [T10] a concurrent submit and approval leave a consistent revision 1ms
+   → expected [ { …(2) } ] to have a length of 2 but got 1
+ ✓ tests/unit/review-workflow.test.ts > [T11] invalid documents fail at the module boundary without writing 1ms
+ × tests/unit/review-workflow.test.ts > [T12] a failed digest leaves the board unchanged 1ms
+   → promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+ × tests/unit/review-workflow.test.ts > [T13] a second review of the same revision is refused 1ms
+   → promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+ ✓ tests/unit/review-workflow.test.ts > [T14] reviewing an empty board is refused 1ms
+ × tests/unit/review-workflow.test.ts > [T17] the review hash covers fields that configHash ignores 1ms
+   → promise resolved "{ version: 2, document: { …(4) }, …(5) }" instead of rejecting
+ ✓ tests/unit/review-workflow.test.ts > [T18] two boards do not share review state 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T01] a reviewer cannot submit preset content
+AssertionError: promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-b93eb415",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "auto",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#6ce6ff",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 2000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "preset-1",
++     "schemaVersion": 2,
++   },
++   "reviewNote": null,
++   "reviewedBy": null,
++   "status": "pending",
++   "submittedBy": "reviewer-bao",
++   "version": 1,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:82:57
+     80|   const board = new PresetReviewBoard({ hash: deterministicHash });
+     81|
+     82|   await expect(board.submit(reviewer, documentFor(1), 0))
+       |                                                         ^
+     83|     .rejects.toMatchObject({ code: 'forbidden-role' });
+     84|   expect(board.read()).toBeNull();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T02] an editor cannot approve
+AssertionError: promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-1af4da91",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "auto",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#6ce6ff",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 3000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "preset-2",
++     "schemaVersion": 2,
++   },
++   "reviewNote": null,
++   "reviewedBy": "editor-ana",
++   "status": "approved",
++   "submittedBy": "editor-ana",
++   "version": 1,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:92:75
+     90|   const pending = board.read()!;
+     91|
+     92|   await expect(board.approve(editor, pending.version, pending.contentH…
+       |                                                                           ^
+     93|     .rejects.toMatchObject({ code: 'forbidden-role' });
+     94|   expect(board.read()!.status).toBe('pending');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T05] read and input cannot mutate stored content
+AssertionError: expected function to throw an error, but it didn't
+ ❯ tests/unit/review-workflow.test.ts:136:76
+    134|   const stored = board.read()!;
+    135|
+    136|   expect(() => { stored.document.config.simulation.particleCount = 999…
+       |                                                                            ^
+    137|   expect(() => { (stored as { status: string }).status = 'approved'; }…
+    138|   expect(board.read()!.document.config.simulation.particleCount).toBe(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T06] approval with a wrong content hash changes nothing
+AssertionError: promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-8a331f49",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "auto",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#6ce6ff",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 7000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "preset-6",
++     "schemaVersion": 2,
++   },
++   "reviewNote": null,
++   "reviewedBy": "reviewer-bao",
++   "status": "approved",
++   "submittedBy": "editor-ana",
++   "version": 1,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:153:74
+    151|   const pending = board.read()!;
+    152|
+    153|   await expect(board.approve(reviewer, pending.version, 'fnv1a-deadbee…
+       |                                                                          ^
+    154|     .rejects.toMatchObject({ code: 'content-changed' });
+    155|   expect(board.read()!.status).toBe('pending');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T07] a stale approval after a newer submission is rejected
+AssertionError: expected undefined to be an instance of ReviewError
+ ❯ tests/unit/review-workflow.test.ts:174:17
+    172|   }
+    173|
+    174|   expect(error).toBeInstanceOf(ReviewError);
+       |                 ^
+    175|   expect(['stale-version', 'content-changed']).toContain((error as Rev…
+    176|   expect(board.read()!.version).toBe(2);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T08] two concurrent submissions from the same base have one winner
+AssertionError: expected [ { status: 'fulfilled', …(1) }, …(1) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/unit/review-workflow.test.ts:201:23
+    199|       (outcome): outcome is PromiseRejectedResult => outcome.status ==…
+    200|     );
+    201|     expect(fulfilled).toHaveLength(1);
+       |                       ^
+    202|     expect(rejected).toHaveLength(1);
+    203|     expect(rejected[0]!.reason).toBeInstanceOf(ReviewError);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T09] two concurrent approvals leave exactly one review
+AssertionError: expected [] to have a length of 2 but got +0
+
+- Expected
++ Received
+
+- 2
++ 0
+
+ ❯ tests/unit/review-workflow.test.ts:224:25
+    222|     const firstAttempt = board.approve(reviewer, pending.version, pend…
+    223|     const secondAttempt = board.approve(otherReviewer, pending.version…
+    224|     expect(gated.gates).toHaveLength(2);
+       |                         ^
+    225|
+    226|     gated.release(gated.gates[winner]!);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T10] a concurrent submit and approval leave a consistent revision
+AssertionError: expected [ { …(2) } ] to have a length of 2 but got 1
+
+- Expected
++ Received
+
+- 2
++ 1
+
+ ❯ tests/unit/review-workflow.test.ts:255:25
+    253|     const approveAttempt = board.approve(reviewer, v1.version, v1.cont…
+    254|     const submitAttempt = board.submit(editor, documentFor(41, 'v2'), …
+    255|     expect(gated.gates).toHaveLength(2);
+       |                         ^
+    256|
+    257|     const order = firstOperation === 'approve' ? [0, 1] : [1, 0];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T12] a failed digest leaves the board unchanged
+AssertionError: promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-12615fff",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "auto",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#6ce6ff",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 61000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "preset-60",
++     "schemaVersion": 2,
++   },
++   "reviewNote": null,
++   "reviewedBy": "reviewer-bao",
++   "status": "approved",
++   "submittedBy": "editor-ana",
++   "version": 1,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:318:77
+    316|
+    317|   fail = true;
+    318|   await expect(board.approve(reviewer, pending.version, pending.conten…
+       |                                                                             ^
+    319|     .rejects.toThrow('digest failed');
+    320|   expect(board.read()!.status).toBe('pending');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T13] a second review of the same revision is refused
+AssertionError: promise resolved "{ version: 1, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-dad3b5ff",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "auto",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#6ce6ff",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 71000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "preset-70",
++     "schemaVersion": 2,
++   },
++   "reviewNote": "second",
++   "reviewedBy": "reviewer-chi",
++   "status": "approved",
++   "submittedBy": "editor-ana",
++   "version": 1,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:334:92
+    332|   await board.approve(reviewer, pending.version, pending.contentHash, …
+    333|
+    334|   await expect(board.approve(otherReviewer, pending.version, pending.c…
+       |                                                                                            ^
+    335|     .rejects.toMatchObject({ code: 'not-reviewable' });
+    336|   expect(board.read()!.reviewedBy).toBe(reviewer.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  tests/unit/review-workflow.test.ts > [T17] the review hash covers fields that configHash ignores
+AssertionError: promise resolved "{ version: 2, document: { …(4) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "contentHash": "fnv1a-72bb183b",
++   "document": {
++     "app": "3D-WEB-05",
++     "config": {
++       "backendPreference": "webgl2",
++       "camera": {
++         "autoRotate": false,
++         "distance": 30,
++         "enabled": true,
++       },
++       "mode": "attractor",
++       "modes": {
++         "attractor": {
++           "attractorDamping": 0.98,
++           "attractorRadius": 6,
++           "attractorStrength": 1.5,
++         },
++         "vortex": {
++           "vortexDamping": 0.99,
++           "vortexStrength": 1.5,
++         },
++       },
++       "rendering": {
++         "additiveBlend": false,
++         "backgroundColor": "#07111f",
++         "opacity": 1,
++         "particleColor": "#ff0000",
++       },
++       "simulation": {
++         "lifetime": 6,
++         "particleCount": 81000,
++         "particleSize": 2.5,
++         "spawnRadius": 10,
++         "speed": 1.2,
++       },
++     },
++     "name": "color-b",
++     "schemaVersion": 2,
++   },
++   "reviewNote": null,
++   "reviewedBy": "reviewer-bao",
++   "status": "approved",
++   "submittedBy": "editor-ana",
++   "version": 2,
+  }
+
+ ❯ tests/unit/review-workflow.test.ts:364:90
+    362|
+    363|   expect(firstRevision.contentHash).not.toBe(secondRevision.contentHas…
+    364|   await expect(board.approve(reviewer, secondRevision.version, firstRe…
+       |                                                                                          ^
+    365|     .rejects.toMatchObject({ code: 'content-changed' });
+    366|   expect(board.read()!.status).toBe('pending');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 5 passed (16)
+   Start at  10:37:43
+   Duration  333ms (import 45%, transform 39%, tests 14%, worker 2%)
+
+EXIT=1
+
+## 3. npm run test:load -- --reporter=verbose
+
+> gpu-particle-lab-week1-ui-prototype@0.1.0 test:load
+> vitest run --config vitest.load.config.ts --reporter=verbose
+
+
+ RUN  v5.0.3 D:/subjects/SE
+
+stdout | tests/load/review-load.test.ts > [T15] 40 concurrent review tasks meet the p95 budget with no lost updates
+VT123_LOAD_RESULT {"tasks":40,"p50Ms":3.28,"p95Ms":3.652,"maxMs":5.044,"minMs":3.009,"wallMs":5.556,"finalVersion":1,"committedSubmissions":40}
+
+ × tests/load/review-load.test.ts > [T15] 40 concurrent review tasks meet the p95 budget with no lost updates 10ms
+   → expected 1 to be greater than or equal to 40
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/load/review-load.test.ts > [T15] 40 concurrent review tasks meet the p95 budget with no lost updates
+AssertionError: expected 1 to be greater than or equal to 40
+ ❯ tests/load/review-load.test.ts:143:24
+    141|
+    142|   expect(latencies).toHaveLength(TASKS);
+    143|   expect(finalVersion).toBeGreaterThanOrEqual(TASKS);
+       |                        ^
+    144|
+    145|   // No revision was skipped or overwritten: successful submissions fo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  10:37:44
+   Duration  264ms (import 53%, transform 37%, tests 8%, worker 2%)
+
+EXIT=1
