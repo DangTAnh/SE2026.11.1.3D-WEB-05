@@ -34,6 +34,17 @@
 - [Scope, traceability, commands and evidence](04-testing/vt124/README.md).
   Candidate only; owner/human review pending. Hardware WebGPU/timestamp
   freshness and physical-GPU parity NOT_RUN; no merge/deploy/tag.
+## 14/11/2026 — PR #87 integration with current dev
+
+- Normally merge dev@e55405d into the published Issue #85 branch; preserve
+  history. Resolve package/lockfile/test-config conflicts by retaining the dev
+  lockfile and all load configurations. No production workflow changes.
+- Full local verify PASS: 353 tests /31 files, 76 E2E PASS /12 capability SKIP
+  in 6.3 minutes, no actual retry/flaky entries, both typechecks and build PASS.
+  All three current load suites pass; no real-user capacity or GPU claim.
+- [Integration evidence and limits](04-testing/reviewer-concurrency-integration-2026-11-14.md).
+  Remote CI and independent human review remain required; #85 stays open.
+  The unmerged #92 test fix and #70 release/deployment gates remain separate.
 
 ## 07/11/2026 — VT-120 / Issue #88 retry-persistence candidate
 

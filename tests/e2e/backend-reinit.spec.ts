@@ -26,6 +26,7 @@ test('backend apply preserves config and pause, creates a new canvas and cleans 
   await page.locator('#toggle-preview').click();
   await page.locator('#reset-preview').click();
   expect(await page.evaluate(() => window.sessionTest.ports[1]!.calls.filter(c => c.type === 'start').length)).toBe(1);
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.evaluate(() => { window.sessionTest.ports[1]!.calls.length = 0; });
   await page.clock.runFor(1500);
   expect(await page.evaluate(() => window.sessionTest.ports[1]!.calls.filter(c => c.type === 'getStatus').length)).toBe(3);
