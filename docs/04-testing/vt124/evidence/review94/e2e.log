@@ -1,0 +1,104 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 test:e2e
+npm notice run playwright test --grep-invert @evidence
+[WebServer] npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 dev
+[WebServer] npm notice run vite --host 127.0.0.1 --port 4173
+[WebServer] (node:31540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 88 tests using 1 worker
+
+(node:3408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:5:1 › backend apply preserves config and pause, creates a new canvas and cleans up UI polling (4.6s)
+  ok  2 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:41:1 › failed init (reject) retains the running canvas and reports rollback (699ms)
+  ok  3 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:41:1 › failed init (unavailable) retains the running canvas and reports rollback (640ms)
+  ok  4 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:65:1 › staging keeps the live canvas until readiness; overlapping requests publish only the latest result (741ms)
+  ok  5 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:93:1 › valid WebGPU to WebGL2 fallback reports success rather than rollback (573ms)
+  ok  6 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:103:1 › backend apply follows a canvas replaced by runtime recovery (683ms)
+  ok  7 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:120:1 › canvas factory follows an id-less canvas replaced by runtime recovery (551ms)
+  ok  8 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:137:1 › backend apply adopts a canvas replaced inside staging during initialization (674ms)
+  ok  9 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:155:1 › initial WebGPU fallback commits the replacement canvas from its staged candidate (624ms)
+  ok 10 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:168:1 › runtime replacement is disposed with its owner without removing a newer candidate surface (583ms)
+  ok 11 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:189:1 › initial unavailable retry does not start without user intent (727ms)
+  ok 12 [desktop-chromium] › tests\e2e\backend-reinit.spec.ts:204:1 › production applies WebGL2, WebGPU and Auto without reload and resumes after re-init (39.4s)
+  ok 13 [desktop-chromium] › tests\e2e\backend.spec.ts:21:1 › probe treats an exposed API without an adapter as unsupported (216ms)
+  ok 14 [desktop-chromium] › tests\e2e\backend.spec.ts:39:1 › forced WebGL2 runs the real adapter and keeps a sized canvas (38.3s)
+  -  15 [desktop-chromium] › tests\e2e\backend.spec.ts:57:1 › forced WebGL2 that cannot start reports unavailable, not the request
+  -  16 [desktop-chromium] › tests\e2e\backend.spec.ts:72:1 › with WebGPU the app reports the actual WebGPU backend and keeps a sized canvas
+  ok 17 [desktop-chromium] › tests\e2e\backend.spec.ts:88:1 › without WebGPU the app falls back or shows unsupported, never WebGPU (28.3s)
+  -  18 [desktop-chromium] › tests\e2e\gpu-timing-freshness.spec.ts:16:3 › webgpu timing becomes unavailable after a real query read error and recovers
+  -  19 [desktop-chromium] › tests\e2e\gpu-timing-freshness.spec.ts:16:3 › webgl2 timing becomes unavailable after a real query read error and recovers
+  -  20 [desktop-chromium] › tests\e2e\renderer-adapter-webgpu.spec.ts:4:1 › WebGPU adapter initializes and renders on the application canvas when available
+  ok 21 [desktop-chromium] › tests\e2e\renderer-adapter.spec.ts:3:1 › forced WebGL2 initializes a renderer on the application canvas when supported (54.8s)
+  ok 22 [desktop-chromium] › tests\e2e\renderer-runtime-context-loss.spec.ts:3:1 › a lost WebGL2 context after initialization is reported as unavailable (23.0s)
+  ok 23 [desktop-chromium] › tests\e2e\simulation-parity.spec.ts:55:1 › GPU kernels match the CPU reference through readback (759ms)
+  ok 24 [desktop-chromium] › tests\e2e\simulation-parity.spec.ts:109:1 › corrupt GPU readback fails instead of claiming parity (399ms)
+  ok 25 [desktop-chromium] › tests\e2e\ui-live-status.spec.ts:5:1 › production WebGL2 shows live FPS and clears metrics when paused (28.5s)
+  ok 26 [desktop-chromium] › tests\e2e\ui-live-status.spec.ts:31:1 › pending init shows loading without fabricated metrics, then displays the initialized port (648ms)
+  ok 27 [desktop-chromium] › tests\e2e\ui-live-status.spec.ts:45:1 › live status replaces metrics and backend identity across failure and recovery (699ms)
+  ok 28 [desktop-chromium] › tests\e2e\ui-live-status.spec.ts:94:1 › paused and invalid samples never keep old GPU timing visible (601ms)
+  ok 29 [desktop-chromium] › tests\e2e\ui-port.spec.ts:6:1 › production ignores the removed UI state query and reports the initialized backend (45.9s)
+  ok 30 [desktop-chromium] › tests\e2e\ui-port.spec.ts:30:1 › webgl=1 forces the WebGL2 backend when available (19.4s)
+  ok 31 [desktop-chromium] › tests\e2e\ui-port.spec.ts:41:1 › each control change applies once; mode resets and particle count rebuilds through the port (1.2s)
+  ok 32 [desktop-chromium] › tests\e2e\ui-port.spec.ts:73:1 › pause, resume, reset and defaults use the port; unmount and unload dispose exactly once (752ms)
+  ok 33 [desktop-chromium] › tests\e2e\ui-port.spec.ts:105:1 › initial apply failure stays disabled across polling until a successful import (592ms)
+  ok 34 [desktop-chromium] › tests\e2e\ui-port.spec.ts:123:1 › renderer reset errors during import do not expose backend details (571ms)
+  ok 35 [desktop-chromium] › tests\e2e\ui-port.spec.ts:136:1 › a pending file read cannot apply configuration after unmount (580ms)
+  ok 36 [desktop-chromium] › tests\e2e\ui-port.spec.ts:156:1 › import applies atomically once and invalid imports do not call the port (629ms)
+  ok 37 [desktop-chromium] › tests\e2e\ui-port.spec.ts:188:1 › rejected apply preserves the previous UI config and does not reset (544ms)
+  ok 38 [desktop-chromium] › tests\e2e\ui.spec.ts:20:1 › luồng điều khiển chính hoạt động và không tràn ngang (617ms)
+  ok 39 [desktop-chromium] › tests\e2e\ui.spec.ts:44:1 › trạng thái port chuyển trực tiếp qua fallback và error (1.4s)
+  ok 40 [desktop-chromium] › tests\e2e\ui.spec.ts:62:1 › preset hợp lệ được import, preset lỗi không làm đổi state (561ms)
+  ok 41 [desktop-chromium] › tests\e2e\ui.spec.ts:87:1 › preset export tạo JSON đúng schema (1.2s)
+  ok 42 [desktop-chromium] › tests\e2e\ui.spec.ts:104:1 › named v2 document survives edits and simulation reset; defaults clear metadata (936ms)
+  ok 43 [desktop-chromium] › tests\e2e\ui.spec.ts:149:1 › rejected import retains document name; accepted import retains new name if reset fails (767ms)
+  ok 44 [desktop-chromium] › tests\e2e\ui.spec.ts:182:1 › không có vi phạm WCAG tự động mức A/AA @a11y (2.7s)
+(node:17328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 45 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:5:1 › backend apply preserves config and pause, creates a new canvas and cleans up UI polling (844ms)
+  ok 46 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:41:1 › failed init (reject) retains the running canvas and reports rollback (604ms)
+  ok 47 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:41:1 › failed init (unavailable) retains the running canvas and reports rollback (865ms)
+  ok 48 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:65:1 › staging keeps the live canvas until readiness; overlapping requests publish only the latest result (1.4s)
+  ok 49 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:93:1 › valid WebGPU to WebGL2 fallback reports success rather than rollback (924ms)
+  ok 50 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:103:1 › backend apply follows a canvas replaced by runtime recovery (575ms)
+  ok 51 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:120:1 › canvas factory follows an id-less canvas replaced by runtime recovery (503ms)
+  ok 52 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:137:1 › backend apply adopts a canvas replaced inside staging during initialization (496ms)
+  ok 53 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:155:1 › initial WebGPU fallback commits the replacement canvas from its staged candidate (542ms)
+  ok 54 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:168:1 › runtime replacement is disposed with its owner without removing a newer candidate surface (550ms)
+  ok 55 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:189:1 › initial unavailable retry does not start without user intent (579ms)
+  ok 56 [mobile-chromium] › tests\e2e\backend-reinit.spec.ts:204:1 › production applies WebGL2, WebGPU and Auto without reload and resumes after re-init (28.4s)
+  ok 57 [mobile-chromium] › tests\e2e\backend.spec.ts:21:1 › probe treats an exposed API without an adapter as unsupported (171ms)
+  ok 58 [mobile-chromium] › tests\e2e\backend.spec.ts:39:1 › forced WebGL2 runs the real adapter and keeps a sized canvas (37.3s)
+  -  59 [mobile-chromium] › tests\e2e\backend.spec.ts:57:1 › forced WebGL2 that cannot start reports unavailable, not the request
+  -  60 [mobile-chromium] › tests\e2e\backend.spec.ts:72:1 › with WebGPU the app reports the actual WebGPU backend and keeps a sized canvas
+  ok 61 [mobile-chromium] › tests\e2e\backend.spec.ts:88:1 › without WebGPU the app falls back or shows unsupported, never WebGPU (28.1s)
+  -  62 [mobile-chromium] › tests\e2e\gpu-timing-freshness.spec.ts:16:3 › webgpu timing becomes unavailable after a real query read error and recovers
+  -  63 [mobile-chromium] › tests\e2e\gpu-timing-freshness.spec.ts:16:3 › webgl2 timing becomes unavailable after a real query read error and recovers
+  -  64 [mobile-chromium] › tests\e2e\renderer-adapter-webgpu.spec.ts:4:1 › WebGPU adapter initializes and renders on the application canvas when available
+  ok 65 [mobile-chromium] › tests\e2e\renderer-adapter.spec.ts:3:1 › forced WebGL2 initializes a renderer on the application canvas when supported (51.0s)
+  ok 66 [mobile-chromium] › tests\e2e\renderer-runtime-context-loss.spec.ts:3:1 › a lost WebGL2 context after initialization is reported as unavailable (19.6s)
+  -  67 [mobile-chromium] › tests\e2e\simulation-parity.spec.ts:55:1 › GPU kernels match the CPU reference through readback
+  -  68 [mobile-chromium] › tests\e2e\simulation-parity.spec.ts:109:1 › corrupt GPU readback fails instead of claiming parity
+  ok 69 [mobile-chromium] › tests\e2e\ui-live-status.spec.ts:5:1 › production WebGL2 shows live FPS and clears metrics when paused (26.0s)
+  ok 70 [mobile-chromium] › tests\e2e\ui-live-status.spec.ts:31:1 › pending init shows loading without fabricated metrics, then displays the initialized port (570ms)
+  ok 71 [mobile-chromium] › tests\e2e\ui-live-status.spec.ts:45:1 › live status replaces metrics and backend identity across failure and recovery (605ms)
+  ok 72 [mobile-chromium] › tests\e2e\ui-live-status.spec.ts:94:1 › paused and invalid samples never keep old GPU timing visible (666ms)
+  ok 73 [mobile-chromium] › tests\e2e\ui-port.spec.ts:6:1 › production ignores the removed UI state query and reports the initialized backend (37.5s)
+  ok 74 [mobile-chromium] › tests\e2e\ui-port.spec.ts:30:1 › webgl=1 forces the WebGL2 backend when available (23.5s)
+  ok 75 [mobile-chromium] › tests\e2e\ui-port.spec.ts:41:1 › each control change applies once; mode resets and particle count rebuilds through the port (588ms)
+  ok 76 [mobile-chromium] › tests\e2e\ui-port.spec.ts:73:1 › pause, resume, reset and defaults use the port; unmount and unload dispose exactly once (628ms)
+  ok 77 [mobile-chromium] › tests\e2e\ui-port.spec.ts:105:1 › initial apply failure stays disabled across polling until a successful import (490ms)
+  ok 78 [mobile-chromium] › tests\e2e\ui-port.spec.ts:123:1 › renderer reset errors during import do not expose backend details (487ms)
+  ok 79 [mobile-chromium] › tests\e2e\ui-port.spec.ts:136:1 › a pending file read cannot apply configuration after unmount (536ms)
+  ok 80 [mobile-chromium] › tests\e2e\ui-port.spec.ts:156:1 › import applies atomically once and invalid imports do not call the port (525ms)
+  ok 81 [mobile-chromium] › tests\e2e\ui-port.spec.ts:188:1 › rejected apply preserves the previous UI config and does not reset (626ms)
+  ok 82 [mobile-chromium] › tests\e2e\ui.spec.ts:20:1 › luồng điều khiển chính hoạt động và không tràn ngang (591ms)
+  ok 83 [mobile-chromium] › tests\e2e\ui.spec.ts:44:1 › trạng thái port chuyển trực tiếp qua fallback và error (1.4s)
+  ok 84 [mobile-chromium] › tests\e2e\ui.spec.ts:62:1 › preset hợp lệ được import, preset lỗi không làm đổi state (526ms)
+  ok 85 [mobile-chromium] › tests\e2e\ui.spec.ts:87:1 › preset export tạo JSON đúng schema (640ms)
+  ok 86 [mobile-chromium] › tests\e2e\ui.spec.ts:104:1 › named v2 document survives edits and simulation reset; defaults clear metadata (847ms)
+  ok 87 [mobile-chromium] › tests\e2e\ui.spec.ts:149:1 › rejected import retains document name; accepted import retains new name if reset fails (668ms)
+  ok 88 [mobile-chromium] › tests\e2e\ui.spec.ts:182:1 › không có vi phạm WCAG tự động mức A/AA @a11y (3.8s)
+
+  12 skipped
+  76 passed (9.8m)
