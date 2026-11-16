@@ -1,5 +1,23 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 16/11/2026 — Issue #99 collector config/status identity fix
+
+- Baseline `dev@2818add`. `PerformanceCollector.#capture` hashed the config,
+  awaited the digest, then read the port status, so a config change during
+  hashing paired workload A's `configHash` with workload B's metrics.
+- Root-cause fix in `src/perf/collector.ts`: config and status are captured in
+  one synchronous step, and a capture whose effective config changes before the
+  digest resolves (including from an `onStatus` callback) is discarded; the next
+  cadence samples the new workload. Observer ordering, paused skipping,
+  non-overlapping captures and the INV-1 GPU-timing null rule are unchanged.
+- New deterministic regressions use a deferred digest: workload change during
+  hashing, change from `onStatus`, status/identity pairing, digest failure
+  recovery and stop-during-digest. 17 collector/benchmark tests PASS; full
+  suite 395/395 across 33 files; both typechecks and build PASS.
+- [Root cause, policy and evidence](04-testing/collector-config-identity-2026-11-16.md).
+  Controlled-port/timer evidence only; no GPU or physical-device claim. Distinct
+  from #97 (stale GPU timestamps on config change), which stays open.
+
 ## 14/11/2026 — Issue #102 preview routing candidate
 
 - Independent `fix/102-preview-pointer-routing` from dev@3d1c4f6. Decorative
