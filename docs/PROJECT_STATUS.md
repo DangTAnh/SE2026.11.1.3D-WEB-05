@@ -1,5 +1,17 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 14/11/2026 — Issue #101 slider focus candidate
+
+- Independent `fix/101-range-focus` from dev@3d1c4f6. A scoped focus-visible
+  rule restores the existing focus token above the range reset specificity.
+- Real Tab, focus geometry/viewport images, mouse modality, Arrow/Home/End,
+  exported config/renderer calls and disabled state: 8 PASS across both projects
+  at 1440/320/390/500px. Existing UI: 34 PASS; earlier crop-test failures are
+  preserved in [evidence](04-testing/range-focus-2026-11-14.md).
+- G0/test typecheck, 336 unit/integration tests and diff check PASS. Local
+  installed Chrome override documented; standard-config CI tracked in Draft PR.
+  TV5/human acceptance pending; no merge/release or renderer/schema changes.
+
 ## 14/11/2026 — Issue #98 import intent candidate
 
 - Baseline dev@3d1c4f6; isolated `fix/98-stale-preset-import` branch.

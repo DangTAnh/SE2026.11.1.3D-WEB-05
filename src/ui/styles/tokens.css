@@ -40,6 +40,12 @@ select:focus-visible {
   outline: var(--ui-focus);
 }
 
+/* Override the scoped range reset only in keyboard focus modality. */
+.panel-scroll input[type='range']:focus-visible {
+  outline: var(--ui-focus);
+  outline-offset: 5px;
+}
+
 button:disabled,
 input:disabled {
   cursor: not-allowed;
