@@ -9,6 +9,7 @@
     "vitest.config.ts",
     "vitest.load.config.ts",
     "vitest.vt120-load.config.ts",
-    "vitest.vt122-load.config.ts"
+    "vitest.vt122-load.config.ts",
+    "vitest.vt124-load.config.ts"
   ]
 }
