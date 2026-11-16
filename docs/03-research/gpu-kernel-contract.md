@@ -60,6 +60,12 @@ seed      = uint(hash(i+3) * 0xffffffff)
 `delta` đã gồm `speed`; kernel **không** nhân thêm `speed` để tránh nhân đôi.
 Vortex dùng uniform riêng (`vortexDamping`) để adapter không vô tình dùng damping của attractor.
 
+Mapping chuẩn của adapter: `delta = clamp(rawFrameDt, 0, 0.05) * speed`. `speed` chỉ được
+nhân **một lần**; harness parity #96 dùng đúng mapping này (`clampedDt * speed` cho GPU,
+`step(state, clampedDt, config)` cho CPU để reference tự nhân `dt * speed` bên trong).
+`tests/unit/renderer-adapter-errors.test.ts` khoá clamp-rồi-nhân-một-lần; artifact parity
+ghi `effectiveDelta` để tái lập case.
+
 ### 3.1 Tham số vortex public (#49)
 
 Bảng mapping được TV2 chốt; schema v2 và `LabConfig`/`SimulationConfig` phải khớp bảng này.
@@ -131,6 +137,16 @@ Hiện có (unit, chạy trong Node):
 PASS (pure step ≤ 4.8e-7; respawn ≤ 7.1e-4 do trig của SwiftShader; zero-delta có prime state đúng 0;
 seeds không đổi), 3/3 readback hỏng bị từ chối. WebGPU SKIP vì môi trường không có adapter. Báo cáo đầy đủ:
 [`docs/04-testing/gpu-kernel-parity-2026-10-26.md`](../04-testing/gpu-kernel-parity-2026-10-26.md).
+
+**Mở rộng #96 (2026-11-14):** fixture expose `attractorRadius`/`attractorDamping`/`speed` có
+validate theo schema v2 (radius `0.5–50`, damping `0.8–1`, speed `0.1–3`), prime được position
+để case damping xác định trong/ngoài radius, và ghi `effectiveDelta = clamp(dt) * speed` vào
+artifact. Case ngoài radius có CPU control run với damping `1`: chênh lệch `0.3488` chứng minh
+damping thực sự đổi kết quả; case trong radius có control delta đúng `0`, chứng minh damping có
+điều kiện. Bao phủ speed `0.1`/`3` (kể cả respawn/age ở speed 3), raw `dt = 0.1` bị clamp còn
+`0.05` trước khi nhân một lần, radius `0.5`/`50`, damping `0.8`/`1`. WebGL2 15/15 PASS; WebGPU
+2/2 SKIP vì không có adapter. Evidence:
+[`docs/04-testing/gpu-kernel-parity-2026-11-14.md`](../04-testing/gpu-kernel-parity-2026-11-14.md).
 
 Điều kiện để chạy lại trên WebGPU thật:
 
