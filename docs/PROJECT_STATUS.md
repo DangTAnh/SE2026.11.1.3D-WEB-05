@@ -1,5 +1,24 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 18/11/2026 — Issue #85 / VT-123 reviewer role delivered
+
+- PR #87 merged `feat/85-reviewer-concurrency` into `dev` (merge `2e57780`,
+  reviewed head `62eccce`); Issue #85 was closed as delivered after the
+  acceptance re-check. The 14/11 integration checkpoint below is preserved as
+  history, including its then-current "#85 stays open" state.
+- `src/presets/review.ts` is the in-process editor/reviewer domain contract:
+  immutable revisions, version + full-document content-hash compare-and-swap,
+  and review actions that change only status/review metadata. Caller-supplied
+  roles are not authentication; CAS and state are in-process; no UI, API or
+  durable persistence is claimed.
+- On `dev@cbce7c4`: 17/17 review unit tests, `npm test` 397/397 across 33 files,
+  both typechecks and the 209-module build PASS, VT-123 load 40 tasks with
+  p95 1002.04 ms (limit 1500 ms, final version 40). E2E was not rerun in that
+  re-check; PR/CI recorded 76 PASS / 12 expected capability SKIP.
+- [Requirements, design, strategy and traceability](04-testing/reviewer-concurrency-test-strategy-2026-11-06.md)
+  and [PR #87 integration checkpoint](04-testing/reviewer-concurrency-integration-2026-11-14.md).
+  No release, deployment or tag claim.
+
 ## 16/11/2026 — Issue #99 collector config/status identity fix
 
 - Baseline `dev@2818add`. `PerformanceCollector.#capture` hashed the config,
