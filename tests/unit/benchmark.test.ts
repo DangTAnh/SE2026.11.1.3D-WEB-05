@@ -15,6 +15,7 @@ import { FakeRenderer } from '../support/fakeRenderer.ts';
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 test.each(['webgl2', 'webgpu'] as const)('collect: %s backend loss rejects and releases caller cleanup', async actual => {
@@ -361,4 +362,64 @@ test.each(['rendering', 'camera', 'inactive mode'] as const)('collect: rejects s
   const calls = port.calls.length;
   await new Promise(resolve => setTimeout(resolve, 20));
   assert.equal(port.calls.length, calls);
+});
+
+/** Defers the digest so a test can lose/replace the backend while it is pending. */
+function controlledDigest() {
+  const realDigest = globalThis.crypto.subtle.digest.bind(globalThis.crypto.subtle);
+  const pending: { bytes: Uint8Array; resolve: (digest: ArrayBuffer) => void }[] = [];
+  vi.stubGlobal('crypto', {
+    subtle: {
+      digest: (_algorithm: string, bytes: Uint8Array) => new Promise<ArrayBuffer>((resolve) => {
+        pending.push({ bytes, resolve });
+      }),
+    },
+  });
+
+  return {
+    pendingCount: () => pending.length,
+    async flush(): Promise<void> {
+      const batch = pending.splice(0, pending.length);
+      await Promise.all(batch.map(async (item) => {
+        item.resolve(await realDigest('SHA-256', new Uint8Array(item.bytes)));
+      }));
+    },
+  };
+}
+
+const LOST_STATUS = {
+  actual: 'unavailable', running: false, fps: null,
+  gpuTimingAvailable: false, gpuTimeMs: null, measurementAgeMs: null,
+} as const;
+
+test('collect: backend loss while the final digest is pending rejects (#99)', async () => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({ actual: 'webgl2', running: true, fps: 60 });
+  const digest = controlledDigest();
+  const settled = collectBenchmarkSamples(port, () => DEFAULT_CONFIG,
+    { warmUpMs: 0, cadenceMs: 100, sampleCount: 1 }).then(() => 'resolved', error => error);
+
+  await vi.advanceTimersByTimeAsync(0);
+  assert.equal(digest.pendingCount(), 1, 'the single sample is stuck in its digest');
+  port.setStatus(LOST_STATUS);
+  await digest.flush();
+
+  const outcome = await settled;
+  assert.match(String(outcome), /backend became unavailable/);
+});
+
+test('collect: backend replacement while the final digest is pending rejects (#99)', async () => {
+  vi.useFakeTimers();
+  const port = new FakeRenderer({ actual: 'webgpu', running: true, fps: 60 });
+  const digest = controlledDigest();
+  const settled = collectBenchmarkSamples(port, () => DEFAULT_CONFIG,
+    { warmUpMs: 0, cadenceMs: 100, sampleCount: 1 }).then(() => 'resolved', error => error);
+
+  await vi.advanceTimersByTimeAsync(0);
+  assert.equal(digest.pendingCount(), 1);
+  port.setStatus({ actual: 'webgl2' });
+  await digest.flush();
+
+  const outcome = await settled;
+  assert.match(String(outcome), /actual backend changed/);
 });

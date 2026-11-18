@@ -1,6 +1,6 @@
 import type { PerformanceSnapshot } from '../core/types/measurement.ts';
 import { MAX_GPU_MEASUREMENT_AGE_MS, type RendererPort, type RendererStatus } from '../core/renderer/RendererPort.ts';
-import { configHash } from '../core/measurement/configHash.ts';
+import { canonicalConfig, configHash } from '../core/measurement/configHash.ts';
 import type { LabConfig } from '../presets/preset.ts';
 
 export interface PerformanceCollectorOptions {
@@ -20,6 +20,15 @@ export interface PerformanceCollectorOptions {
 /**
  * Samples the current renderer status on a fixed cadence after warm-up.
  * The collector does not own or dispose the RendererPort.
+ *
+ * Each capture reads the effective config and the port status in one
+ * synchronous step, so an emitted snapshot always pairs one workload identity
+ * with the metrics of that same moment. After the asynchronous hash the port
+ * status is read again: a paused port, a lost backend or a replaced backend is
+ * reported to `onStatus` and the captured sample is not emitted. If the
+ * effective config changed before the hash resolves — including from an
+ * `onStatus` callback — the capture is discarded too, and the next cadence
+ * samples the new workload (#99).
  */
 export class PerformanceCollector {
   #running = false;
@@ -92,34 +101,53 @@ export class PerformanceCollector {
     this.#sampling = true;
 
     try {
-      const hash = await configHash(this.options.getConfig());
+      // Capture the effective config and the port status in one synchronous
+      // step, so a digest or an observer callback cannot pair workload A's
+      // configHash with workload B's metrics.
+      const config = this.options.getConfig();
+      const identity = canonicalConfig(config);
+      const sampled = this.port.getStatus();
+
+      const hash = await configHash(config);
       if (!this.#isActive(generation)) return;
 
-      const status = this.port.getStatus();
-      this.options.onStatus?.(status);
-      // Observers may synchronously stop, dispose or restart this collection.
+      // The observer keeps its post-digest position so a synchronous stop,
+      // dispose or restart still cancels the capture before it can emit.
+      this.options.onStatus?.(sampled);
       if (!this.#isActive(generation)) return;
-      if (!status.running) return;
+      if (!sampled.running) return;
+
+      // Lifecycle and backend are re-read after the digest. A loss or a
+      // replacement during hashing is surfaced to the observer (which is how
+      // #82/#83 classify it) and the captured sample is not emitted.
+      const current = this.port.getStatus();
+      if (!current.running || current.actual !== sampled.actual) {
+        this.options.onStatus?.(current);
+        return;
+      }
+      // Policy for a changed workload: discard this capture rather than emit an
+      // identity the caller no longer runs; the next cadence samples it.
+      if (canonicalConfig(this.options.getConfig()) !== identity) return;
 
       // Enforce INV-1 even if a RendererPort implementation returns an
       // inconsistent status: unsupported, stale or invalid GPU timing is null.
       // GPU timing age is independent of FPS freshness; preserve a valid FPS.
-      const measurementAgeMs = status.measurementAgeMs;
+      const measurementAgeMs = sampled.measurementAgeMs;
       const gpuMeasurementFresh = measurementAgeMs !== null
         && Number.isFinite(measurementAgeMs)
         && measurementAgeMs >= 0
         && measurementAgeMs <= MAX_GPU_MEASUREMENT_AGE_MS;
       const gpuTimingAvailable =
-        status.gpuTimingAvailable &&
+        sampled.gpuTimingAvailable &&
         gpuMeasurementFresh &&
-        status.gpuTimeMs !== null &&
-        Number.isFinite(status.gpuTimeMs);
+        sampled.gpuTimeMs !== null &&
+        Number.isFinite(sampled.gpuTimeMs);
       const snapshot: PerformanceSnapshot = {
-        actual: status.actual,
+        actual: sampled.actual,
         configHash: hash,
-        fps: status.fps !== null && Number.isFinite(status.fps) ? status.fps : null,
+        fps: sampled.fps !== null && Number.isFinite(sampled.fps) ? sampled.fps : null,
         gpuTimingAvailable,
-        gpuTimeMs: gpuTimingAvailable ? status.gpuTimeMs : null,
+        gpuTimeMs: gpuTimingAvailable ? sampled.gpuTimeMs : null,
       };
 
       this.options.onSample(snapshot);
