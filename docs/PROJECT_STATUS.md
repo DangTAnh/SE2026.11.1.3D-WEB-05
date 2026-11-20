@@ -1,5 +1,19 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 20/11/2026 — Release evidence clarifications (#70 review follow-up)
+
+- TV5 documentation follow-up, no runtime change: collector evidence wording now
+  separates ordinary metric updates (next cadence) from pause/loss/replacement
+  (immediate post-digest re-check, observer notified, sample dropped).
+- Benchmark order recorded as an explicit TV5 decision: single-order artifacts
+  stay labelled as such; a counterbalanced run is required only before any
+  faster-backend claim, which MVP acceptance does not ask for.
+- Dependency audit triage added: `npm audit --omit=dev` reports 0
+  vulnerabilities at `dev@cbce7c4`; the single moderate finding is the dev-only
+  `vite` advisory, not shipped in `dist`.
+- Still open for the release: #103 (P1, TV3) and #97 (P2, TV3) remain
+  reproducible on this head and are not fixed by these notes.
+
 ## 18/11/2026 — Issue #85 / VT-123 reviewer role delivered
 
 - PR #87 merged `feat/85-reviewer-concurrency` into `dev` (merge `2e57780`,
