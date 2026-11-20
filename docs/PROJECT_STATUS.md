@@ -1,5 +1,19 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 20/11/2026 — Release evidence clarifications (#70 review follow-up)
+
+- TV5 documentation follow-up, no runtime change: collector evidence wording now
+  separates ordinary metric updates (next cadence) from pause/loss/replacement
+  (immediate post-digest re-check, observer notified, sample dropped).
+- Benchmark order recorded as an explicit TV5 decision: single-order artifacts
+  stay labelled as such; a counterbalanced run is required only before any
+  faster-backend claim, which MVP acceptance does not ask for.
+- Dependency audit triage added: `npm audit --omit=dev` reports 0
+  vulnerabilities at `dev@cbce7c4`; the single moderate finding is the dev-only
+  `vite` advisory, not shipped in `dist`.
+- Still open for the release: #103 (P1, TV3) and #97 (P2, TV3) remain
+  reproducible on this head and are not fixed by these notes.
+
 ## 16/11/2026 — Issue #99 collector config/status identity fix
 
 - Baseline `dev@2818add`. `PerformanceCollector.#capture` hashed the config,
