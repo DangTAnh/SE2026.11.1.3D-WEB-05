@@ -22,6 +22,8 @@ const harness = vi.hoisted(() => ({
   timestampValue: 4,
   cachedTimestamp: false,
   noticeInsertions: 0,
+  /** Compute nodes in submission order, plus dispose events, for #103 ordering checks. */
+  computeLog: [] as Array<{ kind: 'compute' | 'dispose'; node: unknown }>,
   instances: [] as Array<{
     forceWebGL: boolean;
     canvas: HTMLCanvasElement | undefined;
@@ -132,7 +134,8 @@ vi.mock('three/webgpu', async () => {
       }
     }
 
-    compute(): Promise<void> | void {
+    compute(node?: unknown): Promise<void> | void {
+      harness.computeLog.push({ kind: 'compute', node });
       if (this.record.forceWebGL) return;
       if (harness.deferNextCompute) {
         harness.deferNextCompute = false;
@@ -239,6 +242,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     harness.timestampValue = 4;
     harness.cachedTimestamp = false;
     harness.noticeInsertions = 0;
+    harness.computeLog.length = 0;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
     vi.stubGlobal('document', {
@@ -720,6 +724,81 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     expect(harness.buffers).toHaveLength(2);
     expect(harness.buffers[1]!.count).toBe(2000);
     expect(dispose).toHaveBeenCalledOnce();
+    adapter.dispose();
+  });
+
+  it('releases every compute node of the replaced pipeline before initializing a paused count rebuild (#103)', async () => {
+    // Three r186.1 caches compute programs by shader source. In the WebGL2
+    // backend a cached program keeps the transform-feedback attributes of the
+    // buffers it was first built for, so an undisposed kernel of the old
+    // pipeline would make the replacement kernels write into the old buffers.
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const frame = harness.instances[0]!.animationLoopValues.at(-1) as (time: number) => void;
+    const oldBuffers = harness.buffers[0]!;
+
+    adapter.start();
+    frame(1000);
+    frame(1016);
+    const next = cloneConfig(config);
+    next.mode = 'vortex';
+    adapter.applyConfig(next);
+    frame(1032);
+    next.mode = 'attractor';
+    adapter.applyConfig(next);
+    frame(1048);
+    adapter.pause();
+
+    const oldNodes = [...new Set(harness.computeLog.map(entry => entry.node))];
+    // init + attractor + vortex: switching back reuses the attractor kernel.
+    expect(oldNodes).toHaveLength(3);
+    expect(oldNodes).toContain(oldBuffers.initKernel);
+    for (const node of oldNodes) {
+      (node as import('three/webgpu').Node).addEventListener('dispose', () => harness.computeLog.push({ kind: 'dispose', node }));
+    }
+
+    next.simulation.particleCount = 2000;
+    adapter.applyConfig(next);
+    const newBuffers = harness.buffers[1]!;
+    const firstNewCompute = harness.computeLog.findIndex(entry => entry.kind === 'compute' && entry.node === newBuffers.initKernel);
+    expect(firstNewCompute).toBeGreaterThan(-1);
+    for (const node of oldNodes) {
+      const disposedAt = harness.computeLog.findIndex(entry => entry.kind === 'dispose' && entry.node === node);
+      expect(disposedAt).toBeGreaterThan(-1);
+      expect(disposedAt).toBeLessThan(firstNewCompute);
+    }
+
+    // Initialization does not depend on running a frame and keeps pause.
+    expect(adapter.getStatus().running).toBe(false);
+    const computedBeforeFrames = harness.computeLog.filter(entry => entry.kind === 'compute').length;
+    frame(1064);
+    frame(1080);
+    expect(harness.computeLog.filter(entry => entry.kind === 'compute')).toHaveLength(computedBeforeFrames);
+
+    // Resuming steps the replacement buffers' kernel, never an old one.
+    adapter.start();
+    frame(1096);
+    const resumed = harness.computeLog.at(-1)!;
+    expect(resumed.kind).toBe('compute');
+    expect(oldNodes).not.toContain(resumed.node);
+    expect(resumed.node).not.toBe(newBuffers.initKernel);
+    adapter.dispose();
+  });
+
+  it('keeps the current pipeline when the replacement cannot be built (#103)', async () => {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const oldBuffers = harness.buffers[0]!;
+    const disposeOld = vi.spyOn(oldBuffers.initKernel, 'dispose');
+    const next = cloneConfig(config);
+    next.simulation.particleCount = 1.5;
+    expect(() => adapter.applyConfig(next)).toThrow(RangeError);
+    expect(disposeOld).not.toHaveBeenCalled();
+    expect(harness.buffers).toHaveLength(1);
     adapter.dispose();
   });
 
