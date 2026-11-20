@@ -437,6 +437,101 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     adapter.dispose();
   });
 
+  type ConfigEdit = (config: ReturnType<typeof cloneConfig>) => void;
+  const COMPUTE_CHANGES: Array<[string, ConfigEdit]> = [
+    ['speed', (config) => { config.simulation.speed = 2; }],
+    ['mode', (config) => { config.mode = 'vortex'; }],
+    ['particle count', (config) => { config.simulation.particleCount = 2000; }],
+    ['spawn radius', (config) => { config.simulation.spawnRadius = 20; }],
+    ['lifetime', (config) => { config.simulation.lifetime = 9; }],
+    ['active attractor strength', (config) => { config.modes.attractor.attractorStrength = 3; }],
+    ['active attractor radius', (config) => { config.modes.attractor.attractorRadius = 12; }],
+    ['active attractor damping', (config) => { config.modes.attractor.attractorDamping = 0.9; }],
+  ];
+
+  async function adapterWithCachedTiming(): Promise<{ adapter: ThreeRendererAdapter; frame: (time: number) => void }> {
+    harness.timestampSupported = true;
+    vi.useFakeTimers();
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopCallback!;
+    for (let index = 1; index <= 10; index += 1) frame(index * 16);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 4 });
+    return { adapter, frame };
+  }
+
+  function edited(edit: ConfigEdit): ReturnType<typeof cloneConfig> {
+    const next = cloneConfig(DEFAULT_CONFIG);
+    next.simulation.particleCount = 1000;
+    edit(next);
+    return next;
+  }
+
+  it.each(COMPUTE_CHANGES)('invalidates cached GPU timing immediately when %s changes (#97)', async (_name, edit) => {
+    const { adapter } = await adapterWithCachedTiming();
+    adapter.applyConfig(edited(edit));
+    // No frame has been submitted under the new workload.
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+    expect(adapter.getStatus()).toMatchObject({ running: true });
+    adapter.dispose();
+  });
+
+  it.each(COMPUTE_CHANGES.filter(([name]) => ['speed', 'mode', 'particle count'].includes(name)))(
+    'rejects an in-flight timing from before a %s change (#97)',
+    async (_name, edit) => {
+      harness.timestampSupported = true;
+      harness.deferTimestamps = true;
+      const config = cloneConfig(DEFAULT_CONFIG);
+      config.simulation.particleCount = 1000;
+      const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+      await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+      adapter.start();
+      const frame = harness.instances[0]!.animationLoopCallback!;
+      for (let index = 1; index <= 10; index += 1) frame(index * 16);
+      await vi.waitFor(() => expect(harness.instances[0]?.resolveTimestamp).toBeTypeOf('function'));
+      const resolveOld = harness.instances[0]!.resolveTimestamp!;
+
+      adapter.applyConfig(edited(edit));
+      resolveOld(3.25);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+      adapter.dispose();
+    },
+  );
+
+  it('publishes a new timing for the changed workload after invalidation (#97)', async () => {
+    const { adapter, frame } = await adapterWithCachedTiming();
+    adapter.applyConfig(edited((config) => { config.simulation.speed = 2; }));
+    expect(adapter.getStatus().gpuTimingAvailable).toBe(false);
+
+    harness.timestampValue = 2.5;
+    for (let index = 11; index <= 20; index += 1) frame(index * 16);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 2.5 });
+    adapter.dispose();
+  });
+
+  it.each([
+    ['an identical config', () => {}],
+    ['particle size', (config) => { config.simulation.particleSize = 6; }],
+    ['particle color', (config) => { config.rendering.particleColor = '#ff0000'; }],
+    ['camera distance', (config) => { config.camera.distance = 80; }],
+    ['inactive vortex parameters', (config) => { config.modes.vortex.vortexStrength = 3; }],
+  ] as Array<[string, ConfigEdit]>)('keeps the current GPU timing for %s (#97)', async (_name, edit) => {
+    const { adapter } = await adapterWithCachedTiming();
+    adapter.applyConfig(edited(edit));
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 4 });
+    adapter.dispose();
+  });
+
   it('ages a GPU sample from compute submission, including delayed timestamp readback', async () => {
     harness.timestampSupported = true;
     harness.deferTimestamps = true;
