@@ -33,3 +33,20 @@ jobs:
 
       - name: Verify
         run: npm run verify
+
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install (lockfile exact)
+        run: npm ci
+
+      - name: Load harnesses (VT120/VT122/VT123/VT124 NFRs)
+        run: npm run test:load
