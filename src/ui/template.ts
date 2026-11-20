@@ -1,6 +1,6 @@
 export function createLabMarkup(): string {
   return `
-    <div class="lab-shell" id="lab-shell" data-runtime-phase="initializing">
+    <div class="lab-shell" id="lab-shell" data-runtime-phase="unsupported">
       <aside class="rail" aria-label="Điều hướng">
         <div class="rail-brand" title="GPU Particle Lab">P<span>•</span></div>
         <div class="rail-icons">
@@ -14,7 +14,7 @@ export function createLabMarkup(): string {
         <header class="topbar">
           <div class="breadcrumbs"><span>WORKSPACE</span><span class="slash">/</span><strong>GPU PARTICLE LAB</strong></div>
           <div class="top-actions">
-            <span class="pill small"><span class="status-dot" aria-hidden="true"></span><span id="runtime-phase-label">INITIALIZING</span></span>
+            <span class="pill small"><span class="status-dot" aria-hidden="true"></span><span id="runtime-phase-label">UNSUPPORTED</span></span>
             <span class="top-version">3D-WEB-05</span>
           </div>
         </header>
@@ -30,8 +30,8 @@ export function createLabMarkup(): string {
             </section>
             <section class="scene-card" aria-label="Khu vực xem trước particle">
               <div class="grid-layer" aria-hidden="true"></div>
-              <canvas id="preview-canvas" aria-label="Bản xem trước particle bằng Canvas 2D">Trình duyệt không hỗ trợ Canvas 2D.</canvas>
-              <div class="scene-upper"><span class="pill green">● PREVIEW ACTIVE</span><span class="render-tag">CANVAS 2D DEMO · NOT GPU</span></div>
+              <canvas id="preview-canvas" aria-label="Vùng hiển thị mô phỏng particle">Renderer chưa được kết nối.</canvas>
+              <div class="scene-upper"><span class="pill green">PARTICLE LAB</span><span class="render-tag">SIMULATION VIEW</span></div>
               <div class="crosshair" aria-hidden="true">+</div>
               <div class="scene-bottom">
                 <div><span class="scene-kicker">SIMULATION MODE</span><strong id="scene-mode">ATTRACTOR FIELD</strong></div>
@@ -42,11 +42,11 @@ export function createLabMarkup(): string {
               </div>
             </section>
             <div class="scene-info" aria-live="polite">
-              <div class="info-card"><span>BACKEND THỰC TẾ</span><strong id="actual-backend">Đang khởi tạo</strong><small id="backend-detail">Chờ trạng thái UI.</small></div>
-              <div class="info-card"><span>FPS XEM TRƯỚC</span><strong id="runtime-fps">—</strong><small id="runtime-fps-detail">Chưa có số liệu.</small></div>
+              <div class="info-card"><span>BACKEND THỰC TẾ</span><strong id="actual-backend">Không khả dụng</strong><small id="backend-detail">Renderer chưa được kết nối.</small></div>
+              <div class="info-card"><span>FPS</span><strong id="runtime-fps">—</strong><small id="runtime-fps-detail">Chưa có số liệu.</small></div>
               <div class="info-card"><span>GPU TIMING</span><strong id="gpu-timing">Không khả dụng</strong><small id="gpu-timing-detail">Chờ tích hợp.</small></div>
             </div>
-            <div class="integration-hint">ⓘ Đây là bản <strong>UI pre-integration</strong>. Dùng <code>?uiState=initializing|ready-webgpu|fallback-webgl2|unsupported|error</code> để kiểm tra trạng thái. Fixture không chứng minh backend hoặc hiệu năng thật.</div>
+            <div class="integration-hint">ⓘ Trạng thái và số đo lấy từ renderer được kết nối. Khi renderer chưa sẵn sàng, bạn vẫn có thể chuẩn bị preset.</div>
           </main>
           <aside class="settings" aria-label="Bảng điều khiển particle">
             <div class="settings-head"><div><div class="eyebrow">EXPERIMENT SETTINGS</div><h2>Control panel</h2></div><span class="tool-icon" aria-hidden="true">⚙</span></div>
@@ -57,28 +57,29 @@ export function createLabMarkup(): string {
                   <button class="mode-btn active" id="mode-attractor" data-runtime-control type="button" aria-pressed="true"><span aria-hidden="true">◎</span> Attractor</button>
                   <button class="mode-btn" id="mode-vortex" data-runtime-control type="button" aria-pressed="false"><span aria-hidden="true">◉</span> Vortex</button>
                 </div>
-                <p class="field-hint" id="mode-description">Particle chịu tác động của trường hút (minh họa).</p>
+                <p class="field-hint" id="mode-description">Particle chuyển động theo quỹ đạo tiếp tuyến quanh tâm.</p>
               </section>
               <section class="control-section">
                 <div class="section-title"><span>02</span><h3>Particle properties</h3></div>
-                <label for="particle-count" class="field-label"><span>Particle count</span><output id="particle-count-value" for="particle-count">20.000</output></label>
-                <input id="particle-count" data-runtime-control type="range" min="1000" max="50000" step="1000" value="20000"><div class="scale"><span>1K</span><span>50K</span></div>
+                <label for="particle-count" class="field-label"><span>Particle count</span><output id="particle-count-value" for="particle-count">65.536</output></label>
+                <input id="particle-count" data-runtime-control type="range" min="1000" max="500000" step="1" value="65536"><div class="scale"><span>1K</span><span>500K</span></div>
                 <label for="speed" class="field-label"><span>Velocity / Speed</span><output id="speed-value" for="speed">1,2×</output></label>
-                <input id="speed" data-runtime-control type="range" min="0.1" max="3" step="0.1" value="1.2"><div class="scale"><span>0.1×</span><span>3.0×</span></div>
-                <label for="particle-size" class="field-label"><span>Particle size</span><output id="particle-size-value" for="particle-size">2,5 px</output></label>
-                <input id="particle-size" data-runtime-control type="range" min="1" max="8" step="0.5" value="2.5"><div class="scale"><span>1</span><span>8</span></div>
+                <input id="speed" data-runtime-control type="range" min="0.1" max="3" step="0.001" value="1.2"><div class="scale"><span>0.1×</span><span>3.0×</span></div>
+                <label for="particle-size" class="field-label"><span>Particle size</span><output id="particle-size-value" for="particle-size">2,5</output></label>
+                <input id="particle-size" data-runtime-control type="range" min="1" max="8" step="0.001" value="2.5"><div class="scale"><span>1</span><span>8</span></div>
                 <label for="particle-color" class="field-label color-label"><span>Particle color</span><span class="color-row"><input id="particle-color" data-runtime-control type="color" value="#6ce6ff"><output id="particle-color-value" for="particle-color">#6CE6FF</output></span></label>
               </section>
               <section class="control-section">
                 <div class="section-title"><span>03</span><h3>Force controls</h3></div>
-                <label for="strength" class="field-label"><span id="strength-label">Attraction strength</span><output id="strength-value" for="strength">1,5</output></label>
-                <input id="strength" data-runtime-control type="range" min="0.2" max="4" step="0.1" value="1.5"><div class="scale"><span>0.2</span><span>4.0</span></div>
+                <label for="strength" class="field-label"><span id="strength-label">Attractor strength</span><output id="strength-value" for="strength">1,5</output></label>
+                <input id="strength" data-runtime-control type="range" min="0.2" max="4" step="0.001" value="1.5"><div class="scale"><span>0.2</span><span>4.0</span></div>
               </section>
               <section class="control-section">
                 <div class="section-title"><span>04</span><h3>Rendering preference</h3></div>
                 <label for="backend" class="field-label">Backend được yêu cầu</label>
                 <select id="backend"><option value="auto">Auto (ưu tiên WebGPU)</option><option value="webgpu">WebGPU</option><option value="webgl2">WebGL2</option></select>
-                <p class="field-hint">Lựa chọn này chưa đổi backend thật; adapter Core sẽ xử lý khi tích hợp.</p>
+                <button id="apply-backend" type="button" class="button secondary" disabled>Áp dụng backend</button>
+                <p class="field-hint">Chọn backend rồi nhấn Áp dụng. Renderer khởi tạo lại và giữ cấu hình; hạt bắt đầu lại từ trạng thái ban đầu.</p>
               </section>
               <section class="control-section preset-section">
                 <div class="section-title"><span>05</span><h3>Preset configuration</h3></div>

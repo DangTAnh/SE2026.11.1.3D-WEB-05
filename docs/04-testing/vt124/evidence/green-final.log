@@ -1,0 +1,14 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 test
+npm notice run vitest run
+
+ RUN  v5.0.3 C:/Users/Admin/.codex/worktrees/vt124-bulk-preset-import/SE2026.11.1.3D-WEB-05
+
+
+ Test Files  32 passed (32)
+      Tests  360 passed (360)
+   Start at  09:41:42
+   Duration  4.48s (import 62%, transform 26%, tests 10%, worker 2%)
+
+  Transform  transforming modules took 8.10s · 26% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns

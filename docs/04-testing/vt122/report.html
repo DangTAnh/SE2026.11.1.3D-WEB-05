@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<title>BT3 23001846 VT-122</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Arial, "Helvetica Neue", sans-serif;
+    font-size: 10pt;
+    line-height: 1.36;
+    color: #172026;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 210mm;
+    height: 296mm;
+    padding: 12mm 15mm 13mm;
+    page-break-after: always;
+    position: relative;
+    overflow: hidden;
+  }
+  .page:last-child { page-break-after: auto; }
+  .footer {
+    position: absolute;
+    left: 15mm; right: 15mm; bottom: 6mm;
+    font-size: 7.6pt; color: #6b7a83;
+    border-top: 0.4pt solid #cfdae0;
+    padding-top: 1.5mm;
+    display: flex; justify-content: space-between;
+  }
+  h1 { font-size: 22pt; line-height: 1.15; margin: 0 0 3mm; color: #0b4f6c; letter-spacing: -0.2pt; }
+  h2 { font-size: 13pt; margin: 0 0 2.4mm; color: #0b4f6c; border-bottom: 0.9pt solid #8fb7c8; padding-bottom: 1mm; }
+  h3 { font-size: 10.4pt; margin: 2.6mm 0 1.2mm; color: #145a72; }
+  p { margin: 0 0 1.7mm; text-align: justify; }
+  ul, ol { margin: 0 0 1.8mm; padding-left: 5mm; }
+  li { margin: 0 0 0.7mm; }
+  table { width: 100%; border-collapse: collapse; margin: 1.2mm 0 2mm; }
+  th, td { border: 0.4pt solid #b9cbd3; padding: 1.05mm 1.5mm; vertical-align: top; text-align: left; }
+  th { background: #e7f1f5; color: #0b4f6c; font-weight: 600; }
+  table.small { font-size: 8.8pt; line-height: 1.28; }
+  table.tiny { font-size: 8.1pt; line-height: 1.24; }
+  .page:last-child table.tiny th, .page:last-child table.tiny td { padding: 0.6mm 1.3mm; }
+  code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 8.6pt; }
+  pre {
+    margin: 1.2mm 0 2mm; padding: 2mm 2.5mm; background: #f4f7f8;
+    border-left: 2.2pt solid #2d7d9a; white-space: pre-wrap; font-size: 8.3pt;
+    line-height: 1.3; font-family: Consolas, "Cascadia Mono", monospace;
+  }
+  .tag { display: inline-block; padding: 0.4mm 1.6mm; border-radius: 1.2mm; background: #e7f1f5; color: #0b4f6c; font-size: 7.8pt; font-weight: 600; }
+  .ok { color: #176b3a; font-weight: 600; }
+  .bad { color: #a33030; font-weight: 600; }
+  .muted { color: #5d6d75; }
+  .cover { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+  .cover .kicker { font-size: 11pt; letter-spacing: 1.6pt; text-transform: uppercase; color: #2d7d9a; margin-bottom: 4mm; }
+  .cover .sub { font-size: 13pt; color: #33474f; margin: 0 0 9mm; }
+  .cover .rule { height: 1.2mm; background: linear-gradient(90deg, #0b4f6c, #8fb7c8); margin: 0 0 8mm; }
+  .info { font-size: 10pt; }
+  .info td { border: none; padding: 1.1mm 0; }
+  .info td:first-child { width: 40mm; color: #5d6d75; }
+  .declaration { margin-top: 8mm; padding: 3mm 4mm; background: #f2f7f9; border: 0.5pt solid #b9cbd3; font-size: 9.2pt; }
+  .sign { margin-top: 7mm; display: flex; justify-content: space-between; font-size: 9.2pt; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; }
+  .flow { display: flex; align-items: center; gap: 1.5mm; margin: 1.5mm 0 2mm; font-size: 8.3pt; }
+  .flow .box { flex: 1; border: 0.6pt solid #8fb7c8; background: #f4f8fa; padding: 1.4mm; text-align: center; border-radius: 1.2mm; }
+  .flow .arrow { color: #2d7d9a; font-weight: 700; }
+  .callout { background: #fff8e8; border-left: 2.2pt solid #c58b20; padding: 1.6mm 2.5mm; margin: 1.5mm 0 2mm; font-size: 8.8pt; }
+  .check { color: #176b3a; }
+  .page-title-row { display: flex; justify-content: space-between; align-items: baseline; }
+</style>
+</head>
+<body>
+
+<!-- ============================= PAGE 1 ============================= -->
+<section class="page">
+  <div class="cover">
+    <div class="kicker">Bài tập 3 · Báo cáo cá nhân · Kiểm thử phần mềm</div>
+    <h1>Chống gửi trùng yêu cầu lưu preset</h1>
+    <p class="sub">Idempotent preset resubmission — Variant VT-122</p>
+    <div class="rule"></div>
+    <table class="info">
+      <tr><td>Họ và tên</td><td><strong>Lê Huy Anh Dũng</strong></td></tr>
+      <tr><td>MSSV</td><td><strong>23001846</strong></td></tr>
+      <tr><td>Nhóm</td><td>SE2026-T30</td></tr>
+      <tr><td>Dự án</td><td>3D-WEB-05 — GPU Particle Lab</td></tr>
+      <tr><td>Repository</td><td><span class="mono">github.com/DangTAnh/SE2026.11.1.3D-WEB-05</span></td></tr>
+      <tr><td>Baseline <span class="mono">origin/dev</span></td><td><span class="mono">f00271e06347c5a4c88ebeffc00ca4c2134a7651</span></td></tr>
+      <tr><td>Issue</td><td><span class="mono">#90</span> — giao cho Terivn</td></tr>
+      <tr><td>Branch</td><td><span class="mono">feat/90-idempotent-preset-resubmit</span></td></tr>
+      <tr><td>Pull Request</td><td><span class="mono">DRAFT #91 — github.com/DangTAnh/SE2026.11.1.3D-WEB-05/pull/91</span></td></tr>
+      <tr><td>Commit kỹ thuật cuối</td><td><span class="mono">e865cdf</span> (merge <span class="mono">dev</span>/PR #89); fix P2 <span class="mono">f88a94b</span>; commit tài liệu theo sau</td></tr>
+      <tr><td>Variant</td><td><strong>VT-122</strong></td></tr>
+      <tr><td>Ngày</td><td>08/11/2026</td></tr>
+    </table>
+    <div class="declaration">
+      <strong>Tuyên bố trách nhiệm và sử dụng AI.</strong> Tôi cam đoan phần đặc tả, lựa chọn
+      phạm vi, mã nguồn, kịch bản kiểm thử, thí nghiệm mutation và phần suy ngẫm trong báo cáo
+      này là công việc cá nhân của tôi. AI được dùng như trợ lý: sinh ứng viên test, gợi ý
+      mutation và soạn nháp tài liệu. Mọi đầu ra của AI đều được tôi chạy lại, kiểm tra với log
+      thô và sửa hoặc xóa nếu yếu/trùng lặp. Tôi không dùng kế hoạch, test, mutation hay suy ngẫm
+      của thành viên khác; VT-120 (#88/#89) không được tái sử dụng. Không có số liệu nào trong
+      báo cáo được bịa; mọi kết quả đều có log tương ứng trong <span class="mono">docs/04-testing/vt122/evidence/</span>.
+    </div>
+    <div class="sign">
+      <span>TP. Hồ Chí Minh, ngày 08 tháng 11 năm 2026</span>
+      <span>Ký tên: Lê Huy Anh Dũng</span>
+    </div>
+  </div>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 1 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 2 ============================= -->
+<section class="page">
+  <h2>1. Bối cảnh, vấn đề và phạm vi</h2>
+  <p>
+    Repository 3D-WEB-05 đã có validate/round-trip preset schema v2
+    (<span class="mono">src/presets/preset.ts</span>), nhưng <strong>chưa có</strong> API lưu,
+    database, auth hay nút Save trên UI. Vì vậy không thể kiểm thử một handler HTTP có thật.
+    VT-122 chọn lát cắt nhỏ nhất chạy được: một <span class="mono">PresetSaveService</span>
+    đứng trước <span class="mono">PresetSavePort</span>, kèm test double mô phỏng store nguyên tử.
+  </p>
+  <div class="flow">
+    <div class="box">Người dùng / caller<br /><span class="muted">requestId + PresetDocument</span></div>
+    <div class="arrow">→</div>
+    <div class="box"><strong>PresetSaveService</strong><br /><span class="muted">replay · conflict · receipt</span></div>
+    <div class="arrow">→</div>
+    <div class="box">PresetSavePort<br /><span class="muted">hợp đồng nguyên tử</span></div>
+    <div class="arrow">→</div>
+    <div class="box">Store / test double<br /><span class="muted">1 requestId → 1 effect</span></div>
+  </div>
+  <h3>Vấn đề</h3>
+  <p>
+    Một thao tác lưu có thể bị gửi nhiều lần: double-click, retry sau timeout, mất response,
+    hoặc hai tab. Nếu không có định danh yêu cầu ổn định và luật replay/conflict, hệ thống tạo
+    thêm preset hoặc giao dịch trùng. Cờ “đã lưu” phía client không đủ vì server có thể đã
+    commit trong khi response bị mất.
+  </p>
+  <h3>Bất biến (invariant)</h3>
+  <div class="callout">
+    Trong một cửa sổ lưu giữ, mỗi cặp <span class="mono">(requestId, canonicalDocument)</span>
+    có tối đa một effect đã commit; báo thành công chỉ khi receipt khớp cả requestId và
+    canonical. Client không thể tự chứng minh exactly-once: port phải nguyên tử gắn
+    <span class="mono">requestId + canonical + effect</span>.
+  </div>
+  <h3>Mục tiêu / không mục tiêu</h3>
+  <table class="small">
+    <tr><th style="width:50%">Trong phạm vi</th><th>Ngoài phạm vi (ghi nhận trung thực)</th></tr>
+    <tr>
+      <td>Service + port, replay/conflict, inclusive TTL, kiểm tra receipt, test đồng thời, fault injection, pairwise, mutation, load 100 task, coverage.</td>
+      <td>HTTP API thật, DB, auth, UI Save, exactly-once xuyên process/restart, benchmark sức chứa người dùng, thay đổi schema/configHash/GPU.</td>
+    </tr>
+  </table>
+  <h2 style="margin-top:3mm">2. Hợp đồng và tiêu chí chấp nhận</h2>
+  <pre>interface PresetSaveRequest { requestId: string; canonical: string }
+interface PresetSaveReceipt extends PresetSaveRequest { committed: true }
+interface PresetSavePort { save(r: PresetSaveRequest): Promise&lt;PresetSaveReceipt&gt; }
+
+new PresetSaveService(port, { retentionMs?: number; now?: () =&gt; number })
+  .save(requestId, document): Promise&lt;PresetSaveReceipt&gt;
+  .confirmed(requestId): PresetSaveReceipt | undefined</pre>
+  <table class="small">
+    <tr><th style="width:8%">ID</th><th>Tiêu chí chấp nhận</th></tr>
+    <tr><td>AC1</td><td>Cùng id + canonical, tuần tự hoặc đồng thời, trong hạn: đúng một effect và cùng một receipt đã xác nhận.</td></tr>
+    <tr><td>AC2</td><td>Cùng id + canonical khác trong hạn: <span class="mono">SaveConflictError</span>, không thêm call/effect; receipt cũ được giữ.</td></tr>
+    <tr><td>AC3</td><td>requestId sai hoặc document sai (unknown key, v1) bị từ chối trước port: 0 call, 0 effect.</td></tr>
+    <tr><td>AC4</td><td>Biên retention là inclusive: <span class="mono">now === expiresAt</span> replay; <span class="mono">+1 ms</span> được gọi lại; entry đang in-flight không hết hạn.</td></tr>
+    <tr><td>AC5</td><td>Port lỗi hoặc receipt sai/uncommitted không bao giờ thành công; retry sau mất response giữ tối đa một effect theo hợp đồng port nguyên tử.</td></tr>
+  </table>
+  <p class="muted" style="font-size:8.5pt">
+    Quyết định: requestId do caller cấp; canonical là toàn bộ document schema v2; TTL inclusive
+    chỉ là chính sách cache, không phải giấy phép tạo effect thứ hai; receipt được đóng băng và
+    trả theo identity.
+  </p>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 2 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 3 ============================= -->
+<section class="page">
+  <h2>3. Quy trình test-first và thiết kế oracle</h2>
+  <p>
+    Tôi viết test trước, chạy để thấy đỏ, rồi chỉ implement đủ để xanh. Ba oracle tách biệt
+    được dùng xuyên suốt:
+  </p>
+  <ol>
+    <li><strong>Số lần gọi port</strong> (<span class="mono">store.calls.length</span>) — service có hỏi lớp bền vững hay không.</li>
+    <li><strong>Số effect đã commit</strong> (<span class="mono">effectCount(requestId)</span>) — store có thực sự tạo thêm dữ liệu hay không.</li>
+    <li><strong>Receipt đã xác nhận</strong> (<span class="mono">confirmed()</span> / promise resolve) — caller có được phép coi là thành công hay không.</li>
+  </ol>
+  <p>
+    Tách (1) và (2) là điểm then chốt: sau khi hết TTL, service có thể gọi port lần nữa nhưng
+    store vẫn phải trả đúng một effect. Một test chỉ kiểm tra promise resolve sẽ bỏ lọt lỗi
+    trùng dữ liệu.
+  </p>
+  <table class="small">
+    <tr><th style="width:12%">Mốc</th><th style="width:20%">Commit</th><th>Kết quả thực tế</th><th style="width:26%">Evidence</th></tr>
+    <tr><td>RED</td><td><span class="mono">217a9d9</span></td><td><span class="bad">12 failed / 3 passed</span> — service naive chuyển thẳng mọi request tới port</td><td><span class="mono">evidence/red.txt</span></td></tr>
+    <tr><td>GREEN</td><td><span class="mono">4417683</span></td><td><span class="ok">15/15 targeted</span>; full suite <span class="ok">287/287</span>; cả hai typecheck pass</td><td><span class="mono">green-targeted.txt</span>, <span class="mono">green-full.txt</span></td></tr>
+    <tr><td>Pairwise + load</td><td><span class="mono">ed0805a</span></td><td>18/18 pairwise; full suite <span class="ok">305/305</span></td><td><span class="mono">pairwise.txt</span></td></tr>
+    <tr><td>Coverage + flaky</td><td><span class="mono">352b6cc</span></td><td>100% coverage; 20 seed shuffle không lỗi</td><td><span class="mono">coverage.txt</span>, <span class="mono">flaky-shuffle.txt</span></td></tr>
+    <tr><td>AI + mutation</td><td><span class="mono">04b5ba4</span>…<span class="mono">86cb9eb</span></td><td>6 ứng viên AI pass nhưng yếu; mutant bị giết bởi test biên</td><td><span class="mono">ai-candidates-*.txt</span>, <span class="mono">mutation-*.txt</span></td></tr>
+    <tr><td>Review P2</td><td><span class="mono">f88a94b</span></td><td>Chặn requestId không phải string; T07 đỏ → xanh; re-review APPROVE (bị auto-dismiss khi push docs)</td><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07*.txt</span></td></tr>
+    <tr><td>Merge <span class="mono">dev</span> (#89)</td><td><span class="mono">e865cdf</span></td><td>Giữ cả coverage-v8 và fast-check; <span class="ok">336/336</span> test; CI <span class="ok">PASS</span></td><td><span class="mono">green-merge-dev.txt</span>, <span class="mono">build-merge-dev.txt</span></td></tr>
+    <tr><td>Final</td><td><span class="mono">e865cdf</span></td><td><span class="ok">336/336</span> Vitest (310 trước merge); CI verify PASS; build PASS (cảnh báo chunk cũ)</td><td><span class="mono">green-merge-dev.txt</span>, <span class="mono">build-merge-dev.txt</span></td></tr>
+  </table>
+  <h3>Danh mục 38 test VT-122</h3>
+  <table class="small">
+    <tr><th>Nhóm</th><th>ID</th><th style="width:14%">Số lượng</th><th>File</th></tr>
+    <tr><td>Unit: happy/replay/conflict/biên/validate/options</td><td>T01, T02, T04–T07, T11, T13, T14, T18, T20–T22</td><td>13</td><td><span class="mono">tests/unit/preset-resubmission.test.ts</span></td></tr>
+    <tr><td>Integration: đồng thời, fault, document</td><td>T03, T08–T10, T12</td><td>5</td><td><span class="mono">tests/integration/preset-resubmission-service.test.ts</span></td></tr>
+    <tr><td>Pairwise</td><td>T15/P01–P18</td><td>18</td><td><span class="mono">tests/unit/preset-resubmission-pairwise.test.ts</span></td></tr>
+    <tr><td>Recovery (AI viết lại)</td><td>T23, T24</td><td>2</td><td><span class="mono">tests/unit/preset-resubmission-recovery.test.ts</span></td></tr>
+    <tr><td>Load (chạy riêng)</td><td>T16, T17, T19</td><td>3</td><td><span class="mono">tests/load/vt122-load.test.ts</span></td></tr>
+  </table>
+  <p class="muted" style="font-size:8.4pt">
+    Thời gian được inject qua <span class="mono">now: () =&gt; number</span>; unit/integration/pairwise
+    không dùng timer, sleep, random hay network. Load harness dùng setTimeout chỉ để mô phỏng 50 ms I/O mỗi call.
+  </p>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 3 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 4 ============================= -->
+<section class="page">
+  <h2>4. Kỹ thuật thiết kế kiểm thử</h2>
+  <h3>4.1 Phân vùng tương đương</h3>
+  <table class="small">
+    <tr><th style="width:22%">Đầu vào / trạng thái</th><th>Lớp hợp lệ</th><th>Lớp không hợp lệ</th></tr>
+    <tr><td><span class="mono">requestId</span></td><td>string JavaScript, 1–128 ký tự thuộc <span class="mono">A–Z a–z 0–9 . _ : -</span></td><td>rỗng, có dấu cách, có <span class="mono">/</span>, dài 129; và giá trị không phải string: <span class="mono">undefined</span>, <span class="mono">null</span>, số, boolean, mảng, object có <span class="mono">toString</span></td></tr>
+    <tr><td>document</td><td>schema v2 đầy đủ, name tùy chọn</td><td>unknown key, schema v1, sai cấu trúc</td></tr>
+    <tr><td>Entry trước đó</td><td>none, committed-same, failed</td><td>committed-different (xung đột)</td></tr>
+    <tr><td>Đồng hồ so với <span class="mono">expiresAt</span></td><td>before, exact (inclusive)</td><td>after</td></tr>
+    <tr><td>Receipt từ port</td><td>committed + đúng id/canonical</td><td>sai id, sai canonical, <span class="mono">committed !== true</span>, throw trước/sau commit</td></tr>
+  </table>
+  <h3>4.2 Phân tích giá trị biên</h3>
+  <p>
+    Vì TTL inclusive, ba điểm biên là <span class="mono">expiresAt − 1</span> (replay, 0 call),
+    <span class="mono">expiresAt</span> (replay, 0 call) và <span class="mono">expiresAt + 1</span>
+    (cache miss, gọi lại nhưng vẫn 1 effect). Test T05/T14/T22 phủ biên; T02 cố ý là replay
+    không ở biên để thí nghiệm mutation có thể “sống sót” và chứng minh test biên mới là thứ giết mutant.
+  </p>
+  <h3>4.3 Bảng quyết định (các dòng cốt lõi)</h3>
+  <table class="small">
+    <tr><th>Entry trước</th><th>Đồng hồ</th><th>Đầu vào</th><th>Kỳ vọng</th></tr>
+    <tr><td>none</td><td>before</td><td>valid</td><td>1 call, 1 effect, confirmed</td></tr>
+    <tr><td>committed-same</td><td>before / exact</td><td>valid</td><td>0 call, 1 effect, cùng receipt</td></tr>
+    <tr><td>committed-same</td><td>after</td><td>valid</td><td>1 call, 1 effect</td></tr>
+    <tr><td>committed-different</td><td>before / exact</td><td>valid</td><td><span class="mono">SaveConflictError</span>, 0 call</td></tr>
+    <tr><td>failed</td><td>before / exact</td><td>valid</td><td>được retry, tối đa 1 effect</td></tr>
+    <tr><td>bất kỳ</td><td>bất kỳ</td><td>id/doc sai</td><td>từ chối trước port, 0 call</td></tr>
+  </table>
+  <h3>4.4 Pairwise / tổ hợp</h3>
+  <p>
+    Bốn nhân tố: <span class="mono">prior</span> (4), <span class="mono">clock</span> (3),
+    <span class="mono">input</span> (3), <span class="mono">receipt</span> (5). Ràng buộc loại
+    tổ hợp bất khả thi: input sai không tới được port nên receipt vô nghĩa; <span class="mono">prior=none</span>
+    không có entry để hết hạn; replay/conflict với <span class="mono">prior=committed-*</span> xảy ra trước port nên receipt phải valid.
+  </p>
+  <table class="small">
+    <tr><th>Tổ hợp thô</th><th>Hợp lệ sau ràng buộc</th><th>Dòng được chọn</th><th>Cặp hợp lệ</th><th>Độ phủ cặp</th></tr>
+    <tr><td>4 × 3 × 3 × 5 = 180</td><td>29</td><td>18</td><td>52</td><td><span class="ok">52/52 = 100%</span></td></tr>
+  </table>
+  <p>
+    Ma trận sinh bởi <span class="mono">scripts/vt122-pairwise.mjs</span> (greedy, deterministic),
+    lưu tại <span class="mono">tests/fixtures/vt122-pairwise.json</span>; mỗi dòng P01–P18 là một
+    test thực thi với oracle call/effect/receipt. Chạy lại script cho cùng 18 dòng.
+  </p>
+  <h3>4.5 Đồng thời và tiêm lỗi</h3>
+  <ul>
+    <li>T03: 20 save trùng đồng thời chia sẻ đúng một in-flight call.</li>
+    <li>T12: các id khác nhau commit độc lập, không bị serialize toàn cục.</li>
+    <li>T09–T11, T23–T24: throw trước commit, throw sau commit, sai id, sai canonical, <span class="mono">committed: false</span>.</li>
+    <li>T21: <span class="mono">confirmed()</span> là undefined khi save đầu còn pending.</li>
+    <li>T16/T17/T19: 100 task đồng thời; control cố ý serialize để chứng minh harness nhạy với p95.</li>
+  </ul>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 4 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 5 ============================= -->
+<section class="page">
+  <h2>5. Mutation, coverage, flaky và load</h2>
+  <h3>5.1 Mutation bắt buộc <span class="mono">&gt;</span> → <span class="mono">&gt;=</span></h3>
+  <p>
+    Trên nhánh tạm <span class="mono">temp/vt122-mutation</span>, tôi đổi đúng một ký tự trong
+    <span class="mono">#expired</span>: <span class="mono">return now &gt; entry.expiresAt</span>
+    thành <span class="mono">return now &gt;= entry.expiresAt</span>. Mutant là commit
+    <span class="mono">eb1b1d3</span> (parent <span class="mono">352b6cc</span>), chỉ tồn tại ở nhánh tạm.
+  </p>
+  <table class="small">
+    <tr><th style="width:30%">Phép thử</th><th style="width:16%">Kết quả</th><th>Diễn giải</th></tr>
+    <tr><td>T02 — replay không ở biên</td><td><span class="ok">PASS</span> (mutant sống)</td><td>Test happy-path không đủ giết mutant; đây là thông tin, không phải lỗi che giấu.</td></tr>
+    <tr><td>T05 — <span class="mono">now === expiresAt</span></td><td><span class="bad">FAIL</span> (mutant bị giết)</td><td>Kỳ vọng 1 call nhưng nhận 2; đúng lỗi off-by-one tại biên.</td></tr>
+    <tr><td>Toàn bộ targeted</td><td><span class="bad">5 failed / 31 passed</span></td><td>T05, T14, T22, P01, P11 — các test biên và pairwise exact.</td></tr>
+  </table>
+  <p>
+    Sau thí nghiệm, source trên nhánh chính được khôi phục về <span class="mono">&gt;</span> và
+    kiểm tra lại bằng <span class="mono">Select-String</span>; diff, log và commit mutant được giữ
+    trong <span class="mono">evidence/</span>. Không có mutation nào đi vào PR.
+  </p>
+  <h3>5.2 Coverage, flaky và build</h3>
+  <table class="small">
+    <tr><th>Hạng mục</th><th>Kết quả</th><th>Ghi chú</th></tr>
+    <tr><td>Coverage <span class="mono">src/presets/resubmission.ts</span></td><td><span class="ok">100% statements (54/54), branches (36/36), functions (11/11), lines (50/50)</span></td><td>Đo bằng <span class="mono">@vitest/coverage-v8@5.0.3</span>, chỉ dev dependency.</td></tr>
+    <tr><td>Flaky</td><td><span class="ok">20/20 seed pass, 36/36 test mỗi lần</span></td><td>Seed <span class="mono">23001847</span>–<span class="mono">23001866</span>, <span class="mono">--sequence.shuffle</span>.</td></tr>
+    <tr><td>Build</td><td><span class="ok">PASS</span></td><td>Hai typecheck + Vite build; chỉ còn cảnh báo chunk &gt; 500 kB có sẵn.</td></tr>
+  </table>
+  <h3>5.3 Load 100 task đồng thời</h3>
+  <p>
+    Mỗi task chờ một barrier rồi chạy; mỗi call port mô phỏng 50 ms I/O. Mục tiêu p95 ≤ 3000 ms.
+    Ba lần chạy độc lập:
+  </p>
+  <table class="small">
+    <tr><th>Lần</th><th>Kịch bản</th><th>p95 (ms)</th><th>Call</th><th>Effect</th><th>Kết luận</th></tr>
+    <tr><td>1</td><td>100 task, 100 id duy nhất</td><td>64.2</td><td>100</td><td>100</td><td><span class="ok">đạt</span></td></tr>
+    <tr><td>2</td><td>100 task, 100 id duy nhất</td><td>58.6</td><td>100</td><td>100</td><td><span class="ok">đạt</span></td></tr>
+    <tr><td>3</td><td>100 task, 100 id duy nhất</td><td>63.4</td><td>100</td><td>100</td><td><span class="ok">đạt</span></td></tr>
+    <tr><td>1</td><td>100 task, 10 id × 10 trùng</td><td>58.0</td><td>10</td><td>10</td><td><span class="ok">đạt, không nhân effect</span></td></tr>
+    <tr><td>2</td><td>100 task, 10 id × 10 trùng</td><td>54.0</td><td>10</td><td>10</td><td><span class="ok">đạt</span></td></tr>
+    <tr><td>3</td><td>100 task, 10 id × 10 trùng</td><td>57.1</td><td>10</td><td>10</td><td><span class="ok">đạt</span></td></tr>
+    <tr><td>1</td><td>Control: serialize toàn bộ</td><td>5913.5</td><td>100</td><td>100</td><td><span class="bad">&gt; 3000 — đúng kỳ vọng</span></td></tr>
+    <tr><td>2</td><td>Control: serialize toàn bộ</td><td>5897.9</td><td>100</td><td>100</td><td><span class="bad">&gt; 3000 — đúng kỳ vọng</span></td></tr>
+    <tr><td>3</td><td>Control: serialize toàn bộ</td><td>5911.0</td><td>100</td><td>100</td><td><span class="bad">&gt; 3000 — đúng kỳ vọng</span></td></tr>
+  </table>
+  <div class="callout">
+    Phạm vi load: một tiến trình Node, 100 promise, 50 ms I/O mô phỏng mỗi call. Đây là regression
+    guard cho hành vi đồng thời, <strong>không phải</strong> benchmark network/DB/sức chứa người dùng.
+  </div>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 5 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 6 ============================= -->
+<section class="page">
+  <h2>6. Sử dụng AI và xử lý test yếu / trùng lặp</h2>
+  <p>
+    AI được dùng để tạo ứng viên test, gợi ý mutation, sinh ma trận pairwise và soạn nháp tài liệu.
+    Điểm kiểm tra quan trọng: <strong>sáu test AI sinh ra đều pass ngay lần đầu</strong>. Vì vậy
+    tôi không chấp nhận chúng; tôi đọc từng oracle và phát hiện bốn test yếu/trùng, hai test cần viết lại.
+  </p>
+  <table class="small">
+    <tr><th style="width:13%">Ứng viên</th><th style="width:37%">Điểm yếu</th><th>Quyết định</th></tr>
+    <tr><td>AI-01</td><td>Lặp lại T02; chỉ assert 1 call</td><td>Xóa</td></tr>
+    <tr><td>AI-02</td><td><span class="mono">resolves.toBeDefined()</span> gần như không chứng minh gì</td><td>Xóa</td></tr>
+    <tr><td>AI-03</td><td>requestId sai nhưng không có oracle 0-call</td><td>Xóa</td></tr>
+    <tr><td>AI-04</td><td>Conflict nhưng không kiểm tra effect / receipt cũ</td><td>Xóa</td></tr>
+    <tr><td>AI-05</td><td>Receipt sai nhưng chỉ kiểm tra “có throw”</td><td>Sửa thành <strong>T24</strong>: sai canonical, unconfirmed, 1 effect, retry hòa giải</td></tr>
+    <tr><td>AI-06</td><td>Dùng timer thật 20–25 ms, dễ flaky</td><td>Viết lại thành <strong>T23</strong>: clock inject, failed → retry, receipt frozen, 1 effect</td></tr>
+  </table>
+  <p>
+    Bằng chứng trước/sau: <span class="mono">ai-candidates-before.txt</span> (6/6 pass) và
+    <span class="mono">ai-candidates-after.txt</span> (2/2 pass). Như vậy <strong>bốn test bị xóa,
+    hai test được sửa</strong> — vượt yêu cầu tối thiểu hai test yếu/trùng.
+  </p>
+  <h3>AI Usage Log tóm tắt</h3>
+  <table class="tiny">
+    <tr><th style="width:5%">#</th><th style="width:18%">Mục đích</th><th style="width:39%">Đầu ra AI</th><th>Kiểm tra / quyết định của sinh viên</th></tr>
+    <tr><td>1</td><td>Khảo sát repo, chọn lát cắt</td><td>Đề xuất HTTP handler hoặc service + port</td><td>Chọn port vì repo không có server/DB/UI; ghi rõ giới hạn</td></tr>
+    <tr><td>2</td><td>Sinh test RED đầu tiên</td><td>15 test unit/integration</td><td>Giữ 15; chạy trước implementation: 12 fail / 3 pass</td></tr>
+    <tr><td>3</td><td>Thiết kế pairwise</td><td>4 nhân tố, ràng buộc, 18 dòng</td><td>Kiểm tra tay ràng buộc; chạy lại: 29 combo, 52/52 cặp</td></tr>
+    <tr><td>4</td><td>Gợi ý mutation biên</td><td><span class="mono">&gt;</span> → <span class="mono">&gt;=</span></td><td>Tạo nhánh tạm, commit mutant; T02 sống, T05 chết; khôi phục source</td></tr>
+    <tr><td>5</td><td>Sinh 6 test bổ sung</td><td>AI-01…AI-06, tất cả pass</td><td>Xóa 4, viết lại 2; xem bảng trên</td></tr>
+    <tr><td>6</td><td>Soạn nháp README/spec/report</td><td>Cấu trúc và prose</td><td>Đối chiếu từng số với log; xóa claim không có bằng chứng</td></tr>
+    <tr><td>7</td><td>Rà soát scope cuối</td><td>Không đổi schema/hash/GPU; không claim production exactly-once</td><td>Xác nhận diff chỉ gồm presets guard, test, docs, coverage dev-only</td></tr>
+  </table>
+  <p class="muted" style="font-size:8.3pt">
+    AI không chạy thay test, không tạo số liệu, không viết suy ngẫm thay sinh viên và không dùng
+    nội dung của thành viên khác. Chi tiết đầy đủ ở <span class="mono">docs/04-testing/vt122/ai-usage-log.md</span>
+    và mục Phụ lục.
+  </p>
+  <p style="font-size:8.8pt">
+    <strong>Review #91 (AI-assisted, TV4).</strong> Review phát hiện P2: <span class="mono">RegExp.test</span>
+    tự ép kiểu nên <span class="mono">undefined</span>, <span class="mono">null</span>, số, boolean, mảng
+    hay object có <span class="mono">toString</span> vẫn lọt qua guard. Bản sửa <span class="mono">f88a94b</span>
+    kiểm tra <span class="mono">typeof requestId !== 'string'</span> trước regex; T07 được mở rộng và
+    đỏ→xanh được ghi lại. Re-review chuyển sang <strong>APPROVE</strong>, nhưng khi push commit tài liệu
+    <span class="mono">aab05b3</span> thì GitHub tự động dismiss approval cũ. PR hiện không còn approval
+    hiệu lực, nên vẫn cần một phê duyệt mới của con người. Đây là bằng chứng kỹ thuật AI-assisted, không
+    thay thế phê duyệt của con người.
+  </p>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 6 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 7 ============================= -->
+<section class="page">
+  <h2>7. Kết quả, hạn chế và suy ngẫm</h2>
+  <div class="two">
+    <div>
+      <h3>Kết quả đã kiểm chứng</h3>
+      <ul>
+        <li><span class="ok">336/336</span> Vitest pass sau merge <span class="mono">dev</span> (310 trước merge); 38 test VT-122.</li>
+        <li>Targeted: <span class="ok">36/36</span> (unit + integration + pairwise).</li>
+        <li>Coverage module: <span class="ok">100%</span> cả 4 chỉ số.</li>
+        <li>20 seed shuffle: <span class="ok">0 lỗi</span>.</li>
+        <li>100 task trùng: <span class="ok">10 call → 10 effect</span>, p95 54–58 ms.</li>
+        <li>Mutation <span class="mono">&gt;</span> → <span class="mono">&gt;=</span>: <span class="ok">bị giết</span> bởi test biên.</li>
+        <li>Review P2 <span class="mono">f88a94b</span>: chặn id không phải string; T07 đỏ→xanh; approval sau đó bị auto-dismiss bởi docs commit.</li>
+        <li>CI <span class="mono">verify</span> trên <span class="mono">f88a94b</span>, <span class="mono">aab05b3</span> và <span class="mono">e865cdf</span>: <span class="ok">PASS</span> (merge: 336 test, 76 E2E / 12 skip).</li>
+        <li><span class="mono">npm run build</span>: <span class="ok">PASS</span>.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Hạn chế / NOT_RUN</h3>
+      <ul>
+        <li>Không có API/DB/auth/UI thật; port chỉ là test double.</li>
+        <li>Exactly-once xuyên process/restart: <strong>NOT_RUN</strong>.</li>
+        <li>Load chỉ 1 tiến trình, I/O mô phỏng; không phải capacity test.</li>
+        <li>Cache chỉ dọn khi truy cập, không có background sweep; không phải cache giới hạn bộ nhớ.</li>
+        <li>Local E2E: 75 pass, 12 skip, <span class="bad">1 fail</span> do teardown mobile Chromium; CI Linux pass 76/12 với cùng test file.</li>
+        <li><span class="mono">dev</span> nay có thêm VT-120 (#89). Sau merge hai module cùng tồn tại, nhưng báo cáo không tuyên bố đã thống nhất abstraction hay ranh giới tích hợp.</li>
+        <li>PR phải để <strong>draft</strong> và chờ phê duyệt của con người trước khi merge.</li>
+      </ul>
+    </div>
+  </div>
+  <h3>Suy ngẫm cá nhân</h3>
+  <p>
+    Phần khó nhất của VT-122 không phải viết cache mà là quyết định test được phép khẳng định gì.
+    Repository không có API lưu, database hay UI, nên test browser trên endpoint giả sẽ trông ấn tượng
+    nhưng không chứng minh tính bền vững. Tôi chọn lát cắt service + port và ghi rõ giới hạn vào README,
+    PR, báo cáo.
+  </p>
+  <p>
+    Viết test trước đã thay đổi thiết kế. Ý tưởng đầu là “nhớ receipt gần nhất trong một khoảng”. Test RED
+    buộc tôi tách ba câu hỏi: có gọi port không, store có tạo effect không, caller có được coi là thành công
+    không. Khi call và effect là hai oracle riêng, lỗ hổng mất response hiện ra. TTL phía client không thể
+    chứng minh exactly-once; port phải gắn nguyên tử requestId, canonical và effect. Tôi vẫn giữ TTL để
+    tránh call không cần thiết, nhưng không còn gọi nó là bảo đảm.
+  </p>
+  <p>
+    Mutation là giờ học hữu ích nhất. Đổi <span class="mono">&gt;</span> thành
+    <span class="mono">&gt;=</span> chỉ một ký tự nhưng biến “đúng hạn thì replay” thành “đúng hạn đã hết hạn”.
+    T02 vẫn pass, cho thấy test replay happy-path không thể giết mutant; chỉ T05, T14, T22 và các dòng
+    pairwise exact fail. Tôi coi test không ở biên còn sống là thông tin, không phải vấn đề cần che.
+  </p>
+  <p>
+    Bài học từ AI cũng tương tự: sáu test sinh ra đều pass ngay, nên tôi xóa bốn test yếu/lặp và viết lại
+    hai với clock inject. Một test AI pass chỉ là ứng viên, không phải bằng chứng. Con số tôi tin là con số
+    có log: 100 task trùng tạo đúng 10 effect, còn control serialize vượt p95 như thiết kế.
+  </p>
+  <p>
+    Review #91 dạy thêm: kiểu TypeScript không phải kiểm tra runtime. <span class="mono">RegExp.test</span>
+    ép kiểu nên <span class="mono">undefined</span> vẫn lọt qua guard. Tôi giữ test đỏ của T07 làm bằng chứng
+    thay vì chỉ ghi “đã sửa”. Nếu có thời gian, tôi sẽ thêm adapter transaction thật và case restart.
+  </p>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 7 / 8</span></div>
+</section>
+
+<!-- ============================= PAGE 8 ============================= -->
+<section class="page">
+  <h2>Phụ lục A — AI Usage Log và bằng chứng thô</h2>
+  <table class="tiny">
+    <tr><th style="width:4%">#</th><th style="width:11%">Ngày</th><th style="width:22%">Prompt / mục đích</th><th style="width:30%">Đầu ra AI</th><th>Kiểm tra và quyết định</th></tr>
+    <tr><td>1</td><td>08/11/2026</td><td>Khảo sát repo và đề xuất lát cắt VT-122 chạy được</td><td>HTTP handler (không chạy được) hoặc service + port</td><td>Chọn service + port; xác nhận repo không có server/DB/UI</td></tr>
+    <tr><td>2</td><td>08/11/2026</td><td>Sinh test RED cho replay/conflict/validate/biên/receipt</td><td>15 test unit + integration</td><td>Giữ 15; chạy: 12 fail / 3 pass (<span class="mono">red.txt</span>)</td></tr>
+    <tr><td>3</td><td>08/11/2026</td><td>Thiết kế pairwise 4 nhân tố kèm ràng buộc</td><td>Generator greedy + 18 dòng</td><td>Kiểm tra ràng buộc tay; chạy lại 29 combo, 52/52 cặp</td></tr>
+    <tr><td>4</td><td>08/11/2026</td><td>Đề xuất mutation biên cho retention</td><td><span class="mono">&gt;</span> → <span class="mono">&gt;=</span></td><td>Nhánh tạm <span class="mono">eb1b1d3</span>; T02 sống, T05 chết; khôi phục source</td></tr>
+    <tr><td>5</td><td>08/11/2026</td><td>Sinh 6 test bổ sung</td><td>AI-01…AI-06, tất cả pass</td><td>Xóa 4 (trùng/yếu), sửa 2 thành T23/T24</td></tr>
+    <tr><td>6</td><td>08/11/2026</td><td>Soạn nháp README/spec/strategy/report</td><td>Cấu trúc, prose, bảng</td><td>Đối chiếu từng số với log; xóa claim không có bằng chứng</td></tr>
+    <tr><td>7</td><td>08/11/2026</td><td>Rà soát scope cuối</td><td>Không đổi schema/hash/GPU; không claim production exactly-once</td><td>Xác nhận diff chỉ gồm guard, test, docs, coverage dev-only</td></tr>
+  </table>
+
+  <h3>Bảng ánh xạ bằng chứng thô</h3>
+  <table class="tiny">
+    <tr><th style="width:32%">Tệp</th><th>Nội dung</th></tr>
+    <tr><td><span class="mono">red.txt</span></td><td>12 failed / 3 passed trước implementation</td></tr>
+    <tr><td><span class="mono">green-targeted.txt</span>, <span class="mono">green-full.txt</span></td><td>15/15 targeted; 287/287 full sau GREEN</td></tr>
+    <tr><td><span class="mono">green-final.txt</span></td><td>310/310 full suite trước merge, trên <span class="mono">f88a94b</span></td></tr>
+    <tr><td><span class="mono">green-merge-dev.txt</span>, <span class="mono">build-merge-dev.txt</span></td><td>336/336 test và build PASS sau khi merge <span class="mono">dev</span> (#89) tại <span class="mono">e865cdf</span></td></tr>
+    <tr><td><span class="mono">review-91-fix.md</span>, <span class="mono">review91-t07-red.txt</span>, <span class="mono">review91-t07.txt</span></td><td>P2 non-string id: T07 đỏ (guard revert) → xanh (guard restored); re-review APPROVE rồi bị auto-dismiss khi push docs</td></tr>
+    <tr><td><span class="mono">pairwise.txt</span>, <span class="mono">tests/fixtures/vt122-pairwise.json</span></td><td>18/18 dòng; 29 combo; 52/52 cặp (100%)</td></tr>
+    <tr><td><span class="mono">coverage.txt</span>, <span class="mono">coverage-summary.json</span></td><td>100% statements/branches/functions/lines</td></tr>
+    <tr><td><span class="mono">flaky-shuffle.txt</span></td><td>20 seed 23001847–23001866, 36/36 mỗi lần</td></tr>
+    <tr><td><span class="mono">mutation.diff</span>, <span class="mono">mutation-meta.txt</span></td><td>Mutant <span class="mono">eb1b1d3</span>, parent <span class="mono">352b6cc</span>, đổi <span class="mono">&gt;</span> thành <span class="mono">&gt;=</span></td></tr>
+    <tr><td><span class="mono">mutation-survive.txt</span>, <span class="mono">mutation-killed.txt</span>, <span class="mono">mutation-full.txt</span></td><td>T02 pass; T05 fail; full 5 failed / 31 passed</td></tr>
+    <tr><td><span class="mono">unique.json</span>, <span class="mono">duplicates.json</span>, <span class="mono">serialized-control.json</span></td><td>Load run 1; kèm <span class="mono">load-run2/</span>, <span class="mono">load-run3/</span></td></tr>
+    <tr><td><span class="mono">ai-candidates-before.txt</span>, <span class="mono">ai-candidates-after.txt</span></td><td>6/6 pass trước review; 2/2 pass sau khi sửa</td></tr>
+    <tr><td><span class="mono">build.txt</span></td><td>Typecheck + Vite build PASS; cảnh báo chunk có sẵn</td></tr>
+    <tr><td><span class="mono">e2e.txt</span>, <span class="mono">e2e-rerun.txt</span></td><td>Local: 75 pass, 12 skip, 1 fail teardown mobile; chạy lại vẫn fail. CI Linux: 76 pass / 12 skip</td></tr>
+    <tr><td>CI run <span class="mono">42590832942</span></td><td><span class="mono">f88a94b</span>: verify PASS; 310 test, 76 E2E, 12 skip; CodeQL/Analyze PASS</td></tr>
+    <tr><td>CI run <span class="mono">42771452722</span></td><td><span class="mono">e865cdf</span> (merge <span class="mono">dev</span>): verify PASS; 336 test, 76 E2E, 12 skip; CodeQL/Analyze PASS</td></tr>
+  </table>
+
+  <h3>Lệnh tái lập chính</h3>
+  <pre>npm ci
+npm test
+npx vitest run tests/unit/preset-resubmission.test.ts \
+  tests/integration/preset-resubmission-service.test.ts \
+  tests/unit/preset-resubmission-pairwise.test.ts \
+  tests/unit/preset-resubmission-recovery.test.ts
+node scripts/vt122-pairwise.mjs
+npx vitest run --config vitest.vt122-load.config.ts
+npm run build</pre>
+  <p class="muted" style="font-size:7.8pt">
+    Môi trường: Windows 11, Node v24.22.1, npm 11.19.1, Vitest 5.0.3, Vite 6.4.4,
+    Playwright Chromium headless shell 1248. Toàn bộ log nằm trong
+    <span class="mono">docs/04-testing/vt122/evidence/</span>; báo cáo này và PDF được giữ cục bộ,
+    không chứa token hay thông tin đăng nhập.
+  </p>
+  <div class="footer"><span>BT3 — 23001846 — VT-122</span><span>Trang 8 / 8</span></div>
+</section>
+
+</body>
+</html>

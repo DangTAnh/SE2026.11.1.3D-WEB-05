@@ -1,5 +1,22 @@
 # DELIVERY PLAN — TV4 pre-integration
 
+## Current delivery procedure — 24 October 2026
+
+Follow [CONTRIBUTING](../CONTRIBUTING.md): one assigned Issue, a numbered branch
+from latest dev, small English Conventional Commits, G0 before push, PR into
+dev, and another person's approval before merge. The older waves below describe
+the historical pre-integration plan; their branch/PR instructions are superseded.
+
+TV4 checkpoint, 25 October: #9/#25 merged in #32; #14 source candidate is #33,
+now integrating dev `04f1522` with #12/#13/#15. Its runtime dependency is no
+longer the placeholder port; updated evidence and independent review gate remain.
+#16 waits for TV1 hash scope and TV2/TV3 Vortex mapping. #36 records
+workflow/branch corrections; #37 tracks the collector test-clock flake.
+See [current checkpoint](05-management/workflow-audit-2026-10-24.md) for evidence
+and ordered next actions. No accepted GPU milestone or deployment is claimed.
+
+## Historical plan
+
 ## Wave 1 — hoàn thiện độc lập engine
 
 - Tách template, controls, notifications, runtime overlay/state.
