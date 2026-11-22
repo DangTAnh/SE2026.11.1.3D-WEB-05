@@ -292,6 +292,14 @@ Serialization fixes ordering at every level, indent 2, final LF newline.
 All runtime groups are consumed by the shared adapter: simulation count rebuilds
 storage, size updates material, speed multiplies clamped delta once, spawn/lifetime
 feed init/respawn uniforms. Only the active mode parameters reach its kernel.
+A count rebuild runs the init kernel on the replacement storage immediately,
+also while paused, and does not wait for a frame or a zero-delta step. Before
+that, it disposes every compute node of the replaced storage (init kernel and the
+one cached kernel per mode). Three r186.1 caches compute programs by shader
+source and the WebGL2 backend binds transform feedback to the attributes of the
+first storage the program saw. A surviving old kernel would make the
+replacement kernels write into the old buffers (#103). If building the
+replacement fails, `applyConfig` throws and the current storage stays in use.
 Rendering updates color/background/opacity/blending; transparency/blending changes
 mark material for recompilation. OrbitControls owns camera enabled/autoRotate and
 distance around the existing target. Distance/zoom is bounded 5..500; far plane
