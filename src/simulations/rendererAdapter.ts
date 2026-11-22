@@ -32,6 +32,24 @@ function isThreeNoWebGpuAdapterError(error: unknown): boolean {
   return error instanceof Error && error.message === THREE_NO_WEBGPU_ADAPTER_MESSAGE;
 }
 
+/**
+ * Identity of the compute workload whose GPU time `getStatus()` reports: every
+ * config value the adapter feeds to the init/step kernels (count, mode, speed
+ * via `delta`, spawn/lifetime uniforms and the active mode's uniforms).
+ * Rendering, camera, particle size and the inactive mode group do not change
+ * the measured compute pass. `backendPreference` is applied by `init()`, which
+ * clears timing itself. This is not the collector's `configHash`.
+ */
+function computeWorkloadKey(config: Readonly<LabConfig>): string {
+  const { simulation, mode, modes } = config;
+  const active = mode === 'attractor'
+    ? [modes.attractor.attractorStrength, modes.attractor.attractorRadius, modes.attractor.attractorDamping]
+    : [modes.vortex.vortexStrength, modes.vortex.vortexDamping];
+  return JSON.stringify([
+    mode, simulation.particleCount, simulation.speed, simulation.spawnRadius, simulation.lifetime, ...active,
+  ]);
+}
+
 function hasWebGpuApi(): boolean {
   if (typeof navigator === 'undefined') return false;
   const gpu = (navigator as Navigator & { gpu?: { requestAdapter?: unknown } }).gpu;
@@ -456,9 +474,14 @@ export class ThreeRendererAdapter implements RendererPort {
   applyConfig(config: Readonly<LabConfig>): void {
     const countChanged = config.simulation.particleCount !== this.#config.simulation.particleCount;
     const modeChanged = config.mode !== this.#config.mode;
+    const computeChanged = computeWorkloadKey(config) !== computeWorkloadKey(this.#config);
     const renderer = this.#renderer;
 
     if (countChanged && renderer) this.#createPipeline(config.simulation.particleCount, config);
+    // A GPU time measured for the previous compute workload must not be
+    // reported for the new one (#97). Advancing the measurement generation
+    // also rejects a timestamp query that is still in flight.
+    if (computeChanged) this.#clearGpuTiming();
     const distanceChanged = config.camera.distance !== this.#config.camera.distance;
     this.#config = cloneConfig(config);
     this.#updateUniforms();
