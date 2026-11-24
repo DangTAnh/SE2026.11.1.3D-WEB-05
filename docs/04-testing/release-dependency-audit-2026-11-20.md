@@ -31,8 +31,9 @@ npm ls vite                 # which entries pull the dev-only advisory
 
 ## Triage decision
 
-- No runtime-exploitable advisory is present; the site is a static build with no
-  server process.
+- At the dated `dev@cbce7c4` snapshot, `npm audit --omit=dev` reported no known
+  advisories in the installed production dependency tree. This finding does not
+  establish that the application has no runtime-exploitable defects.
 - The remaining moderate advisory is dev-server-only, so it is recorded rather
   than force-upgraded: the repository instructions forbid incidental stack
   upgrades, and `vite` is pinned by the lockfile used for every CI run.
@@ -44,3 +45,18 @@ npm ls vite                 # which entries pull the dev-only advisory
 This is a dependency-database check, not a penetration test or a claim that the
 application is free of exploitable defects. Physical-GPU and deployment checks
 remain separate release gates.
+
+## Re-check — 25/11/2026
+
+After normally merging `dev@2b306ad` into PR #113 (merge `6f85dff`), `npm ci`
+and both audit commands were rerun with the unchanged lockfile:
+
+| Scope | Actual result |
+|---|---|
+| `npm audit --omit=dev --json` | 0 known advisories; exit 0 |
+| `npm audit --json` | 1 moderate, `vite`; exit 1 because that advisory remains |
+
+No low, high or critical advisory was reported in this snapshot. No dependency
+upgrade was made. The 20/11 results and the historical 18/11 CI warning above
+remain dated evidence, not a claim about all future advisory databases. The
+fresh audit is still a dependency check, not a security guarantee.

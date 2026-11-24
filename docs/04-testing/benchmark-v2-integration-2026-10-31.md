@@ -59,13 +59,18 @@ WebGL2 always precedes WebGPU; order is not counterbalanced. Near-60 headed FPS
 does not measure peak throughput, and these single-session numbers establish no
 performance advantage.
 
-**TV5 order decision (20/11/2026).** The MVP acceptance wording asks for both
-backends to be measured on the same machine starting from reset; it sets no
-improvement threshold, and this run is presented as a reproducible measurement,
-not an advantage claim. The committed artifacts therefore stay single-order and
-are labelled as such, and no counterbalanced re-run is claimed. A counterbalanced
-run (WebGPU first) would be required before any statement about which backend is
-faster, or before comparing across sessions; it is not part of MVP acceptance. The exact driver version is not exposed by the browser.
+**Order acceptance correction (25/11/2026).** The 20/11 TV5 interpretation that
+counterbalancing was outside MVP acceptance is withdrawn following PR #113's
+review. The unchanged proposed acceptance criterion explicitly says to alternate
+WebGPU and WebGL2 on the same machine. Measuring both backends in a fixed order
+does not, by itself, demonstrate that criterion, even without an advantage claim.
+These October artifacts remain historical measurements, not proof that the order
+gate is satisfied. New same-build evidence covering both orders, or an explicit
+acceptance-owner decision changing the proposed criterion, is still required.
+No owner agreement or waiver is invented by this correction.
+
+The exact driver version was not exposed by the browser in this historical run.
+
 Positive GPU durations do not prove fresh query identity under readback errors:
 Three may return a cached value, the inherited #62 finding. Physical-GPU numeric
 parity, error-path timestamp freshness and release/MVP acceptance remain NOT_RUN

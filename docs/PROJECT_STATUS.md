@@ -1,5 +1,29 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 25/11/2026 — Release review follow-up after #114/#115
+
+- Normally merge `dev@2b306ad` into the published Issue #59 documentation branch
+  for PR #113; preserve its history and the dated checkpoints below.
+- #114 / Issue #103 is merged: count rebuild releases old compute kernels before
+  constructing replacements; real-WebGL2 regressions cover the paused lifecycle.
+  #115 / Issue #97 is merged: effective compute-config changes invalidate cached
+  and in-flight GPU timings. Both Issues were closed after their deliveries.
+- Integrated-dev CI [44974013524](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/actions/runs/44974013524)
+  at exactly `2b306ad`: 416 unit/integration PASS, 137 E2E PASS /25 capability
+  SKIP, 6 load PASS; both typechecks, build, Analyze and CodeQL PASS. These are
+  published integration results, not a claim that this docs follow-up has already
+  passed final-head CI or physical-GPU acceptance.
+- Withdraw the 20/11 TV5 interpretation of benchmark order below. Keep the
+  proposed MVP criterion unchanged: the October fixed-order artifacts alone do
+  not demonstrate alternate-order acceptance. New both-order evidence or an
+  explicit acceptance-owner decision remains necessary; no waiver is claimed.
+- Fresh dependency audit on the resolved integration tree: production dependency
+  tree 0 known advisories; full tree 1 moderate (`vite`). Historical counts remain
+  dated; a clean dependency snapshot is not an application security guarantee.
+- #70 remains open pending current-head verification, acceptance and independent
+  human release approval. Deployment, live-URL smoke and agreed tag remain later
+  gates. #55/#56 are post-MVP; #84 remains deferred, not an Undo delivery.
+
 ## 20/11/2026 — Release evidence clarifications (#70 review follow-up)
 
 - TV5 documentation follow-up, no runtime change: collector evidence wording now
