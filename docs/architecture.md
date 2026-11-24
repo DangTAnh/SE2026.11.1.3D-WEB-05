@@ -117,6 +117,19 @@ unavailable/null. This field does not establish FPS freshness; that remains the
 separate Issue #55 contract. The field and threshold are the Issue #53
 contract merged through PR #62.
 
+Issue #97: `applyConfig` also clears timing and age when the compute workload
+changes. It advances the measurement generation, so a timestamp query already
+in flight for the previous workload cannot publish. Timing stays null/unavailable
+until a sample submitted under the new config resolves. The workload is every
+value fed to the init/step kernels: `mode`, `particleCount`, `speed` (through
+`delta`), `spawnRadius`, `lifetime`, and the active mode's parameters
+(attractor strength/radius/damping or vortex strength/damping). Particle size,
+rendering, camera and the inactive mode group do not change the measured compute
+pass and keep the current sample. `backendPreference` takes effect only through
+`init()`, which already clears timing. This adapter-side rule is not the
+collector's `configHash` and adds no schema or hash semantics. FPS freshness
+remains #55.
+
 Issue #79 hardens the pinned Three 0.186.1 query boundary: failed or disjoint
 queries may fulfill with cached `lastValue`, and WebGL2 can advance frame ids
 while doing so. Before each non-overlapping compute timestamp resolve, the
@@ -292,6 +305,14 @@ Serialization fixes ordering at every level, indent 2, final LF newline.
 All runtime groups are consumed by the shared adapter: simulation count rebuilds
 storage, size updates material, speed multiplies clamped delta once, spawn/lifetime
 feed init/respawn uniforms. Only the active mode parameters reach its kernel.
+A count rebuild runs the init kernel on the replacement storage immediately,
+also while paused, and does not wait for a frame or a zero-delta step. Before
+that, it disposes every compute node of the replaced storage (init kernel and the
+one cached kernel per mode). Three r186.1 caches compute programs by shader
+source and the WebGL2 backend binds transform feedback to the attributes of the
+first storage the program saw. A surviving old kernel would make the
+replacement kernels write into the old buffers (#103). If building the
+replacement fails, `applyConfig` throws and the current storage stays in use.
 Rendering updates color/background/opacity/blending; transparency/blending changes
 mark material for recompilation. OrbitControls owns camera enabled/autoRotate and
 distance around the existing target. Distance/zoom is bounded 5..500; far plane

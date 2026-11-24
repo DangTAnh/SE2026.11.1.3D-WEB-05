@@ -22,6 +22,8 @@ const harness = vi.hoisted(() => ({
   timestampValue: 4,
   cachedTimestamp: false,
   noticeInsertions: 0,
+  /** Compute nodes in submission order, plus dispose events, for #103 ordering checks. */
+  computeLog: [] as Array<{ kind: 'compute' | 'dispose'; node: unknown }>,
   instances: [] as Array<{
     forceWebGL: boolean;
     canvas: HTMLCanvasElement | undefined;
@@ -132,7 +134,8 @@ vi.mock('three/webgpu', async () => {
       }
     }
 
-    compute(): Promise<void> | void {
+    compute(node?: unknown): Promise<void> | void {
+      harness.computeLog.push({ kind: 'compute', node });
       if (this.record.forceWebGL) return;
       if (harness.deferNextCompute) {
         harness.deferNextCompute = false;
@@ -239,6 +242,7 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     harness.timestampValue = 4;
     harness.cachedTimestamp = false;
     harness.noticeInsertions = 0;
+    harness.computeLog.length = 0;
     harness.instances.length = 0;
     vi.stubGlobal('navigator', { gpu: { requestAdapter: vi.fn(async () => ({})) } });
     vi.stubGlobal('document', {
@@ -434,6 +438,101 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, gpuTimeMs: null });
     expect(adapter.getStatus().measurementAgeMs).not.toBe(0);
+    adapter.dispose();
+  });
+
+  type ConfigEdit = (config: ReturnType<typeof cloneConfig>) => void;
+  const COMPUTE_CHANGES: Array<[string, ConfigEdit]> = [
+    ['speed', (config) => { config.simulation.speed = 2; }],
+    ['mode', (config) => { config.mode = 'vortex'; }],
+    ['particle count', (config) => { config.simulation.particleCount = 2000; }],
+    ['spawn radius', (config) => { config.simulation.spawnRadius = 20; }],
+    ['lifetime', (config) => { config.simulation.lifetime = 9; }],
+    ['active attractor strength', (config) => { config.modes.attractor.attractorStrength = 3; }],
+    ['active attractor radius', (config) => { config.modes.attractor.attractorRadius = 12; }],
+    ['active attractor damping', (config) => { config.modes.attractor.attractorDamping = 0.9; }],
+  ];
+
+  async function adapterWithCachedTiming(): Promise<{ adapter: ThreeRendererAdapter; frame: (time: number) => void }> {
+    harness.timestampSupported = true;
+    vi.useFakeTimers();
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    adapter.start();
+    const frame = harness.instances[0]!.animationLoopCallback!;
+    for (let index = 1; index <= 10; index += 1) frame(index * 16);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 4 });
+    return { adapter, frame };
+  }
+
+  function edited(edit: ConfigEdit): ReturnType<typeof cloneConfig> {
+    const next = cloneConfig(DEFAULT_CONFIG);
+    next.simulation.particleCount = 1000;
+    edit(next);
+    return next;
+  }
+
+  it.each(COMPUTE_CHANGES)('invalidates cached GPU timing immediately when %s changes (#97)', async (_name, edit) => {
+    const { adapter } = await adapterWithCachedTiming();
+    adapter.applyConfig(edited(edit));
+    // No frame has been submitted under the new workload.
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+    expect(adapter.getStatus()).toMatchObject({ running: true });
+    adapter.dispose();
+  });
+
+  it.each(COMPUTE_CHANGES.filter(([name]) => ['speed', 'mode', 'particle count'].includes(name)))(
+    'rejects an in-flight timing from before a %s change (#97)',
+    async (_name, edit) => {
+      harness.timestampSupported = true;
+      harness.deferTimestamps = true;
+      const config = cloneConfig(DEFAULT_CONFIG);
+      config.simulation.particleCount = 1000;
+      const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+      await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+      adapter.start();
+      const frame = harness.instances[0]!.animationLoopCallback!;
+      for (let index = 1; index <= 10; index += 1) frame(index * 16);
+      await vi.waitFor(() => expect(harness.instances[0]?.resolveTimestamp).toBeTypeOf('function'));
+      const resolveOld = harness.instances[0]!.resolveTimestamp!;
+
+      adapter.applyConfig(edited(edit));
+      resolveOld(3.25);
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: false, measurementAgeMs: null, gpuTimeMs: null });
+      adapter.dispose();
+    },
+  );
+
+  it('publishes a new timing for the changed workload after invalidation (#97)', async () => {
+    const { adapter, frame } = await adapterWithCachedTiming();
+    adapter.applyConfig(edited((config) => { config.simulation.speed = 2; }));
+    expect(adapter.getStatus().gpuTimingAvailable).toBe(false);
+
+    harness.timestampValue = 2.5;
+    for (let index = 11; index <= 20; index += 1) frame(index * 16);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 2.5 });
+    adapter.dispose();
+  });
+
+  it.each([
+    ['an identical config', () => {}],
+    ['particle size', (config) => { config.simulation.particleSize = 6; }],
+    ['particle color', (config) => { config.rendering.particleColor = '#ff0000'; }],
+    ['camera distance', (config) => { config.camera.distance = 80; }],
+    ['inactive vortex parameters', (config) => { config.modes.vortex.vortexStrength = 3; }],
+  ] as Array<[string, ConfigEdit]>)('keeps the current GPU timing for %s (#97)', async (_name, edit) => {
+    const { adapter } = await adapterWithCachedTiming();
+    adapter.applyConfig(edited(edit));
+    expect(adapter.getStatus()).toMatchObject({ gpuTimingAvailable: true, gpuTimeMs: 4 });
     adapter.dispose();
   });
 
@@ -720,6 +819,81 @@ describe('ThreeRendererAdapter initialization error classification', () => {
     expect(harness.buffers).toHaveLength(2);
     expect(harness.buffers[1]!.count).toBe(2000);
     expect(dispose).toHaveBeenCalledOnce();
+    adapter.dispose();
+  });
+
+  it('releases every compute node of the replaced pipeline before initializing a paused count rebuild (#103)', async () => {
+    // Three r186.1 caches compute programs by shader source. In the WebGL2
+    // backend a cached program keeps the transform-feedback attributes of the
+    // buffers it was first built for, so an undisposed kernel of the old
+    // pipeline would make the replacement kernels write into the old buffers.
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const frame = harness.instances[0]!.animationLoopValues.at(-1) as (time: number) => void;
+    const oldBuffers = harness.buffers[0]!;
+
+    adapter.start();
+    frame(1000);
+    frame(1016);
+    const next = cloneConfig(config);
+    next.mode = 'vortex';
+    adapter.applyConfig(next);
+    frame(1032);
+    next.mode = 'attractor';
+    adapter.applyConfig(next);
+    frame(1048);
+    adapter.pause();
+
+    const oldNodes = [...new Set(harness.computeLog.map(entry => entry.node))];
+    // init + attractor + vortex: switching back reuses the attractor kernel.
+    expect(oldNodes).toHaveLength(3);
+    expect(oldNodes).toContain(oldBuffers.initKernel);
+    for (const node of oldNodes) {
+      (node as import('three/webgpu').Node).addEventListener('dispose', () => harness.computeLog.push({ kind: 'dispose', node }));
+    }
+
+    next.simulation.particleCount = 2000;
+    adapter.applyConfig(next);
+    const newBuffers = harness.buffers[1]!;
+    const firstNewCompute = harness.computeLog.findIndex(entry => entry.kind === 'compute' && entry.node === newBuffers.initKernel);
+    expect(firstNewCompute).toBeGreaterThan(-1);
+    for (const node of oldNodes) {
+      const disposedAt = harness.computeLog.findIndex(entry => entry.kind === 'dispose' && entry.node === node);
+      expect(disposedAt).toBeGreaterThan(-1);
+      expect(disposedAt).toBeLessThan(firstNewCompute);
+    }
+
+    // Initialization does not depend on running a frame and keeps pause.
+    expect(adapter.getStatus().running).toBe(false);
+    const computedBeforeFrames = harness.computeLog.filter(entry => entry.kind === 'compute').length;
+    frame(1064);
+    frame(1080);
+    expect(harness.computeLog.filter(entry => entry.kind === 'compute')).toHaveLength(computedBeforeFrames);
+
+    // Resuming steps the replacement buffers' kernel, never an old one.
+    adapter.start();
+    frame(1096);
+    const resumed = harness.computeLog.at(-1)!;
+    expect(resumed.kind).toBe('compute');
+    expect(oldNodes).not.toContain(resumed.node);
+    expect(resumed.node).not.toBe(newBuffers.initKernel);
+    adapter.dispose();
+  });
+
+  it('keeps the current pipeline when the replacement cannot be built (#103)', async () => {
+    const config = cloneConfig(DEFAULT_CONFIG);
+    config.simulation.particleCount = 1000;
+    const adapter = new ThreeRendererAdapter(makeCanvas(), config);
+    await adapter.init({ width: 640, height: 480, pixelRatio: 1 });
+    const oldBuffers = harness.buffers[0]!;
+    const disposeOld = vi.spyOn(oldBuffers.initKernel, 'dispose');
+    const next = cloneConfig(config);
+    next.simulation.particleCount = 1.5;
+    expect(() => adapter.applyConfig(next)).toThrow(RangeError);
+    expect(disposeOld).not.toHaveBeenCalled();
+    expect(harness.buffers).toHaveLength(1);
     adapter.dispose();
   });
 

@@ -24,9 +24,30 @@ const MAX_FRAME_DELTA = 0.05;
 const GPU_TIMING_SAMPLE_INTERVAL_FRAMES = 10;
 const THREE_NO_WEBGPU_ADAPTER_MESSAGE = 'THREE.WebGPUBackend: Unable to create WebGPU adapter.';
 
+type ComputeKernel = ReturnType<typeof createAttractorKernel> | ReturnType<typeof createVortexKernel>;
+type ModeKernels = Map<LabConfig['mode'], ComputeKernel>;
+
 /** Three r186.1 emits this exact generic Error only when requestAdapter() returns null. */
 function isThreeNoWebGpuAdapterError(error: unknown): boolean {
   return error instanceof Error && error.message === THREE_NO_WEBGPU_ADAPTER_MESSAGE;
+}
+
+/**
+ * Identity of the compute workload whose GPU time `getStatus()` reports: every
+ * config value the adapter feeds to the init/step kernels (count, mode, speed
+ * via `delta`, spawn/lifetime uniforms and the active mode's uniforms).
+ * Rendering, camera, particle size and the inactive mode group do not change
+ * the measured compute pass. `backendPreference` is applied by `init()`, which
+ * clears timing itself. This is not the collector's `configHash`.
+ */
+function computeWorkloadKey(config: Readonly<LabConfig>): string {
+  const { simulation, mode, modes } = config;
+  const active = mode === 'attractor'
+    ? [modes.attractor.attractorStrength, modes.attractor.attractorRadius, modes.attractor.attractorDamping]
+    : [modes.vortex.vortexStrength, modes.vortex.vortexDamping];
+  return JSON.stringify([
+    mode, simulation.particleCount, simulation.speed, simulation.spawnRadius, simulation.lifetime, ...active,
+  ]);
 }
 
 function hasWebGpuApi(): boolean {
@@ -46,7 +67,9 @@ export class ThreeRendererAdapter implements RendererPort {
   #material: PointsNodeMaterial | null = null;
   #points: Sprite | null = null;
   #buffers: ParticleBuffers | null = null;
-  #computeKernel: ReturnType<typeof createAttractorKernel> | ReturnType<typeof createVortexKernel> | null = null;
+  #computeKernel: ComputeKernel | null = null;
+  /** Kernels built for the current `#buffers`, one per mode, released with them. */
+  #modeKernels: ModeKernels = new Map();
   #config: Readonly<LabConfig>;
   #actual: ActualBackend = 'unavailable';
   #requested: LabConfig['backendPreference'] = 'auto';
@@ -451,9 +474,14 @@ export class ThreeRendererAdapter implements RendererPort {
   applyConfig(config: Readonly<LabConfig>): void {
     const countChanged = config.simulation.particleCount !== this.#config.simulation.particleCount;
     const modeChanged = config.mode !== this.#config.mode;
+    const computeChanged = computeWorkloadKey(config) !== computeWorkloadKey(this.#config);
     const renderer = this.#renderer;
 
     if (countChanged && renderer) this.#createPipeline(config.simulation.particleCount, config);
+    // A GPU time measured for the previous compute workload must not be
+    // reported for the new one (#97). Advancing the measurement generation
+    // also rejects a timestamp query that is still in flight.
+    if (computeChanged) this.#clearGpuTiming();
     const distanceChanged = config.camera.distance !== this.#config.camera.distance;
     this.#config = cloneConfig(config);
     this.#updateUniforms();
@@ -555,7 +583,7 @@ export class ThreeRendererAdapter implements RendererPort {
     let buffers: ParticleBuffers | null = null;
     let material: PointsNodeMaterial | null = null;
     let points: Sprite | null = null;
-    let computeKernel: ReturnType<typeof createAttractorKernel> | ReturnType<typeof createVortexKernel> | null = null;
+    let computeKernel: ComputeKernel | null = null;
     try {
       buffers = createParticleBuffers(count);
       material = new PointsNodeMaterial({
@@ -574,21 +602,29 @@ export class ThreeRendererAdapter implements RendererPort {
       scene.add(points);
     } catch (error) {
       if (points) scene.remove(points);
-      this.#disposePipeline(material, buffers);
+      this.#disposePipeline(material, buffers, computeKernel ? new Map([[config.mode, computeKernel]]) : new Map());
       throw error;
     }
 
     const previousPoints = this.#points;
     const previousMaterial = this.#material;
     const previousBuffers = this.#buffers;
+    const previousKernels = this.#modeKernels;
     this.#points = points;
     this.#material = material;
     this.#buffers = buffers;
     this.#computeKernel = computeKernel;
+    this.#modeKernels = new Map([[config.mode, computeKernel]]);
     this.#updateUniforms(buffers, config);
 
+    // Release the replaced compute nodes before any replacement kernel is
+    // submitted (#103). Three r186.1 caches compute programs by shader source
+    // and the WebGL2 backend stores the transform-feedback attributes on that
+    // cached program. The replacement shaders have identical source, so while
+    // an old kernel still holds the program, the new init/step kernels would
+    // write into the old buffers and leave the rendered positions at zero.
     if (previousPoints) scene.remove(previousPoints);
-    this.#disposePipeline(previousMaterial, previousBuffers);
+    this.#disposePipeline(previousMaterial, previousBuffers, previousKernels);
   }
 
   #updateUniforms(
@@ -612,11 +648,18 @@ export class ThreeRendererAdapter implements RendererPort {
     }
   }
 
-  #selectComputeKernel(buffers: ParticleBuffers | null = this.#buffers, config: Readonly<LabConfig> = this.#config): void {
+  #selectComputeKernel(): void {
+    const buffers = this.#buffers;
     if (!buffers) return;
-    this.#computeKernel = config.mode === 'attractor'
-      ? createAttractorKernel(buffers)
-      : createVortexKernel(buffers);
+    const { mode } = this.#config;
+    // Reuse one kernel per mode for the current buffers so every compute node
+    // that holds a shared program is tracked and released with its buffers.
+    let kernel = this.#modeKernels.get(mode);
+    if (!kernel) {
+      kernel = mode === 'attractor' ? createAttractorKernel(buffers) : createVortexKernel(buffers);
+      this.#modeKernels.set(mode, kernel);
+    }
+    this.#computeKernel = kernel;
   }
 
   #onFrame = (time: number): void => {
@@ -694,7 +737,11 @@ export class ThreeRendererAdapter implements RendererPort {
     }
   }
 
-  #disposePipeline(material: PointsNodeMaterial | null, buffers: ParticleBuffers | null): void {
+  #disposePipeline(material: PointsNodeMaterial | null, buffers: ParticleBuffers | null, kernels: ModeKernels): void {
+    // Compute nodes first: their dispose releases renderer pipelines/programs
+    // that still reference the attributes disposed below.
+    for (const kernel of kernels.values()) kernel.dispose();
+    buffers?.initKernel.dispose();
     material?.dispose();
     buffers?.positions.value.dispose();
     buffers?.velocities.value.dispose();
@@ -705,10 +752,13 @@ export class ThreeRendererAdapter implements RendererPort {
   #geometryAndMaterialDispose(): void {
     const material = this.#material;
     const buffers = this.#buffers;
+    const kernels = this.#modeKernels;
     this.#material = null;
     this.#points = null;
     this.#buffers = null;
-    this.#disposePipeline(material, buffers);
+    this.#computeKernel = null;
+    this.#modeKernels = new Map();
+    this.#disposePipeline(material, buffers, kernels);
   }
 
   #releaseRenderer(): void {
