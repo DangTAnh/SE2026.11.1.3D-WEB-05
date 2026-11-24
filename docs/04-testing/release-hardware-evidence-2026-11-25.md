@@ -11,9 +11,10 @@ does not change `mvp-acceptance.md` or invent an acceptance-owner waiver.
 - Measured revision: `d22de971f8d058d1a020b3558f9467696078a974` on the Issue #59
   branch. Its source, tests, lockfile and workflows are identical to that dev
   baseline; its additional changes are documentation.
-- The separate favicon fix #117 adds only `public/favicon.ico`. The successful
-  headed working tree was later committed as `729f8a1`; no renderer or test
-  assertion was modified for that recheck.
+- The separate favicon fix #117 adds `public/favicon.ico` and an explicit relative
+  icon link in index.html for the GitHub Pages project path. The first successful
+  icon-only working tree was later committed as `729f8a1`; final head `004f7a9`
+  includes both delivery changes. No renderer or test assertion was modified.
 - Pinned Playwright Chromium 156.0.8078.4, headed, Windows 11 build26300,
   physical AMD Radeon(TM) Graphics / WebGPU amd/rdna-2. AMD driver31.0.21024.2004
   was read from Win32_VideoController, not inferred from a browser string.
@@ -87,6 +88,19 @@ release-20261125 evidence workspace. The committed summary retains every test
 status/error and the parity subcase results. The missing-browser launch attempt
 was resolved by installing the pinned Chromium; no installed-Chrome override or
 dependency upgrade was used.
+
+The icon-only version still allowed an implicit `/favicon.ico` request at the
+domain root when the app was served below its GitHub Pages project path. A local
+production-build subpath smoke reproduced that404. Final #117 head `004f7a9`
+adds `href="./favicon.ico"`, matching the existing relative Vite base. The same
+subpath smoke then requested the icon below the project prefix, returned200 and
+reported no console errors. The GPU was intentionally unavailable in that
+static-delivery smoke; it is not a live-URL/deployment or rendering acceptance.
+[Before/after subpath record](../06-benchmark/evidence/2026-11-25-orders/favicon-project-path.json).
+
+All14 headed GPU tests were rerun on final `004f7a9`: **14 PASS /0 SKIP /0 FAIL
+in23.9s**, no retries. The machine-readable summary preserves the initial failure,
+first icon-only pass and final relative-link pass separately.
 
 ## Local verification and remaining gates
 

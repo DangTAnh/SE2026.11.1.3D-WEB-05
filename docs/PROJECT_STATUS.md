@@ -26,6 +26,10 @@
   suites14/14, including both actual backends, parity and query-error recovery.
   This result depends on that companion fix; it is not a pass claim for a release
   tree that still lacks the icon. No test assertion, timeout or retry was weakened.
+- Final #117 head004f7a9 also declares the icon relative to the Pages project
+  path: local production-subpath delivery returns200 without console errors;
+  the unchanged14 headed GPU tests pass again in23.9s. The earlier icon-only
+  run and subpath404 are retained, not presented as the final result.
 - Fresh dependency audit on the resolved integration tree: production dependency
   tree 0 known advisories; full tree 1 moderate (`vite`). Historical counts remain
   dated; a clean dependency snapshot is not an application security guarantee.
