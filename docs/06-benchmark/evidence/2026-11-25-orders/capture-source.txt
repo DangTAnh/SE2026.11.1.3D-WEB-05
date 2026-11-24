@@ -1,0 +1,78 @@
+import { chromium } from 'file:///E:/CNPM/node_modules/playwright/index.mjs';
+import { execFileSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+
+execFileSync('git',['diff','--quiet'],{cwd:'E:/CNPM'});
+const commit=execFileSync('git',['rev-parse','HEAD'],{cwd:'E:/CNPM',encoding:'utf8'}).trim();
+const system=JSON.parse(readFileSync(new URL('./system.json',import.meta.url),'utf8'));
+const browser=await chromium.launch({headless:false});
+const campaign={commit,utc:new Date().toISOString(),browserVersion:browser.version(),system,pairs:[]};
+try {
+ for(const [label,order] of [['ab',['webgl2','webgpu']],['ba',['webgpu','webgl2']]]) {
+  const page=await browser.newPage({viewport:{width:1000,height:800}});
+  const errors=[];page.on('pageerror',error=>errors.push(error.message));
+  await page.goto('http://127.0.0.1:4187/tests/e2e/fixtures/capability-probe.html');
+  const capability=await page.evaluate(async()=>{
+   const canvas=document.createElement('canvas'),gl=canvas.getContext('webgl2'),ext=gl?.getExtension('WEBGL_debug_renderer_info');
+   const renderer=ext?gl.getParameter(ext.UNMASKED_RENDERER_WEBGL):null;
+   const gpu=await navigator.gpu?.requestAdapter();
+   gl?.getExtension('WEBGL_lose_context')?.loseContext();
+   return {renderer,webgpu:!!gpu,adapter:gpu?{vendor:gpu.info.vendor,architecture:gpu.info.architecture}:null};
+  });
+  assert(capability.webgpu,'No WebGPU adapter; refuse two-backend acceptance claim');
+  assert(/AMD/i.test(capability.renderer)&&capability.adapter.vendor==='amd','Expected the same AMD hardware for both paths');
+  const controller=system.graphics.find(row=>row.Name==='AMD Radeon(TM) Graphics');assert(controller);
+  const environment={browser:'Chromium',browserVersion:browser.version(),
+   os:`${system.os.Caption} (${system.os.Version}, build ${system.os.BuildNumber})`,
+   gpu:`${capability.renderer}; WebGPU adapter ${capability.adapter.vendor}/${capability.adapter.architecture}`,
+   driver:`AMD Radeon(TM) Graphics ${controller.DriverVersion} (Win32_VideoController)`,commit,sameHost:true};
+  const runs=[];
+  for(const backend of order) {
+   const run=await page.evaluate(async backend=>{
+    const {ThreeRendererAdapter}=await import('/src/simulations/rendererAdapter.ts');
+    const {BENCHMARK_PROTOCOL,collectBenchmarkSamples}=await import('/src/perf/benchmark.ts');
+    const {DEFAULT_CONFIG,cloneConfig}=await import('/src/presets/preset.ts');
+    const canvas=document.createElement('canvas');canvas.width=800;canvas.height=600;
+    document.body.replaceChildren(canvas);
+    const config=cloneConfig(DEFAULT_CONFIG);config.backendPreference=backend;
+    const adapter=new ThreeRendererAdapter(canvas,config),startedAt=new Date().toISOString();
+    try {
+     const actual=await adapter.init({width:800,height:600,pixelRatio:1});
+     if(actual!==backend)throw new Error(`Requested ${backend}, initialized ${actual}`);
+     adapter.reset();adapter.start();
+     const samples=await collectBenchmarkSamples(adapter,()=>config,BENCHMARK_PROTOCOL);
+     return {requested:backend,actual,startedAt,finishedAt:new Date().toISOString(),protocol:BENCHMARK_PROTOCOL,samples};
+    }finally{adapter.dispose();}
+   },backend);
+   assert.equal(run.samples.length,100);assert(run.samples.every(s=>s.actual===backend));
+   assert(run.samples.every(s=>Number.isFinite(s.fps)&&s.fps>0));
+   runs.push(run);
+   writeFileSync(new URL(`./order-${label}-partial.json`,import.meta.url),JSON.stringify({environment,order,runs,errors},null,2));
+   console.log(JSON.stringify({pair:label,backend,actual:run.actual,samples:run.samples.length}));
+  }
+  assert.deepEqual(errors,[]);
+  const formatted=await page.evaluate(async({environment,order,runs})=>{
+   const {buildBenchmarkResult}=await import('/src/perf/benchmark.ts');
+   const {DEFAULT_CONFIG}=await import('/src/presets/preset.ts');
+   const {toMarkdown}=await import('/src/core/measurement/result.ts');
+   const result=await buildBenchmarkResult({environment,config:DEFAULT_CONFIG,samples:runs.flatMap(run=>run.samples),
+    limitations:[`Observed pair execution order: ${order.join(' then ')}; each backend uses a new canvas/adapter and explicit reset.`,
+     'Paired campaign also records the reverse order on the same host/build; this file is one pair, not pooled results.',
+     'WebGL2 compute uses transform feedback; WebGPU uses the same shared kernels.',
+     'Only backendPreference changes to force each actual backend; workload, rendering, camera, viewport and protocol are otherwise identical.',
+     'Refresh-bound FPS and one paired campaign establish no backend speed advantage or general hardware capacity.',
+     'GPU timing is adapter-reported; query-error tests, numerical parity, device-loss acceptance and deployment are separate evidence.']});
+   return {result,markdown:toMarkdown(result)};
+  },{environment,order,runs});
+  const pair={label,order,environment,capability,runs,result:formatted.result,errors};campaign.pairs.push(pair);
+  writeFileSync(new URL(`./order-${label}.md`,import.meta.url),formatted.markdown);
+  writeFileSync(new URL('./benchmark-orders.json',import.meta.url),JSON.stringify(campaign,null,2));
+  console.log(JSON.stringify({pair:label,hash:formatted.result.configHash,groups:formatted.result.groups}));
+  await page.close();
+ }
+ assert.equal(campaign.pairs.length,2);
+ assert.equal(campaign.pairs[0].result.configHash,campaign.pairs[1].result.configHash);
+ assert.equal(execFileSync('git',['rev-parse','HEAD'],{cwd:'E:/CNPM',encoding:'utf8'}).trim(),commit);
+}catch(error){campaign.error=String(error);writeFileSync(new URL('./benchmark-orders.json',import.meta.url),JSON.stringify(campaign,null,2));throw error;}
+finally{await browser.close();}

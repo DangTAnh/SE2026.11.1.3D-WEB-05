@@ -65,9 +65,15 @@ review. The unchanged proposed acceptance criterion explicitly says to alternate
 WebGPU and WebGL2 on the same machine. Measuring both backends in a fixed order
 does not, by itself, demonstrate that criterion, even without an advantage claim.
 These October artifacts remain historical measurements, not proof that the order
-gate is satisfied. New same-build evidence covering both orders, or an explicit
-acceptance-owner decision changing the proposed criterion, is still required.
+gate is satisfied. Satisfying that condition requires new same-build evidence
+covering both orders, or an explicit acceptance-owner decision changing the
+proposed criterion.
 No owner agreement or waiver is invented by this correction.
+
+The [25/11 follow-up](release-hardware-evidence-2026-11-25.md) now supplies two
+new same-host/build pairs in opposite orders. Those are separate artifacts at a
+newer runtime revision, subject to owner review; they do not rewrite these
+October measurements or independently establish full MVP acceptance.
 
 The exact driver version was not exposed by the browser in this historical run.
 

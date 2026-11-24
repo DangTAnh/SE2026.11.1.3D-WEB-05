@@ -15,8 +15,17 @@
   passed final-head CI or physical-GPU acceptance.
 - Withdraw the 20/11 TV5 interpretation of benchmark order below. Keep the
   proposed MVP criterion unchanged: the October fixed-order artifacts alone do
-  not demonstrate alternate-order acceptance. New both-order evidence or an
-  explicit acceptance-owner decision remains necessary; no waiver is claimed.
+  not demonstrate alternate-order acceptance. New both-order evidence is
+  recorded separately below for owner review; no waiver is claimed.
+- New [headed hardware evidence](04-testing/release-hardware-evidence-2026-11-25.md)
+  at runtime-equivalent d22de97 records both backend orders on AMD Radeon:
+  400 actual samples, identical default-v2 workload/hash and protocol, no speed
+  advantage claim. This supplies new order evidence for acceptance-owner review.
+- Initial headed GPU checks:5 PASS /9 console404 FAIL. The missing favicon is
+  isolated as #116/#117; its asset-only working tree passes the unchanged headed
+  suites14/14, including both actual backends, parity and query-error recovery.
+  This result depends on that companion fix; it is not a pass claim for a release
+  tree that still lacks the icon. No test assertion, timeout or retry was weakened.
 - Fresh dependency audit on the resolved integration tree: production dependency
   tree 0 known advisories; full tree 1 moderate (`vite`). Historical counts remain
   dated; a clean dependency snapshot is not an application security guarantee.
