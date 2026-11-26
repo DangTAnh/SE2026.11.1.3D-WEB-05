@@ -1,0 +1,27 @@
+{
+  "before": {
+    "scope": "local production-build project-subpath smoke, GPU intentionally unavailable",
+    "icon": [],
+    "errors": [
+      {
+        "text": "Failed to load resource: the server responded with a status of 404 (File not found)",
+        "location": {
+          "url": "http://127.0.0.1:4189/favicon.ico",
+          "line": 0,
+          "column": 0,
+          "lineNumber": 0,
+          "columnNumber": 0
+        }
+      }
+    ]
+  },
+  "after": {
+    "scope": "local production-build project-subpath smoke, GPU intentionally unavailable",
+    "icon": [
+      "http://127.0.0.1:4189/SE2026.11.1.3D-WEB-05/favicon.ico"
+    ],
+    "iconStatus": 200,
+    "errors": []
+  },
+  "finalFixHead": "004f7a93cf8abc8accd83078bc4178df742a40aa"
+}

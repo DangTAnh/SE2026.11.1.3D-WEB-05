@@ -1,0 +1,3140 @@
+{
+  "commit": "d22de971f8d058d1a020b3558f9467696078a974",
+  "utc": "2026-11-24T17:40:09.777Z",
+  "browserVersion": "156.0.8078.4",
+  "system": {
+    "os": {
+      "Caption": "Microsoft Windows 11 Home Single Language",
+      "Version": "10.0.26300",
+      "BuildNumber": "26300"
+    },
+    "graphics": [
+      {
+        "Name": "MuMuPlayer Virtual Display Adapter",
+        "DriverVersion": "22.3.52.447"
+      },
+      {
+        "Name": "NVIDIA GeForce GTX 1650",
+        "DriverVersion": "32.0.16.2101"
+      },
+      {
+        "Name": "AMD Radeon(TM) Graphics",
+        "DriverVersion": "31.0.21024.2004"
+      }
+    ]
+  },
+  "pairs": [
+    {
+      "label": "ab",
+      "order": [
+        "webgl2",
+        "webgpu"
+      ],
+      "environment": {
+        "browser": "Chromium",
+        "browserVersion": "156.0.8078.4",
+        "os": "Microsoft Windows 11 Home Single Language (10.0.26300, build 26300)",
+        "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11); WebGPU adapter amd/rdna-2",
+        "driver": "AMD Radeon(TM) Graphics 31.0.21024.2004 (Win32_VideoController)",
+        "commit": "d22de971f8d058d1a020b3558f9467696078a974",
+        "sameHost": true
+      },
+      "capability": {
+        "renderer": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "webgpu": true,
+        "adapter": {
+          "vendor": "amd",
+          "architecture": "rdna-2"
+        }
+      },
+      "runs": [
+        {
+          "requested": "webgl2",
+          "actual": "webgl2",
+          "startedAt": "2026-11-24T17:40:10.440Z",
+          "finishedAt": "2026-11-24T17:40:23.396Z",
+          "protocol": {
+            "warmUpMs": 3000,
+            "cadenceMs": 100,
+            "sampleCount": 100,
+            "durationSeconds": 10,
+            "statistic": "median"
+          },
+          "samples": [
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10428
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37332
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37332
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1546
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10532
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10532
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12128
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12128
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.27223
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10448
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10448
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.23016
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.23016
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14864
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14068
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14068
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10492
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10524
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10524
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12028
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12376
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12376
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10528
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10528
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37332
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.4948
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.4948
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.39045
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.39045
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14692
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37332
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37332
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.11032
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10372
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10372
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14616
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14616
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10388
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10356
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10356
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1044
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1044
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.33821
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10384
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10384
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.4984
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.4984
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.11888
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10352
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10352
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1134
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.17759
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.17759
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1462
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1462
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12288
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12288
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10476
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10476
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10764
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10436
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10436
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10492
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10492
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14436
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14436
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10508
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10888
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10888
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10768
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10768
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1302
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12584
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12584
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.11836
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.11836
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37336
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10468
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10468
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10984
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10984
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.11956
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.13844
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.13844
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12428
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37336
+            }
+          ]
+        },
+        {
+          "requested": "webgpu",
+          "actual": "webgpu",
+          "startedAt": "2026-11-24T17:40:23.410Z",
+          "finishedAt": "2026-11-24T17:40:36.352Z",
+          "protocol": {
+            "warmUpMs": 3000,
+            "cadenceMs": 100,
+            "sampleCount": 100,
+            "durationSeconds": 10,
+            "statistic": "median"
+          },
+          "samples": [
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            }
+          ]
+        }
+      ],
+      "result": {
+        "environment": {
+          "browser": "Chromium",
+          "browserVersion": "156.0.8078.4",
+          "os": "Microsoft Windows 11 Home Single Language (10.0.26300, build 26300)",
+          "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11); WebGPU adapter amd/rdna-2",
+          "driver": "AMD Radeon(TM) Graphics 31.0.21024.2004 (Win32_VideoController)",
+          "commit": "d22de971f8d058d1a020b3558f9467696078a974",
+          "sameHost": true
+        },
+        "config": {
+          "mode": "attractor",
+          "backendPreference": "auto",
+          "simulation": {
+            "particleCount": 65536,
+            "spawnRadius": 10,
+            "particleSize": 2.5,
+            "lifetime": 6,
+            "speed": 1.2
+          },
+          "modes": {
+            "attractor": {
+              "attractorStrength": 1.5,
+              "attractorRadius": 6,
+              "attractorDamping": 0.98
+            },
+            "vortex": {
+              "vortexStrength": 1.5,
+              "vortexDamping": 0.99
+            }
+          },
+          "rendering": {
+            "backgroundColor": "#07111f",
+            "particleColor": "#6ce6ff",
+            "opacity": 1,
+            "additiveBlend": false
+          },
+          "camera": {
+            "enabled": true,
+            "autoRotate": false,
+            "distance": 30
+          }
+        },
+        "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+        "protocol": {
+          "warmUpSeconds": 3,
+          "sampleCount": 100,
+          "durationSeconds": 10
+        },
+        "groups": [
+          {
+            "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+            "actual": "webgl2",
+            "count": 100,
+            "fps": {
+              "count": 100,
+              "min": 59.880239520958085,
+              "max": 59.94005994005994,
+              "median": 59.91013539511138,
+              "p95": 59.92808629644422
+            },
+            "gpuTimeMs": {
+              "count": 100,
+              "min": 0.10352,
+              "max": 0.4984,
+              "median": 0.11836,
+              "p95": 0.39045
+            }
+          },
+          {
+            "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+            "actual": "webgpu",
+            "count": 100,
+            "fps": {
+              "count": 100,
+              "min": 59.880239520958085,
+              "max": 59.94005994005994,
+              "median": 59.91611743559009,
+              "p95": 59.94005994005994
+            },
+            "gpuTimeMs": {
+              "count": 100,
+              "min": 0.065536,
+              "max": 0.196608,
+              "median": 0.131072,
+              "p95": 0.131072
+            }
+          }
+        ],
+        "blockedBackends": [],
+        "limitations": [
+          "Observed pair execution order: webgl2 then webgpu; each backend uses a new canvas/adapter and explicit reset.",
+          "Paired campaign also records the reverse order on the same host/build; this file is one pair, not pooled results.",
+          "WebGL2 compute uses transform feedback; WebGPU uses the same shared kernels.",
+          "Only backendPreference changes to force each actual backend; workload, rendering, camera, viewport and protocol are otherwise identical.",
+          "Refresh-bound FPS and one paired campaign establish no backend speed advantage or general hardware capacity.",
+          "GPU timing is adapter-reported; query-error tests, numerical parity, device-loss acceptance and deployment are separate evidence."
+        ]
+      },
+      "errors": []
+    },
+    {
+      "label": "ba",
+      "order": [
+        "webgpu",
+        "webgl2"
+      ],
+      "environment": {
+        "browser": "Chromium",
+        "browserVersion": "156.0.8078.4",
+        "os": "Microsoft Windows 11 Home Single Language (10.0.26300, build 26300)",
+        "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11); WebGPU adapter amd/rdna-2",
+        "driver": "AMD Radeon(TM) Graphics 31.0.21024.2004 (Win32_VideoController)",
+        "commit": "d22de971f8d058d1a020b3558f9467696078a974",
+        "sameHost": true
+      },
+      "capability": {
+        "renderer": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+        "webgpu": true,
+        "adapter": {
+          "vendor": "amd",
+          "architecture": "rdna-2"
+        }
+      },
+      "runs": [
+        {
+          "requested": "webgpu",
+          "actual": "webgpu",
+          "startedAt": "2026-11-24T17:40:36.793Z",
+          "finishedAt": "2026-11-24T17:40:49.739Z",
+          "protocol": {
+            "warmUpMs": 3000,
+            "cadenceMs": 100,
+            "sampleCount": 100,
+            "durationSeconds": 10,
+            "statistic": "median"
+          },
+          "samples": [
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463262,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559014,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.916117435590195,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463257,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.9161174355903,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.9161174355903,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.9161174355903,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.9161174355903,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.9161174355903,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632456,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.065536
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.196608
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            },
+            {
+              "actual": "webgpu",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.131072
+            }
+          ]
+        },
+        {
+          "requested": "webgl2",
+          "actual": "webgl2",
+          "startedAt": "2026-11-24T17:40:49.750Z",
+          "finishedAt": "2026-11-24T17:41:02.692Z",
+          "protocol": {
+            "warmUpMs": 3000,
+            "cadenceMs": 100,
+            "sampleCount": 100,
+            "durationSeconds": 10,
+            "statistic": "median"
+          },
+          "samples": [
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.104
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.104
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10536
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10536
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1258
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37344
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37344
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644422,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1078
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10524
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10524
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12028
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10536
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10536
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10468
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10468
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559009,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.105
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.105
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12884
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10472
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10472
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10476
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37688
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.37688
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14264
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14264
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12472
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1084
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1084
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10456
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10456
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10436
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10436
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1048
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1086
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10576
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10576
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10528
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10528
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10864
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10864
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.104
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.104
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1062
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1062
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.15964
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10752
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10752
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644444,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.15692
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.15692
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.90415335463224,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1044
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10416
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10416
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12424
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.91611743559052,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10516
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10516
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10472
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10388
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10388
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.40752
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.892194050708554,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10484
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10484
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10468
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10468
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.15708
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.15708
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10832
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10512
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12076
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10508
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10508
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.880239520958085,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1048
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10408
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10408
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14064
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14064
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.94005994005994,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.14148
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10856
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10856
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.1046
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12304
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.904153354632676,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12304
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644401,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.12328
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644401,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644401,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10444
+            },
+            {
+              "actual": "webgl2",
+              "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+              "fps": 59.92808629644401,
+              "gpuTimingAvailable": true,
+              "gpuTimeMs": 0.10488
+            }
+          ]
+        }
+      ],
+      "result": {
+        "environment": {
+          "browser": "Chromium",
+          "browserVersion": "156.0.8078.4",
+          "os": "Microsoft Windows 11 Home Single Language (10.0.26300, build 26300)",
+          "gpu": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11); WebGPU adapter amd/rdna-2",
+          "driver": "AMD Radeon(TM) Graphics 31.0.21024.2004 (Win32_VideoController)",
+          "commit": "d22de971f8d058d1a020b3558f9467696078a974",
+          "sameHost": true
+        },
+        "config": {
+          "mode": "attractor",
+          "backendPreference": "auto",
+          "simulation": {
+            "particleCount": 65536,
+            "spawnRadius": 10,
+            "particleSize": 2.5,
+            "lifetime": 6,
+            "speed": 1.2
+          },
+          "modes": {
+            "attractor": {
+              "attractorStrength": 1.5,
+              "attractorRadius": 6,
+              "attractorDamping": 0.98
+            },
+            "vortex": {
+              "vortexStrength": 1.5,
+              "vortexDamping": 0.99
+            }
+          },
+          "rendering": {
+            "backgroundColor": "#07111f",
+            "particleColor": "#6ce6ff",
+            "opacity": 1,
+            "additiveBlend": false
+          },
+          "camera": {
+            "enabled": true,
+            "autoRotate": false,
+            "distance": 30
+          }
+        },
+        "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+        "protocol": {
+          "warmUpSeconds": 3,
+          "sampleCount": 100,
+          "durationSeconds": 10
+        },
+        "groups": [
+          {
+            "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+            "actual": "webgl2",
+            "count": 100,
+            "fps": {
+              "count": 100,
+              "min": 59.880239520958085,
+              "max": 59.94005994005994,
+              "median": 59.904153354632676,
+              "p95": 59.94005994005994
+            },
+            "gpuTimeMs": {
+              "count": 100,
+              "min": 0.10388,
+              "max": 0.40752,
+              "median": 0.10514000000000001,
+              "p95": 0.15964
+            }
+          },
+          {
+            "configHash": "0f917cd0a56e3d7b63f53c7f1e7bb5f2cdfb70d6191454733baf204f0fc907fa",
+            "actual": "webgpu",
+            "count": 100,
+            "fps": {
+              "count": 100,
+              "min": 59.904153354632456,
+              "max": 59.9161174355903,
+              "median": 59.91611743559009,
+              "p95": 59.916117435590195
+            },
+            "gpuTimeMs": {
+              "count": 100,
+              "min": 0.065536,
+              "max": 0.196608,
+              "median": 0.131072,
+              "p95": 0.196608
+            }
+          }
+        ],
+        "blockedBackends": [],
+        "limitations": [
+          "Observed pair execution order: webgpu then webgl2; each backend uses a new canvas/adapter and explicit reset.",
+          "Paired campaign also records the reverse order on the same host/build; this file is one pair, not pooled results.",
+          "WebGL2 compute uses transform feedback; WebGPU uses the same shared kernels.",
+          "Only backendPreference changes to force each actual backend; workload, rendering, camera, viewport and protocol are otherwise identical.",
+          "Refresh-bound FPS and one paired campaign establish no backend speed advantage or general hardware capacity.",
+          "GPU timing is adapter-reported; query-error tests, numerical parity, device-loss acceptance and deployment are separate evidence."
+        ]
+      },
+      "errors": []
+    }
+  ]
+}

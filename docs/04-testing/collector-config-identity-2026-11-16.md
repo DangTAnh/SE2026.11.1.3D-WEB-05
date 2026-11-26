@@ -68,7 +68,10 @@ stashing the source change) and pass with it.
 
 - Controlled fake-port and fake-timer evidence. No GPU execution, no physical
   device, no real-user capacity claim.
-- The capture now reports the status read at capture time; a status change that
-  happens during the digest is visible on the next cadence. The benchmark
-  terminal-loss observer keeps its guarded position, but this fix does not
-  change #97 (stale GPU timestamps after `applyConfig`), which stays open.
+- The capture reports the status read at capture time, so an ordinary metric
+  update (same running backend, new FPS value) that lands during the digest is
+  visible on the next cadence. Lifecycle and backend changes are different: a
+  pause, a terminal loss or a replaced backend is re-checked immediately after
+  the digest, reaches `onStatus`, and drops the captured sample.
+- This fix does not change #97 (stale GPU timestamps after `applyConfig`), which
+  stays open and is a producer-side identity problem.

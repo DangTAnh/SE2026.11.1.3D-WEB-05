@@ -1,0 +1,1988 @@
+{
+  "runtimeBase": "2b306ad5f3f063648df4752d431dc15b9943227c",
+  "initial": {
+    "runtimeCommit": "d22de971f8d058d1a020b3558f9467696078a974",
+    "stats": {
+      "startTime": "2026-11-24T17:41:26.148Z",
+      "duration": 34627.571,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 9,
+      "flaky": 0
+    },
+    "tests": [
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 1000→2000",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 4000→1000",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/vortex 1000→3000",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/vortex 3000→1000",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 1000→2000 after mode round trip",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgpu/attractor 1000→2000",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgpu/vortex 3000→1000",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  167 |       });\n  168 |       await page.evaluate(() => window.rebuild.dispose());\n> 169 |       expect(problems).toEqual([]);\n      |                        ^\n  170 |     });\n  171 |   }\n  172 | });\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:169:24"
+        ]
+      },
+      {
+        "title": "changing particle count while paused keeps a spatially distributed cloud",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  207 |     expect(after.height).toBeGreaterThan(before.height * 0.5);\n  208 |     await testInfo.attach('visible-extent.json', { body: JSON.stringify({ before, after }), contentType: 'application/json' });\n> 209 |     expect(problems).toEqual([]);\n      |                      ^\n  210 |   });\n  211 |\n  212 |   test('importing a preset with another count and mode while paused keeps a distributed cloud', async ({ page }, testInfo) => {\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:209:22"
+        ]
+      },
+      {
+        "title": "importing a preset with another count and mode while paused keeps a distributed cloud",
+        "status": "failed",
+        "retry": 0,
+        "errors": [
+          "Error: expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"error: Failed to load resource: the server responded with a status of 404 (Not Found)\",\n+ ]\n\n  239 |     expect(after.height).toBeGreaterThan(before.height * 0.5);\n  240 |     await testInfo.attach('visible-extent.json', { body: JSON.stringify({ before, after }), contentType: 'application/json' });\n> 241 |     expect(problems).toEqual([]);\n      |                      ^\n  242 |   });\n  243 | });\n  244 |\n    at E:\\CNPM\\tests\\e2e\\count-rebuild.spec.ts:241:22"
+        ]
+      },
+      {
+        "title": "webgpu timing becomes unavailable after a real query read error and recovers",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "webgl2 timing becomes unavailable after a real query read error and recovers",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "GPU kernels match the CPU reference through readback",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "corrupt GPU readback fails instead of claiming parity",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "out-of-range parity parameters fail instead of running or skipping",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      }
+    ],
+    "parity": [
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 2.980232238769531e-7,
+        "maxVelocityDelta": 2.384185791015625e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 4.76837158203125e-7,
+        "maxVelocityDelta": 6.556510925292969e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 1.2293457984924316e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 1.1175870895385742e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.0016666666666666668,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 0.1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 3.725290298461914e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.05,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.000002384185791015625,
+        "maxVelocityDelta": 0.0000013113021850585938,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.05,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 20,
+        "dt": 0.1,
+        "effectiveDelta": 0.15000000000000002,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.000001430511474609375,
+        "maxVelocityDelta": 7.152557373046875e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "changes-result",
+        "dampingControlDelta": 0.3487894609570503,
+        "maxPositionDelta": 7.450580596923828e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            1,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "no-effect",
+        "dampingControlDelta": 0,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 0.5,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "changes-result",
+        "dampingControlDelta": 0.3487894609570503,
+        "maxPositionDelta": 7.450580596923828e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 50,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "no-effect",
+        "dampingControlDelta": 0,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.1920928955078125e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 1,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.1920928955078125e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 5,
+        "dt": 0,
+        "effectiveDelta": 0,
+        "lifetime": 0.25,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0,
+          "velocity": 0,
+          "age": 0
+        },
+        "prime": {
+          "age": 1,
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            1.5,
+            -0.5,
+            0.25
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 5,
+        "dt": 0,
+        "effectiveDelta": 0,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 0.1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0,
+          "velocity": 0,
+          "age": 0
+        },
+        "prime": {
+          "age": 1,
+          "velocity": [
+            1.5,
+            -0.5,
+            0.25
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgpu",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 7.152557373046875e-7,
+        "maxVelocityDelta": 9.685754776000977e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgpu",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 8.344650268554688e-7,
+        "maxVelocityDelta": 1.043081283569336e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      }
+    ],
+    "retryAttempts": 0
+  },
+  "faviconFix": {
+    "testedWorkingTreeLaterCommittedAs": "729f8a1",
+    "onlyChange": "public/favicon.ico",
+    "stats": {
+      "startTime": "2026-11-24T17:46:01.229Z",
+      "duration": 24443.059999999998,
+      "expected": 14,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "tests": [
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 1000→2000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 4000→1000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/vortex 1000→3000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/vortex 3000→1000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 1000→2000 after mode round trip",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgpu/attractor 1000→2000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgpu/vortex 3000→1000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "changing particle count while paused keeps a spatially distributed cloud",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "importing a preset with another count and mode while paused keeps a distributed cloud",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "webgpu timing becomes unavailable after a real query read error and recovers",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "webgl2 timing becomes unavailable after a real query read error and recovers",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "GPU kernels match the CPU reference through readback",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "corrupt GPU readback fails instead of claiming parity",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "out-of-range parity parameters fail instead of running or skipping",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      }
+    ],
+    "parity": [
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 2.980232238769531e-7,
+        "maxVelocityDelta": 2.384185791015625e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 4.76837158203125e-7,
+        "maxVelocityDelta": 6.556510925292969e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 1.2293457984924316e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 1.1175870895385742e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.0016666666666666668,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 0.1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 3.725290298461914e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.05,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.000002384185791015625,
+        "maxVelocityDelta": 0.0000013113021850585938,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.05,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 20,
+        "dt": 0.1,
+        "effectiveDelta": 0.15000000000000002,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.000001430511474609375,
+        "maxVelocityDelta": 7.152557373046875e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "changes-result",
+        "dampingControlDelta": 0.3487894609570503,
+        "maxPositionDelta": 7.450580596923828e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            1,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "no-effect",
+        "dampingControlDelta": 0,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 0.5,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "changes-result",
+        "dampingControlDelta": 0.3487894609570503,
+        "maxPositionDelta": 7.450580596923828e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 50,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "no-effect",
+        "dampingControlDelta": 0,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.1920928955078125e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 1,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.1920928955078125e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 5,
+        "dt": 0,
+        "effectiveDelta": 0,
+        "lifetime": 0.25,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0,
+          "velocity": 0,
+          "age": 0
+        },
+        "prime": {
+          "age": 1,
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            1.5,
+            -0.5,
+            0.25
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 5,
+        "dt": 0,
+        "effectiveDelta": 0,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 0.1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0,
+          "velocity": 0,
+          "age": 0
+        },
+        "prime": {
+          "age": 1,
+          "velocity": [
+            1.5,
+            -0.5,
+            0.25
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgpu",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 7.152557373046875e-7,
+        "maxVelocityDelta": 9.685754776000977e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgpu",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 8.344650268554688e-7,
+        "maxVelocityDelta": 1.043081283569336e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      }
+    ],
+    "retryAttempts": 0
+  },
+  "faviconFinal": {
+    "commit": "004f7a93cf8abc8accd83078bc4178df742a40aa",
+    "changes": [
+      "public/favicon.ico",
+      "index.html relative icon link"
+    ],
+    "stats": {
+      "startTime": "2026-11-24T18:07:23.623Z",
+      "duration": 23865.783,
+      "expected": 14,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "tests": [
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 1000→2000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 4000→1000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/vortex 1000→3000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/vortex 3000→1000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgl2/attractor 1000→2000 after mode round trip",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgpu/attractor 1000→2000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "paused rebuild initializes and resumes: webgpu/vortex 3000→1000",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "changing particle count while paused keeps a spatially distributed cloud",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "importing a preset with another count and mode while paused keeps a distributed cloud",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "webgpu timing becomes unavailable after a real query read error and recovers",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "webgl2 timing becomes unavailable after a real query read error and recovers",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "GPU kernels match the CPU reference through readback",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "corrupt GPU readback fails instead of claiming parity",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      },
+      {
+        "title": "out-of-range parity parameters fail instead of running or skipping",
+        "status": "passed",
+        "retry": 0,
+        "errors": []
+      }
+    ],
+    "parity": [
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 2.980232238769531e-7,
+        "maxVelocityDelta": 2.384185791015625e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 4.76837158203125e-7,
+        "maxVelocityDelta": 6.556510925292969e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 1.2293457984924316e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 1.1175870895385742e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.0016666666666666668,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 0.1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 3.725290298461914e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 60,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.05,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.000002384185791015625,
+        "maxVelocityDelta": 0.0000013113021850585938,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.05,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.0000016093254089355469,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 20,
+        "dt": 0.1,
+        "effectiveDelta": 0.15000000000000002,
+        "lifetime": 100,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0.000001430511474609375,
+        "maxVelocityDelta": 7.152557373046875e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "changes-result",
+        "dampingControlDelta": 0.3487894609570503,
+        "maxPositionDelta": 7.450580596923828e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            1,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "no-effect",
+        "dampingControlDelta": 0,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 0.5,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "changes-result",
+        "dampingControlDelta": 0.3487894609570503,
+        "maxPositionDelta": 7.450580596923828e-9,
+        "maxVelocityDelta": 1.4901161193847656e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 50,
+        "attractorDamping": 0.8,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": "no-effect",
+        "dampingControlDelta": 0,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.1920928955078125e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 30,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 100,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 1,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.00005,
+          "velocity": 0.00005,
+          "age": 0.00001
+        },
+        "prime": {
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            0,
+            0,
+            1
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 1.1920928955078125e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 5,
+        "dt": 0,
+        "effectiveDelta": 0,
+        "lifetime": 0.25,
+        "spawnRadius": 12,
+        "strength": 1.5,
+        "speed": 3,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0,
+          "velocity": 0,
+          "age": 0
+        },
+        "prime": {
+          "age": 1,
+          "position": [
+            10,
+            0,
+            0
+          ],
+          "velocity": [
+            1.5,
+            -0.5,
+            0.25
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgl2",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 5,
+        "dt": 0,
+        "effectiveDelta": 0,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 0.1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0,
+          "velocity": 0,
+          "age": 0
+        },
+        "prime": {
+          "age": 1,
+          "velocity": [
+            1.5,
+            -0.5,
+            0.25
+          ]
+        },
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 0,
+        "maxVelocityDelta": 0,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgpu",
+        "mode": "attractor",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 7.152557373046875e-7,
+        "maxVelocityDelta": 9.685754776000977e-8,
+        "maxAgeDelta": 0,
+        "reason": null
+      },
+      {
+        "status": "passed",
+        "backend": "webgpu",
+        "mode": "vortex",
+        "count": 64,
+        "steps": 40,
+        "dt": 0.016666666666666666,
+        "effectiveDelta": 0.016666666666666666,
+        "lifetime": 0.25,
+        "spawnRadius": 4,
+        "strength": 1.5,
+        "speed": 1,
+        "attractorRadius": 6,
+        "attractorDamping": 0.98,
+        "vortexDamping": 0.97,
+        "tolerance": {
+          "position": 0.002,
+          "velocity": 0.0001,
+          "age": 0.00001
+        },
+        "prime": null,
+        "expectDamping": null,
+        "dampingControlDelta": null,
+        "maxPositionDelta": 8.344650268554688e-7,
+        "maxVelocityDelta": 1.043081283569336e-7,
+        "maxAgeDelta": 0,
+        "reason": null
+      }
+    ],
+    "retryAttempts": 0
+  },
+  "capabilityProbe": {
+    "webgl2": true,
+    "renderer": "ANGLE (AMD, AMD Radeon(TM) Graphics (0x00001681) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "webgpu": true,
+    "adapter": {
+      "vendor": "amd",
+      "architecture": "rdna-2",
+      "description": ""
+    },
+    "browserVersion": "156.0.8078.4",
+    "headed": true
+  }
+}
