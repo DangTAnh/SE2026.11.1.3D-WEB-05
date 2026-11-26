@@ -11,6 +11,10 @@ config, environment and protocol before combining independent sessions.
 
 ## Recorded sessions
 
+- [25/11 current runtime, order AB: WebGL2 then WebGPU](2026-11-25-amd-radeon-chromium-order-ab.md)
+  and [order BA: WebGPU then WebGL2](2026-11-25-amd-radeon-chromium-order-ba.md):
+  same physical AMD host, runtime-equivalent d22de97,65536 particles,100 samples
+  per actual backend per pair. [Raw data, order policy and hardware limits](../04-testing/release-hardware-evidence-2026-11-25.md).
 - [31/10 default v2, AMD Radeon, headed Chromium](2026-10-31-amd-radeon-chromium-v2.md):
   commit `d6ee6e3`, 65,536 particles, 100 samples on each actual backend.
 - [31/10 default v2, SwiftShader, headless Chromium](2026-10-31-swiftshader-chromium-v2.md):
@@ -26,7 +30,11 @@ The headed FPS medians remain near 60; backend order is fixed and no performance
 advantage is claimed. Its positive GPU durations describe the original measured
 source. Issue #79 adds cached-readback rejection with real-query-pool regressions;
 it does not retroactively prove error-path freshness in those older sessions.
-Physical-GPU numerical parity remains NOT_RUN.
+Those historical sessions did not establish physical-GPU numerical parity.
+The25/11 follow-up separately records a bounded physical-AMD parity matrix and
+injected query-error recovery. Physical device-loss and full release acceptance
+are still separate gates; the new evidence does not retroactively validate an
+older measured build.
 
 ## Runner
 

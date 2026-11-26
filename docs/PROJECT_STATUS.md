@@ -1,5 +1,56 @@
 # PROJECT STATUS — 3D-WEB-05
 
+## 25/11/2026 — Release review follow-up after #114/#115
+
+- Normally merge `dev@2b306ad` into the published Issue #59 documentation branch
+  for PR #113; preserve its history and the dated checkpoints below.
+- #114 / Issue #103 is merged: count rebuild releases old compute kernels before
+  constructing replacements; real-WebGL2 regressions cover the paused lifecycle.
+  #115 / Issue #97 is merged: effective compute-config changes invalidate cached
+  and in-flight GPU timings. Both Issues were closed after their deliveries.
+- Integrated-dev CI [44974013524](https://github.com/DangTAnh/SE2026.11.1.3D-WEB-05/actions/runs/44974013524)
+  at exactly `2b306ad`: 416 unit/integration PASS, 137 E2E PASS /25 capability
+  SKIP, 6 load PASS; both typechecks, build, Analyze and CodeQL PASS. These are
+  published integration results, not a claim that this docs follow-up has already
+  passed final-head CI or physical-GPU acceptance.
+- Withdraw the 20/11 TV5 interpretation of benchmark order below. Keep the
+  proposed MVP criterion unchanged: the October fixed-order artifacts alone do
+  not demonstrate alternate-order acceptance. New both-order evidence is
+  recorded separately below for owner review; no waiver is claimed.
+- New [headed hardware evidence](04-testing/release-hardware-evidence-2026-11-25.md)
+  at runtime-equivalent d22de97 records both backend orders on AMD Radeon:
+  400 actual samples, identical default-v2 workload/hash and protocol, no speed
+  advantage claim. This supplies new order evidence for acceptance-owner review.
+- Initial headed GPU checks:5 PASS /9 console404 FAIL. The missing favicon is
+  isolated as #116/#117; its asset-only working tree passes the unchanged headed
+  suites14/14, including both actual backends, parity and query-error recovery.
+  This result depends on that companion fix; it is not a pass claim for a release
+  tree that still lacks the icon. No test assertion, timeout or retry was weakened.
+- Final #117 head004f7a9 also declares the icon relative to the Pages project
+  path: local production-subpath delivery returns200 without console errors;
+  the unchanged14 headed GPU tests pass again in23.9s. The earlier icon-only
+  run and subpath404 are retained, not presented as the final result.
+- Fresh dependency audit on the resolved integration tree: production dependency
+  tree 0 known advisories; full tree 1 moderate (`vite`). Historical counts remain
+  dated; a clean dependency snapshot is not an application security guarantee.
+- #70 remains open pending current-head verification, acceptance and independent
+  human release approval. Deployment, live-URL smoke and agreed tag remain later
+  gates. #55/#56 are post-MVP; #84 remains deferred, not an Undo delivery.
+
+## 20/11/2026 — Release evidence clarifications (#70 review follow-up)
+
+- TV5 documentation follow-up, no runtime change: collector evidence wording now
+  separates ordinary metric updates (next cadence) from pause/loss/replacement
+  (immediate post-digest re-check, observer notified, sample dropped).
+- Benchmark order recorded as an explicit TV5 decision: single-order artifacts
+  stay labelled as such; a counterbalanced run is required only before any
+  faster-backend claim, which MVP acceptance does not ask for.
+- Dependency audit triage added: `npm audit --omit=dev` reports 0
+  vulnerabilities at `dev@cbce7c4`; the single moderate finding is the dev-only
+  `vite` advisory, not shipped in `dist`.
+- Still open for the release: #103 (P1, TV3) and #97 (P2, TV3) remain
+  reproducible on this head and are not fixed by these notes.
+
 ## 18/11/2026 — Issue #85 / VT-123 reviewer role delivered
 
 - PR #87 merged `feat/85-reviewer-concurrency` into `dev` (merge `2e57780`,
