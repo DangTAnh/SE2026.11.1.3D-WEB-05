@@ -8,13 +8,9 @@
  * Deliberately DOM-free and `three`-free: a canvas, an OffscreenCanvas or a
  * test double can all be passed as `RendererTarget`. This is what lets the UI
  * and the perf collector be tested without a GPU.
- *
- * Known coupling: `LabConfig` still lives in `src/presets/preset.ts`, so this
- * module depends on the preset domain for a type. Moving the config types into
- * `src/core/types/` is tracked as D-06 in docs/architecture.md.
  */
 import type { ActualBackend, BackendPreference } from '../types/backend.ts';
-import type { LabConfig } from '../../presets/preset.ts';
+import type { LabConfig } from '../types/config.ts';
 
 /** GPU timing older than this is stale and must not be reported as available. */
 export const MAX_GPU_MEASUREMENT_AGE_MS = 2_000;

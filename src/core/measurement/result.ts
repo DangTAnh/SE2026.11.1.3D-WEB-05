@@ -7,7 +7,7 @@
  * values that the team has not fixed yet stay "not fixed" — this module never
  * substitutes a sample count or duration.
  */
-import type { LabConfig } from '../../presets/preset.ts';
+import type { LabConfig } from '../types/config.ts';
 import type { AggregateGroup, ValueSummary } from './aggregate.ts';
 
 export interface BenchmarkEnvironment {

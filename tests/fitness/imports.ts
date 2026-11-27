@@ -120,8 +120,8 @@ export function checkArchitecture(files: readonly SourceFile[]): Violation[] {
         violations.push({ rule: 'core-types-is-leaf', file: file.path, detail: specifier });
       }
 
-      // Rule 2: runtime dependencies stay inside the renderer layer; outward
-      // references are allowed only as types (the documented LabConfig edge).
+      // Rule 2: runtime dependencies stay inside the renderer layer or the
+      // leaf; outward references are allowed only as types.
       if (
         file.path.startsWith('src/core/renderer/')
         && !typeOnly
@@ -134,6 +134,12 @@ export function checkArchitecture(files: readonly SourceFile[]): Violation[] {
 
       if (file.path.startsWith('src/presets/') && target?.startsWith('src/ui/')) {
         violations.push({ rule: 'presets-does-not-import-ui', file: file.path, detail: specifier });
+      }
+
+      // Core owns its own contracts: config types live in the leaf, so no core
+      // file may reach into the preset domain for them (D-06, Issue #118).
+      if (file.path.startsWith('src/core/') && target?.startsWith('src/presets/')) {
+        violations.push({ rule: 'core-does-not-import-presets', file: file.path, detail: specifier });
       }
     }
 

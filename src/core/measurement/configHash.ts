@@ -1,5 +1,5 @@
 /** Active workload identity, per TV1 decision on Issue #16 (27/10/2026). */
-import type { LabConfig } from '../../presets/preset.ts';
+import type { LabConfig } from '../types/config.ts';
 
 function round(value: number, field: string): number {
   if (!Number.isFinite(value)) throw new TypeError(`configHash: ${field} must be a finite number`);

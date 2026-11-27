@@ -25,6 +25,7 @@ Related documents: [`ui-requirements.md`](01-requirements/ui-requirements.md),
 |---|---|---|
 | Renderer contract | Typed port implemented by ThreeRendererAdapter; UI consumes the injected port | [`src/core/renderer/RendererPort.ts`](../src/core/renderer/RendererPort.ts) |
 | Backend identity types | Implemented (types only) | [`src/core/types/backend.ts`](../src/core/types/backend.ts) |
+| Shared config contract (`LabConfig`, `SimulationMode`, `DEFAULT_CONFIG`, `cloneConfig`) | Implemented (types and frozen defaults); re-exported by `src/presets/preset.ts` | [`src/core/types/config.ts`](../src/core/types/config.ts) |
 | Perf sample shape (`PerformanceSnapshot`) | Implemented (type only) | [`src/core/types/measurement.ts`](../src/core/types/measurement.ts) |
 | Benchmark config identity (`configHash`) | Implemented | [`src/core/measurement/configHash.ts`](../src/core/measurement/configHash.ts) |
 | Preset domain (parse/serialize) | Implemented, client-side only | [`src/presets/preset.ts`](../src/presets/preset.ts) |
@@ -61,14 +62,13 @@ flowchart LR
   UI["src/ui"] --> PORT["src/core/renderer<br/>RendererPort"]
   UI --> PRESET["src/presets"]
   PORT --> TYPES["src/core/types"]
-  PORT -. "type only: LabConfig" .-> PRESET
   SIM["src/simulations/simulation.ts"] --> PORT
   RND["src/simulations/rendererAdapter.ts"] --> PORT
   PERF["src/perf"] --> PORT
 ```
 
-Solid arrows are runtime dependencies; the dotted arrow is type-only. Arrows
-never point back toward `src/ui`.
+Solid arrows are runtime dependencies. Arrows never point back toward
+`src/ui`.
 
 Rules:
 
@@ -76,9 +76,11 @@ Rules:
    may reference each other (`measurement.ts` type-imports `ActualBackend` from
    `./backend.ts`), but not another layer or a package.
 2. `src/core/renderer/` may import types only from outside its own layer. Runtime
-   imports stay inside `src/core/renderer/` or come from `src/core/types/`; the
-   only outward dependency is the type-only `LabConfig` edge to `src/presets/`.
-   No DOM, no `three`, no network.
+   imports stay inside `src/core/renderer/` or come from `src/core/types/`; it
+   has no outward dependency. The shared config types (`LabConfig`,
+   `SimulationMode`, `DEFAULT_CONFIG`, `cloneConfig`) live in
+   `src/core/types/config.ts`, and `src/presets/preset.ts` re-exports them. No
+   DOM, no `three`, no network.
 3. `src/simulations/*` may import `src/core/`; **never** the reverse.
 4. `src/ui/` may not import `src/simulations/*` directly — only `RendererPort`.
 5. `src/presets/` may not import `src/ui/`.
@@ -223,7 +225,8 @@ composition/lifecycle change requires TV1/TV3 review before merge.
 |---|---|---|---|---|
 | `RendererPort`, `RendererStatus` | `src/core/renderer/RendererPort.ts` | TV1 | UI, perf, both renderers | TV1 |
 | `ActualBackend`, `BackendPreference` | `src/core/types/backend.ts` | TV1 | renderer, perf, UI | TV1 |
-| `LabConfig`, preset JSON v2 | `src/presets/preset.ts` | TV4 | UI, renderer, future server | TV4 |
+| `LabConfig`, `SimulationMode`, `DEFAULT_CONFIG`, `cloneConfig` | `src/core/types/config.ts` | TV1 | UI, renderer, presets, future server | TV1 |
+| Preset JSON v2 | `src/presets/preset.ts` | TV4 | UI, future server | TV4 |
 | `PerformanceSnapshot`, `configHash` | `src/core/types/measurement.ts`, `src/core/measurement/configHash.ts` | TV1 | TV5, ingestion | TV1 |
 
 A contract changes only with its owner's review. Consumers adapt; the contract
@@ -332,11 +335,12 @@ reviewing benchmark reproducibility and tests; agent review is supplemental.
 | D-02 | Domain module touches the DOM (`downloadPreset`) | `src/presets/preset.ts` |
 | D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/controls/controlBindings.ts` |
 | D-05 | `serializePreset` re-parses its own output to self-validate | `src/presets/preset.ts` |
-| D-06 | `RendererPort` depends on `src/presets` for the `LabConfig` type | `src/core/renderer/RendererPort.ts` |
 | D-07 | UI injection API is available; TV1 supplies the initialized port from main. Live-status source merged in #33; remaining acceptance is tracked in #14 | `src/main.ts`, `src/ui/overlays/statusOverlay.ts` |
 
-D-06 disappears once the config types move into `src/core/types/`; that change
-needs TV4's agreement because `src/presets/` is theirs.
+D-06 was resolved by #118: the shared config types (`LabConfig`,
+`SimulationMode`, `DEFAULT_CONFIG`, `cloneConfig`) moved to
+`src/core/types/config.ts` and `src/presets/preset.ts` re-exports them, so
+`RendererPort` no longer reaches into `src/presets/`. The ID is not reused.
 
 D-01 was resolved by the adapter and composition-root work in #12/#15.
 
