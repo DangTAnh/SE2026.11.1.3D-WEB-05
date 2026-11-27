@@ -333,16 +333,20 @@ reviewing benchmark reproducibility and tests; agent review is supplemental.
 | D-03 | Unchecked cast from a DOM value into `LabConfig` | `src/ui/controls/controlBindings.ts` |
 | D-05 | `serializePreset` re-parses its own output to self-validate | `src/presets/preset.ts` |
 | D-06 | `RendererPort` depends on `src/presets` for the `LabConfig` type | `src/core/renderer/RendererPort.ts` |
-| D-07 | UI injection API is available; TV1 supplies the initialized port from main. Live-status source merged in #33; remaining acceptance is tracked in #14 | `src/main.ts`, `src/ui/overlays/statusOverlay.ts` |
 
 D-06 disappears once the config types move into `src/core/types/`; that change
-needs TV4's agreement because `src/presets/` is theirs.
+needs TV4's agreement because `src/presets/` is theirs. It is tracked as Issue #118.
 
 D-01 was resolved by the adapter and composition-root work in #12/#15.
 
 D-04 was resolved by #33: the UI now renders `backendLabel` from
 `RendererStatus.actual` in `src/ui/state/runtimeState.ts`, and no Canvas 2D or
 mockup label remains. The ID is not reused.
+
+D-07 is retired: the composition root injects the initialized port into the UI
+(`src/main.ts`), and the live-status acceptance it pointed at closed with #14 on
+29/10/2026 after #33 merged. There is no open work left under that ID, and it is
+not reused.
 
 D-08 is retired: a changed `backendPreference` applies on the next `init()`
 (§4). The ID is not reused.
