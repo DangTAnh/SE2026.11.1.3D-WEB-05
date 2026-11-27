@@ -99,7 +99,7 @@ test('fitness: core/types is a leaf with no outward imports', () => {
 
   assert.deepEqual(
     violations.map((violation) => violation.rule),
-    ['core-types-is-leaf', 'core-types-is-leaf', 'core-types-is-leaf'],
+    ['core-types-is-leaf', 'core-types-is-leaf', 'core-does-not-import-presets', 'core-types-is-leaf'],
   );
 });
 
@@ -120,14 +120,33 @@ test('fitness: core/renderer only type-imports outward', () => {
 
   assert.deepEqual(
     violations.map((violation) => violation.rule),
-    ['core-renderer-imports-types-only', 'core-renderer-imports-types-only', 'core-renderer-imports-types-only'],
+    [
+      'core-renderer-imports-types-only',
+      'core-does-not-import-presets',
+      'core-renderer-imports-types-only',
+      'core-renderer-imports-types-only',
+      'core-does-not-import-presets',
+    ],
   );
 });
 
-test('fitness: core/renderer keeps the documented LabConfig type-only exception', () => {
+test('fitness: core does not import the preset domain (D-06)', () => {
   const violations = checkArchitecture([
     source('src/core/renderer/RendererPort.ts', "import type { LabConfig } from '../../presets/preset.ts';"),
     source('src/core/renderer/RendererPort.ts', "export type { LabConfig } from '../../presets/preset.ts';"),
+    source('src/core/measurement/configHash.ts', "import { cloneConfig } from '../../presets/preset.ts';"),
+  ]);
+
+  assert.deepEqual(
+    violations.map((violation) => violation.rule),
+    ['core-does-not-import-presets', 'core-does-not-import-presets', 'core-does-not-import-presets'],
+  );
+});
+
+test('fitness: core takes its config contract from the leaf instead', () => {
+  const violations = checkArchitecture([
+    source('src/core/renderer/RendererPort.ts', "import type { LabConfig } from '../types/config.ts';"),
+    source('src/core/measurement/configHash.ts', "import { cloneConfig } from '../types/config.ts';"),
     source('src/core/renderer/adapter.ts', "import type { RendererPort } from './RendererPort.ts';"),
   ]);
 

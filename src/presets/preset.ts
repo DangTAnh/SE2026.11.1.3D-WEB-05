@@ -1,20 +1,12 @@
 import Ajv2020 from 'ajv/dist/2020.js';
 import type { ErrorObject } from 'ajv';
 import presetSchema from '../../docs/02-design/preset-schema-v2.schema.json' with { type: 'json' };
+import type { BackendPreference } from '../core/types/backend.ts';
+import type { LabConfig, SimulationMode } from '../core/types/config.ts';
 
-export type SimulationMode = 'attractor' | 'vortex';
-export type BackendPreference = 'auto' | 'webgpu' | 'webgl2';
-export interface LabConfig {
-  mode: SimulationMode;
-  backendPreference: BackendPreference;
-  simulation: { particleCount: number; spawnRadius: number; particleSize: number; lifetime: number; speed: number };
-  modes: {
-    attractor: { attractorStrength: number; attractorRadius: number; attractorDamping: number };
-    vortex: { vortexStrength: number; vortexDamping: number };
-  };
-  rendering: { backgroundColor: string; particleColor: string; opacity: number; additiveBlend: boolean };
-  camera: { enabled: boolean; autoRotate: boolean; distance: number };
-}
+/** The config contract lives in the leaf; re-exported here for existing callers. */
+export { DEFAULT_CONFIG, cloneConfig } from '../core/types/config.ts';
+export type { BackendPreference, LabConfig, SimulationMode };
 /** Metadata belongs to the document, never to RendererPort or configHash. */
 export interface PresetDocument {
   schemaVersion: 2;
@@ -23,19 +15,6 @@ export interface PresetDocument {
   config: LabConfig;
 }
 export type LabPreset = PresetDocument;
-
-/** Frozen at every level; cloneConfig returns independent mutable defaults. */
-export const DEFAULT_CONFIG: Readonly<LabConfig> = Object.freeze({
-  mode: 'attractor', backendPreference: 'auto',
-  simulation: Object.freeze({ particleCount: 65536, spawnRadius: 10, particleSize: 2.5, lifetime: 6, speed: 1.2 }),
-  modes: Object.freeze({
-    attractor: Object.freeze({ attractorStrength: 1.5, attractorRadius: 6, attractorDamping: 0.98 }),
-    vortex: Object.freeze({ vortexStrength: 1.5, vortexDamping: 0.99 }),
-  }),
-  rendering: Object.freeze({ backgroundColor: '#07111f', particleColor: '#6ce6ff', opacity: 1, additiveBlend: false }),
-  camera: Object.freeze({ enabled: true, autoRotate: false, distance: 30 }),
-});
-export function cloneConfig(config: Readonly<LabConfig>): LabConfig { return structuredClone(config); }
 
 const validatePreset = new Ajv2020({ allErrors: true, strict: true, multipleOfPrecision: 8 })
   .compile<PresetDocument>(presetSchema);
