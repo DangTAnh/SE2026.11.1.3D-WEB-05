@@ -23,7 +23,7 @@
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.64.0",
     "@types/node": "^26.6.5",
-    "@types/three": "0.186.0",
+    "@types/three": "0.187.0",
     "@vitest/coverage-v8": "5.0.3",
     "fast-check": "4.10.2",
     "typescript": "^5.8.3",
@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "ajv": "^8.20.0",
-    "three": "0.186.1"
+    "three": "0.187.0"
   }
 }
