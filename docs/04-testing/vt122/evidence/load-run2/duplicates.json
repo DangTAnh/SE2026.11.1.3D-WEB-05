@@ -1,0 +1,419 @@
+{
+  "scenario": "duplicates",
+  "tasks": 100,
+  "errors": 0,
+  "errorMessages": [],
+  "effects": 10,
+  "calls": 10,
+  "p50Ms": 53.28370000000001,
+  "p95Ms": 53.95660000000004,
+  "maxMs": 54.0369,
+  "targetP95Ms": 3000,
+  "ioMs": 50,
+  "node": "v24.22.1",
+  "platform": "win32",
+  "arch": "x64",
+  "scope": "single Node process, 100 promises, 50 ms simulated I/O per port call, no real network/DB/user capacity claim",
+  "raw": [
+    {
+      "id": "duplicate-0",
+      "latencyMs": 54.02780000000001
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.95660000000004
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.9486
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.94760000000002
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.948000000000036
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.94720000000001
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 54.00980000000004
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 54.010299999999916
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 54.01080000000002
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 54.0369
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 53.78789999999998
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.796200000000056
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.79740000000004
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.798400000000015
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.799499999999966
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.7987
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 53.861699999999985
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 53.86190000000005
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 53.862900000000025
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.89009999999996
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 53.640100000000075
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.652300000000025
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.65489999999994
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.65660000000008
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.65730000000002
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.657100000000014
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 53.720399999999984
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 53.72120000000001
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 53.72279999999995
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.750099999999975
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 53.50240000000002
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.51409999999993
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.516500000000065
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.518100000000004
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.51910000000004
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.520800000000065
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 53.58220000000006
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 53.582899999999995
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 53.58440000000002
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.611399999999946
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 53.36379999999997
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.37600000000003
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.3784
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.38009999999997
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.38080000000002
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.439899999999966
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 53.44379999999995
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 53.44509999999997
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 53.44649999999996
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.473599999999976
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 53.224199999999996
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.22860000000003
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.196799999999996
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.19289999999995
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.19310000000007
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.252999999999986
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 53.25570000000005
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 53.25670000000002
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 53.25749999999999
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.28370000000001
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 53.03570000000008
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 53.04790000000003
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 53.0489
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 53.050599999999974
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 53.05129999999997
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 53.11180000000002
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 53.11450000000002
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 53.115500000000054
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 53.11689999999999
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.14409999999998
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 52.89680000000004
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 52.90890000000002
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 52.911400000000015
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 52.91320000000002
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 52.91409999999996
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 52.97569999999996
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 52.97750000000008
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 52.97849999999994
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 52.97990000000004
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 53.00729999999999
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 52.76010000000008
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 52.77230000000003
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 52.77490000000006
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 52.77679999999998
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 52.77779999999996
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 52.83959999999996
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 52.84129999999993
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 52.84239999999994
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 52.843800000000044
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 52.87139999999994
+    },
+    {
+      "id": "duplicate-0",
+      "latencyMs": 52.62430000000006
+    },
+    {
+      "id": "duplicate-1",
+      "latencyMs": 52.63640000000004
+    },
+    {
+      "id": "duplicate-2",
+      "latencyMs": 52.63920000000002
+    },
+    {
+      "id": "duplicate-3",
+      "latencyMs": 52.640600000000006
+    },
+    {
+      "id": "duplicate-4",
+      "latencyMs": 52.64179999999999
+    },
+    {
+      "id": "duplicate-5",
+      "latencyMs": 52.7038
+    },
+    {
+      "id": "duplicate-6",
+      "latencyMs": 52.70550000000003
+    },
+    {
+      "id": "duplicate-7",
+      "latencyMs": 52.70689999999996
+    },
+    {
+      "id": "duplicate-8",
+      "latencyMs": 52.70840000000004
+    },
+    {
+      "id": "duplicate-9",
+      "latencyMs": 52.73579999999998
+    }
+  ]
+}

@@ -2,6 +2,7 @@
   "name": "gpu-particle-lab-week1-ui-prototype",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:load": "vitest run --config vitest.load.config.ts",
+    "test:coverage": "vitest run --coverage --coverage.include=src/presets/review.ts --coverage.reporter=text --coverage.reporter=json",
     "test:e2e": "playwright test --grep-invert @evidence",
     "test:a11y": "playwright test --grep @a11y",
     "evidence:screenshots": "playwright test --grep @evidence",
@@ -20,6 +23,9 @@
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.64.0",
     "@types/node": "^26.6.5",
+    "@types/three": "0.186.0",
+    "@vitest/coverage-v8": "5.0.3",
+    "fast-check": "4.10.2",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
     "vitest": "^5.0.3"
@@ -28,6 +34,7 @@
     "node": ">=22.16.0"
   },
   "dependencies": {
-    "ajv": "^8.20.0"
+    "ajv": "^8.20.0",
+    "three": "0.186.1"
   }
 }

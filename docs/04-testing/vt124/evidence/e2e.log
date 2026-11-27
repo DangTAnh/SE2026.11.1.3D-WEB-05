@@ -1,0 +1,6 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 test:e2e
+npm notice run playwright test --grep-invert @evidence
+[WebServer] npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 dev
+[WebServer] npm notice run vite --host 127.0.0.1 --port 4173
+[WebServer] (node:27076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)

@@ -1,0 +1,249 @@
+npm notice run gpu-particle-lab-week1-ui-prototype@0.1.0 npx
+npm notice run vitest run tests/unit/preset-batch.test.ts tests/integration/preset-batch.test.ts
+
+ RUN  v5.0.3 C:/Users/Admin/.codex/worktrees/vt124-bulk-preset-import/SE2026.11.1.3D-WEB-05
+
+ ❯ tests/integration/preset-batch.test.ts (5 tests | 5 failed) 7ms
+   × VT124-T09 strict schema failures do not poison a later valid record 3ms
+   × VT124-T10 attractor document/name round-trip survives batch import 0ms
+   × VT124-T10 vortex document/name round-trip survives batch import 0ms
+   × VT124-T11 count/range/precision validation remains unchanged 0ms
+   × VT124-T22 published examples stay byte-identical after batch round-trip 2ms
+ ❯ tests/unit/preset-batch.test.ts (18 tests | 18 failed) 10ms
+   × VT124-T01 accepts a complete v2 document 3ms
+   × VT124-T02/T03 valid-error-valid preserves both documents and the rejected position 0ms
+   × VT124-T04 report follows valid/error state transitions 0ms
+   × VT124-T05 report follows valid/error state transitions 0ms
+   × VT124-T06 report follows valid/error state transitions 0ms
+   × VT124-T07 report follows valid/error state transitions 0ms
+   × VT124-T19 report follows valid/error state transitions 0ms
+   × VT124-T08 empty/new calls do not inherit a previous report 0ms
+   × VT124-T12 non-string runtime records fail independently 0ms
+   × VT124-T20 sparse array slots still receive indexed outcomes 0ms
+   × VT124-T13 results and repeated accepted documents are isolated 0ms
+   × VT124-T14 duplicate documents are retained in order 0ms
+   × VT124-T15 record-count boundary is inclusive 0ms
+   × VT124-T15 UTF-8 byte boundary is inclusive and checked before parsing 0ms
+   × VT124-T21 non-array envelope rejects (null) 2ms
+   × VT124-T21 non-array envelope rejects (undefined) 0ms
+   × VT124-T21 non-array envelope rejects ({}) 0ms
+   × VT124-T21 non-array envelope rejects ([]) 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 23 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T09 strict schema failures do not poison a later valid record
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/integration/preset-batch.test.ts:10:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T10 attractor document/name round-trip survives batch import
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T10 vortex document/name round-trip survives batch import
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/integration/preset-batch.test.ts:24:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T11 count/range/precision validation remains unchanged
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/integration/preset-batch.test.ts:40:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯
+
+ FAIL  tests/integration/preset-batch.test.ts > VT124-T22 published examples stay byte-identical after batch round-trip
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/integration/preset-batch.test.ts:51:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T01 accepts a complete v2 document
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:10:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T02/T03 valid-error-valid preserves both documents and the rejected position
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:17:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T04 report follows valid/error state transitions
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T05 report follows valid/error state transitions
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T06 report follows valid/error state transitions
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T07 report follows valid/error state transitions
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T19 report follows valid/error state transitions
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:38:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T08 empty/new calls do not inherit a previous report
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:47:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T12 non-string runtime records fail independently
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:54:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T20 sparse array slots still receive indexed outcomes
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ Test Files  2 failed (2)
+      Tests  23 failed (23)
+   Start at  09:32:15
+   Duration  467ms (import 61%, transform 33%, tests 4%, worker 2%)
+
+ ❯ tests/unit/preset-batch.test.ts:65:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T13 results and repeated accepted documents are isolated
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:76:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T14 duplicate documents are retained in order
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:89:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T15 record-count boundary is inclusive
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:96:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T15 UTF-8 byte boundary is inclusive and checked before parsing
+Error: VT124 bulk import not implemented
+ ❯ importPresetBatch src/presets/batchImport.ts:16:9
+     14| /** RED contract stub only; no bulk behavior exists at this checkpoint…
+     15| export function importPresetBatch(_inputs: readonly unknown[]): BatchI…
+     16|   throw new Error('VT124 bulk import not implemented');
+       |         ^
+     17| }
+     18|
+ ❯ tests/unit/preset-batch.test.ts:103:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/23]⎯
+
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T21 non-array envelope rejects (null)
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T21 non-array envelope rejects (undefined)
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T21 non-array envelope rejects ({})
+ FAIL  tests/unit/preset-batch.test.ts > VT124-T21 non-array envelope rejects ([])
+AssertionError: expected error to be instance of TypeError
+
+- Expected:
+[Function TypeError]
+
++ Received:
+Error {
+  "message": "VT124 bulk import not implemented",
+}
+
+ ❯ tests/unit/preset-batch.test.ts:110:51
+    108|
+    109| test.each([null, undefined, {}, '[]'])('VT124-T21 non-array envelope r…
+    110|   expect(() => importPresetBatch(input as never)).toThrow(TypeError);
+       |                                                   ^
+    111| });
+    112|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/23]⎯
